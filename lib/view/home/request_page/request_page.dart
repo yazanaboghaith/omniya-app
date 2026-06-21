@@ -146,55 +146,6 @@ class _RequestPageState extends State<RequestPage> {
                       ),
                     ],
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(w * 0.07),
-                      border: Border.all(
-                        color: AppColors.text(context).withValues(alpha: 0.15),
-                      ),
-                      color: isDark
-                          ? AppColors.text(context).withValues(alpha: 0.08)
-                          : Colors.black.withValues(alpha: 0.04),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(28),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 16.0, sigmaY: 16.0),
-                        child: Container(
-                          padding: EdgeInsets.all(w * 0.05),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              buildHeaderTitle(context, h),
-                              SizedBox(height: w * 0.04),
-                              buildSearchField(
-                                context,
-                                searchController,
-                                _debounce,
-                                (timer) => _debounce = timer,
-                              ),
-                              SizedBox(height: w * 0.04),
-                              Consumer<RequestPageController>(
-                                builder: (context, controller, child) {
-                                  return buildBody(
-                                    context,
-                                    controller,
-                                    controller.orders,
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Consumer<RequestPageController>(
-                    builder: (context, controller, child) {
-                      return buildPagination(context, controller);
-                    },
-                  ),
                 ],
               ),
             ),
