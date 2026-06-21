@@ -26,4 +26,10 @@ class AppApi {
   static const epaymentactivemethods = "/v1/epayment/active-methods";
   static const epaymentcheckpayment = "/v1/epayment/check-payment";
   static const epaymentcreatepayment = "/v1/epayment/create-payment";
+
+  ///////////////////////////////
+  //////////////////////////////
+  //////////////////////////////
+  static const servicesaddon = "/v1/services/addon";
+  static const servicesupdate = "/v1/services/update";
 }

@@ -13,7 +13,10 @@ class UserModel {
   final String arabicStatus;
   final List<Package> packages;
   final List<AddonService> addonServices;
-
+  final String? token;
+  final String? refreshToken;
+  final int? tokenExpiry;
+  final bool? fcmRegistered;
   UserModel({
     required this.id,
     required this.username,
@@ -29,6 +32,10 @@ class UserModel {
     required this.arabicStatus,
     required this.packages,
     required this.addonServices,
+    this.token,
+    this.refreshToken,
+    this.tokenExpiry,
+    this.fcmRegistered,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -51,6 +58,11 @@ class UserModel {
       addonServices: _toList(
         json['addon_services'],
       ).map((e) => AddonService.fromJson(e)).toList(),
+      token: json['token']?.toString(),
+      refreshToken: json['refresh_token']?.toString(),
+      tokenExpiry:
+          json['token_expiry'] != null ? _toInt(json['token_expiry']) : null,
+      fcmRegistered: json['fcm_registered'] == true,
     );
   }
 
