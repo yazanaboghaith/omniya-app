@@ -27,7 +27,6 @@ class UserModel {
     required this.baseService,
     required this.quota,
     required this.arabicStatus,
-
     required this.packages,
     required this.addonServices,
   });
@@ -49,7 +48,6 @@ class UserModel {
         json['packages'],
       ).map((e) => Package.fromJson(e)).toList(),
       arabicStatus: _toString(json['arabic_status']),
-
       addonServices: _toList(
         json['addon_services'],
       ).map((e) => AddonService.fromJson(e)).toList(),
@@ -86,6 +84,7 @@ class BaseService {
   final String name;
   final String label;
   final int regPrice;
+  final bool unlimitted;
 
   BaseService({
     required this.id,
@@ -94,6 +93,7 @@ class BaseService {
     required this.name,
     required this.label,
     required this.regPrice,
+    required this.unlimitted,
   });
 
   factory BaseService.fromJson(Map<String, dynamic>? json) {
@@ -105,6 +105,7 @@ class BaseService {
         name: "",
         label: "",
         regPrice: 0,
+        unlimitted: false,
       );
     }
 
@@ -115,6 +116,7 @@ class BaseService {
       name: UserModel._toString(json['name']),
       label: UserModel._toString(json['label']),
       regPrice: UserModel._toInt(json['reg_price']),
+      unlimitted: json['unlimitted'] == true,
     );
   }
 }
@@ -164,24 +166,6 @@ class Quota {
       totalUsagePercent: UserModel._toInt(json['total_usage_percent']),
       speed: UserModel._toString(json['speed']),
     );
-  }
-
-  double get currentSpeedValue => _parseSpeed(currentSpeed);
-
-  static double _parseSpeed(String value) {
-    if (value.isEmpty) return 0;
-
-    String v = value.toUpperCase().trim();
-
-    if (v.contains("K")) {
-      return double.tryParse(v.replaceAll("K", "")) ?? 0;
-    }
-
-    if (v.contains("M")) {
-      return (double.tryParse(v.replaceAll("M", "")) ?? 0) * 1024;
-    }
-
-    return double.tryParse(v) ?? 0;
   }
 }
 

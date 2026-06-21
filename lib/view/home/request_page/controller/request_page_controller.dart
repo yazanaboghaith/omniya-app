@@ -4,7 +4,6 @@ import 'package:omniya/const/url.dart';
 import 'package:omniya/model/orders_response.dart';
 import 'package:omniya/view/auth/services/api_client.dart';
 
-// 1. إضافة حالة unauthorized للتعامل مع انتهاء الجلسة
 enum RequestState {
   idle,
   loading,
@@ -16,7 +15,6 @@ enum RequestState {
 }
 
 class RequestPageController with ChangeNotifier {
-  // 2. تعريف نسخة واحدة من ApiClient للحفاظ على Lock التجديد
   final ApiClient apiClient = ApiClient();
 
   bool isLoading = false;
@@ -34,7 +32,7 @@ class RequestPageController with ChangeNotifier {
 
   bool isLoadMore = false;
 
-  final String apiorders = "${AppApi.Url}${AppApi.apiorders}";
+  final String apiorders = "${AppApi.url}${AppApi.apiorders}";
 
   Future<void> getOrders({
     int page = 1,
@@ -56,73 +54,60 @@ class RequestPageController with ChangeNotifier {
     notifyListeners();
 
     try {
-      // String url = "$apiorders?page=$page&page_size=10";
-      String url = "$apiorders";
+      String url = "$apiorders?page=$page&page_size=10";
 
       if (search != null && search.trim().isNotEmpty) {
-        // url += "&search=${Uri.encodeComponent(search)}";
-        url += "?search=${Uri.encodeComponent(search)}";
+        url += "&search=${Uri.encodeComponent(search)}";
       }
 
-      debugPrint("API REQUEST URL: $url");
-
-      // 3. استخدام النسخة الموحدة بدلاً من ApiClient().get(...)
       final response = await apiClient.get(Uri.parse(url));
-
-      debugPrint("STATUS CODE: ${response.statusCode}");
-      debugPrint("BODY: ${response.body}");
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         data = OrdersResponseModel.fromJson(jsonData);
 
-        if (page == 1) {
-          orders.clear();
-        }
-
         final newItems = data?.results ?? [];
 
-        orders.addAll(
-          newItems.where(
-            (item) => !orders.any(
-              (e) => e.timestamp == item.timestamp && e.service == item.service,
+        if (!loadMore) {
+          orders = newItems;
+        } else {
+          orders.addAll(
+            newItems.where(
+              (item) => !orders.any(
+                (e) =>
+                    e.timestamp == item.timestamp && e.service == item.service,
+              ),
             ),
-          ),
-        );
+          );
+        }
+
         currentPage = page;
-        hasNextPage = data?.next != null; // مبسطة بناءً على كودك الأصلي
+        hasNextPage = data?.next != null;
+
         state = RequestState.success;
       } else {
-        // تم مسح فحص 401 من هنا لأنه لن يحدث، الـ ApiClient يعالجه!
         error = "فشل في جلب البيانات";
         state = RequestState.serverError;
       }
     } catch (e) {
-      // 4. التقاط استثناء انتهاء الجلسة هنا
-      if (e.toString().contains("SESSION_EXPIRED")) {
-        final msg = "انتهت الجلسة، يجب إعادة تسجيل الدخول";
-        error = msg;
-        state = RequestState.unauthorized; // تغيير الحالة
-
-        if (context != null && context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(msg),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
-      } else {
-        error = e.toString();
-        state = RequestState.error;
-      }
+      error = e.toString();
+      state = RequestState.error;
     }
 
     isLoading = false;
     isLoadMore = false;
-
     notifyListeners();
+  }
+
+  Future<void> loadPreviousPage() async {
+    if (currentPage <= 1) return;
+
+    final prevPage = currentPage - 1;
+
+    await getOrders(
+      page: prevPage,
+      loadMore: false,
+    );
   }
 
   Future<void> loadNextPage() async {

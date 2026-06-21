@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:omniya/const/app_background.dart';
 import 'package:omniya/const/app_color.dart';
+import 'package:omniya/l10n/app_localizations.dart';
 import 'package:omniya/view/home/recharge_package/controller/recharge_package_controller.dart';
 
 class RechargePackage extends StatefulWidget {
@@ -117,7 +118,7 @@ class _RechargePackageState extends State<RechargePackage> {
           ),
           SizedBox(width: screenWidth * 0.04),
           Text(
-            "شحن باقة",
+            AppLocalizations.of(context)!.recharge_package,
             style: AppTextStyles.text24(
               context,
               color: AppColors.text(context),
@@ -158,7 +159,7 @@ class _RechargePackageState extends State<RechargePackage> {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  "مسبقة الدفع",
+                  AppLocalizations.of(context)!.prepaid,
                   style: TextStyle(
                     color: isPrepaid
                         ? AppColors.text(context)
@@ -185,7 +186,7 @@ class _RechargePackageState extends State<RechargePackage> {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  "لاحقة الدفع",
+                  AppLocalizations.of(context)!.postpaid,
                   style: TextStyle(
                     color: !isPrepaid
                         ? AppColors.text(context)
@@ -214,12 +215,12 @@ class _RechargePackageState extends State<RechargePackage> {
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline, color: AppColors.secondary),
           SizedBox(width: screenWidth * 0.02),
+          Icon(Icons.info_outline, color: AppColors.text(context)),
           Expanded(
             child: Center(
               child: Text(
-                "يرجى التأكد من الرصيد قبل الشراء",
+                AppLocalizations.of(context)!.check_balance_before_purchase,
                 style: AppTextStyles.text15(context),
               ),
             ),
@@ -235,14 +236,9 @@ class _RechargePackageState extends State<RechargePackage> {
     final postpaid = data?.postpaid;
     final items = isPrepaid ? prepaid : (postpaid != null ? [postpaid] : []);
 
-    // if (controller.isLoading && !isBuying) {
-    //   debugPrint(" loading...");
-    //   return const Center(child: CircularProgressIndicator());
-    // }
-
     if (items.isEmpty) {
       debugPrint(" empty");
-      return const Center(child: Text("لا توجد باقات"));
+      return Center(child: Text(AppLocalizations.of(context)!.no_packages));
     }
 
     return GridView.builder(
@@ -257,14 +253,18 @@ class _RechargePackageState extends State<RechargePackage> {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
+        final isDark = Theme.of(context).brightness == Brightness.dark;
 
         return Container(
           decoration: BoxDecoration(
-            color: AppColors.text(context).withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(25),
+            borderRadius:
+                BorderRadius.circular(MediaQuery.of(context).size.width * 0.07),
             border: Border.all(
-              color: AppColors.text(context).withValues(alpha: 0.12),
+              color: AppColors.text(context).withValues(alpha: 0.15),
             ),
+            color: isDark
+                ? AppColors.text(context).withValues(alpha: 0.08)
+                : Colors.black.withValues(alpha: 0.04),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -287,9 +287,7 @@ class _RechargePackageState extends State<RechargePackage> {
                   filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.text(
-                        context,
-                      ).withValues(alpha: 0.3),
+                      backgroundColor: Colors.green.withValues(alpha: 0.6),
                       foregroundColor: AppColors.text(context),
                       shadowColor: Colors.transparent,
                       elevation: 0,
@@ -301,7 +299,7 @@ class _RechargePackageState extends State<RechargePackage> {
                       showConfirmDialog(context, item.quota, item.id);
                     },
                     child: Text(
-                      "شراء الآن",
+                      AppLocalizations.of(context)!.buy_package,
                       style: AppTextStyles.text15(context),
                     ),
                   ),
@@ -313,27 +311,6 @@ class _RechargePackageState extends State<RechargePackage> {
       },
     );
   }
-
-  // Widget _buildLoading() {
-  //   return Positioned.fill(
-  //     child: Container(
-  //       color: Colors.black.withValues(alpha: 0.4),
-  //       child: Center(
-  //         child: Column(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             CircularProgressIndicator(color: AppColors.text(context)),
-  //             const SizedBox(height: 15),
-  //             Text(
-  //               "جاري جلب الباقات...",
-  //               style: TextStyle(color: AppColors.text(context)),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Future<void> showConfirmDialog(
     BuildContext pageContext,
@@ -354,80 +331,71 @@ class _RechargePackageState extends State<RechargePackage> {
             return BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
               child: Dialog(
-                backgroundColor: AppColors.text(
-                  context,
-                ).withValues(alpha: 0.08),
+                backgroundColor: Colors.white30,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (showResult) ...[
-                        Icon(
-                          isSuccess
-                              ? Icons.check_circle_outline
-                              : Icons.error_outline,
-                          color: isSuccess ? Colors.green : Colors.redAccent,
-                          size: 60,
+                        Center(
+                          child: Icon(
+                            isSuccess
+                                ? Icons.check_circle_outline
+                                : Icons.error_outline,
+                            color: isSuccess
+                                ? Colors.green.withValues(alpha: 0.6)
+                                : Colors.red.withValues(alpha: 0.6),
+                            size: 60,
+                          ),
                         ),
                         const SizedBox(height: 15),
-                        Text(
-                          resultMessage,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.text15(context),
+                        Center(
+                          child: Text(
+                            resultMessage,
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.text15(context),
+                          ),
                         ),
                       ] else if (dialogLoading) ...[
-                        CircularProgressIndicator(
-                          color: AppColors.text(context),
+                        Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.text(context),
+                          ),
                         ),
                         const SizedBox(height: 15),
                         Text(
-                          "جاري تفعيل الباقة...",
+                          AppLocalizations.of(context)!.activating_package,
                           style: TextStyle(color: AppColors.text(context)),
                         ),
                       ] else ...[
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.12,
-                          width: MediaQuery.of(context).size.width * 0.26,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(28),
-                            border: Border.all(
-                              color: AppColors.text(
-                                context,
-                              ).withValues(alpha: 0.15),
-                              width: 1,
-                            ),
-                            gradient: LinearGradient(
-                              colors: [
-                                AppColors.text(context).withValues(alpha: 0.25),
-                                AppColors.text(context).withValues(alpha: 0.25),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Image.asset(
-                              "assets/images/icon.png",
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
                         SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.04,
+                          height: MediaQuery.of(context).size.height * 0.01,
                         ),
                         Text(
-                          "هل أنت متأكد من شراء باقة",
-                          style: AppTextStyles.text15(context),
+                          AppLocalizations.of(context)!.buy_package,
+                          style: AppTextStyles.text17Bold(context),
                         ),
                         SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.015,
+                          height: MediaQuery.of(context).size.height * 0.02,
                         ),
-                        Text(quota, style: AppTextStyles.text19Bold(context)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.confirm_buy_package,
+                              style: AppTextStyles.text15(context),
+                            ),
+                            Text(
+                              quota,
+                              style: AppTextStyles.text19Bold(context),
+                            ),
+                          ],
+                        ),
                         SizedBox(
                           height: MediaQuery.of(context).size.height * 0.04,
                         ),
@@ -436,20 +404,21 @@ class _RechargePackageState extends State<RechargePackage> {
                             Expanded(
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primary,
+                                  backgroundColor: AppColors.secondaryText,
                                 ),
                                 onPressed: () async {
                                   setDialogState(() {
                                     dialogLoading = true;
                                   });
-
                                   isBuying = true;
-
-                                  String apiMessage = await controller
-                                      .chargeExtraPackage(
-                                        addonId: addonId,
-                                        postPaid: isPrepaid ? "1" : "0",
-                                      );
+                                  debugPrint("Selected Package => "
+                                      "${isPrepaid ? "PREPAID" : "POSTPAID"}");
+                                  debugPrint("Addon ID => $addonId");
+                                  String apiMessage =
+                                      await controller.chargeExtraPackage(
+                                    addonId: addonId,
+                                    isPostPaid: !isPrepaid,
+                                  );
                                   bool success =
                                       controller.state == PackageState.success;
 
@@ -458,7 +427,8 @@ class _RechargePackageState extends State<RechargePackage> {
                                     showResult = true;
                                     isSuccess = success;
                                     resultMessage = success
-                                        ? "تم تفعيل الباقة بنجاح!"
+                                        ? AppLocalizations.of(context)!
+                                            .package_activated_success
                                         : apiMessage;
                                   });
 
@@ -472,8 +442,8 @@ class _RechargePackageState extends State<RechargePackage> {
                                   }
                                 },
                                 child: Text(
-                                  "تأكيد",
-                                  style: AppTextStyles.text15(context),
+                                  AppLocalizations.of(context)!.confirm,
+                                  style: AppTextStyles.text15white(context),
                                 ),
                               ),
                             ),
@@ -483,11 +453,11 @@ class _RechargePackageState extends State<RechargePackage> {
                             Expanded(
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.secondaryText,
+                                  backgroundColor: Colors.white30,
                                 ),
                                 onPressed: () => Navigator.pop(context),
                                 child: Text(
-                                  "إلغاء",
+                                  AppLocalizations.of(context)!.cancel,
                                   style: AppTextStyles.text15(context),
                                 ),
                               ),

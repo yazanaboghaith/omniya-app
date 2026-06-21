@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:omniya/const/url.dart';
 import 'package:omniya/model/user_model.dart';
 import 'package:omniya/view/auth/services/api_client.dart';
-// تأكد من استيراد ملف ApiClient الذي أنشأناه سابقاً
 
 enum HomeState {
   loading,
@@ -16,11 +15,10 @@ enum HomeState {
 }
 
 class HomePageController with ChangeNotifier {
-  // استخدام ApiClient بدلاً من التخزين المباشر أو الـ http المباشر
   final ApiClient apiClient = ApiClient();
 
   UserModel? user;
-  final String apiUserDetails = "${AppApi.Url}${AppApi.userdetails}";
+  final String apiUserDetails = "${AppApi.url}${AppApi.userdetails}";
 
   HomeState state = HomeState.loading;
   String errorMessage = '';

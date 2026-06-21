@@ -3,9 +3,12 @@ import 'package:omniya/const/app_color.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class SpeedometerWidget extends StatelessWidget {
-  final double speed;
+  final String speedText; // بدل double
 
-  const SpeedometerWidget({super.key, required this.speed});
+  const SpeedometerWidget({
+    super.key,
+    required this.speedText,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,8 +18,7 @@ class SpeedometerWidget extends StatelessWidget {
     final gaugeWidth = screenWidth * 0.45;
     final gaugeHeight = gaugeWidth * 0.65;
 
-    const double maxSpeed = 16.0;
-
+    const double maxSpeed = 100;
     return SizedBox(
       height: gaugeHeight,
       width: gaugeWidth,
@@ -37,9 +39,8 @@ class SpeedometerWidget extends StatelessWidget {
               thickness: 2,
               color: AppColors.speed,
             ),
-
             minorTicksPerInterval: 0,
-            interval: 2,
+            interval: 20,
 
             axisLineStyle: AxisLineStyle(
               thickness: 0.22,
@@ -48,10 +49,9 @@ class SpeedometerWidget extends StatelessWidget {
                   : Colors.black.withValues(alpha: 0.05),
               thicknessUnit: GaugeSizeUnit.factor,
             ),
-
             pointers: <GaugePointer>[
               RangePointer(
-                value: speed,
+                value: maxSpeed,
                 width: 0.22,
                 sizeUnit: GaugeSizeUnit.factor,
                 enableAnimation: true,
@@ -68,7 +68,7 @@ class SpeedometerWidget extends StatelessWidget {
                 widget: Transform.translate(
                   offset: Offset(0, -gaugeHeight * 0.14),
                   child: Text(
-                    '${speed.toInt()} Mbps',
+                    speedText,
                     style: TextStyle(
                       color: AppColors.text(context),
                       fontSize: gaugeWidth * 0.08,

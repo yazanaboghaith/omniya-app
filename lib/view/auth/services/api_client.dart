@@ -11,21 +11,44 @@ class ApiClient {
 
   Future<Map<String, String>> _headers() async {
     final token = await storage.getToken();
-    return {
+    final languageCode = await storage.storage.read(key: "language") ?? "ar";
+
+    final headers = {
       "Accept": "application/json",
       "Content-Type": "application/json",
       "Authorization": "Bearer $token",
+      "Accept-Language": languageCode,
     };
+
+    print("========== HEADERS ==========");
+    print(headers);
+    print("=============================");
+
+    return headers;
   }
 
   Future<http.Response> get(Uri url) async {
-    return await _request(() async => http.get(url, headers: await _headers()));
+    print("========== API REQUEST ==========");
+    print("GET URL: $url");
+    print("=================================");
+
+    return await _request(
+      () async => http.get(url, headers: await _headers()),
+    );
   }
 
   Future<http.Response> post(Uri url, Map body) async {
+    print("========== API REQUEST ==========");
+    print("POST URL: $url");
+    print("BODY: $body");
+    print("=================================");
+
     return await _request(
-      () async =>
-          http.post(url, headers: await _headers(), body: jsonEncode(body)),
+      () async => http.post(
+        url,
+        headers: await _headers(),
+        body: jsonEncode(body),
+      ),
     );
   }
 
@@ -34,15 +57,13 @@ class ApiClient {
   ) async {
     final response = await request();
 
-    if (response.statusCode == 401) {
-      print(
-        "======> [ApiClient] التوكن منتهي (401)، محاولة التحديث... <======",
-      );
+    print("========== API RESPONSE ==========");
+    print("STATUS: ${response.statusCode}");
+    print("BODY: ${response.body}");
+    print("==================================");
 
+    if (response.statusCode == 401) {
       if (_isRefreshing) {
-        print(
-          "======> [ApiClient] هناك طلب تحديث يعمل حالياً، الانتظار ثانية... <======",
-        );
         await Future.delayed(const Duration(seconds: 1));
         return await request();
       }
@@ -52,15 +73,9 @@ class ApiClient {
       _isRefreshing = false;
 
       if (refreshed) {
-        print(
-          "======> [ApiClient] تم تحديث التوكن بنجاح! إعادة إرسال الطلب الأصلي... <======",
-        );
         return await request();
       }
 
-      print(
-        "======> [ApiClient] فشل تحديث الـ Refresh Token، تسجيل الخروج... <======",
-      );
       await authService.logout();
       throw Exception("SESSION_EXPIRED");
     }

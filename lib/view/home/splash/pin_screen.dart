@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:omniya/l10n/app_localizations.dart';
 import 'package:omniya/view/auth/services/auth_storage.dart';
 import 'package:omniya/view/home/home.dart';
 
@@ -22,12 +25,23 @@ class _PinScreenState extends State<PinScreen> {
       isLoading = true;
     });
 
+    final hasInternet = await _hasInternet();
+
+    if (!hasInternet) {
+      setState(() {
+        isLoading = false;
+        error = AppLocalizations.of(context)!.no_Internet;
+      });
+      return;
+    }
+
     String? savedPin = await storage.storage.read(key: "user_pin");
 
     await Future.delayed(const Duration(milliseconds: 500));
 
     if (pinController.text == savedPin) {
       if (!mounted) return;
+
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => const Home()),
@@ -35,9 +49,9 @@ class _PinScreenState extends State<PinScreen> {
       );
     } else {
       setState(() {
-        error = "الرمز الذي أدخلته غير صحيح";
+        error = AppLocalizations.of(context)!.invalid_code;
         isLoading = false;
-        pinController.clear(); 
+        pinController.clear();
       });
     }
   }
@@ -53,8 +67,8 @@ class _PinScreenState extends State<PinScreen> {
             children: [
               const Icon(Icons.lock_outline, size: 80, color: Colors.blueGrey),
               const SizedBox(height: 20),
-              const Text(
-                "أدخل رمز المرور (PIN)",
+              Text(
+                AppLocalizations.of(context)!.enter_pin,
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 30),
@@ -62,7 +76,7 @@ class _PinScreenState extends State<PinScreen> {
                 controller: pinController,
                 keyboardType: TextInputType.number,
                 obscureText: true,
-                maxLength: 4, 
+                maxLength: 4,
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 24, letterSpacing: 8),
                 decoration: InputDecoration(
@@ -70,7 +84,7 @@ class _PinScreenState extends State<PinScreen> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   hintText: "****",
-                  counterText: "", 
+                  counterText: "",
                 ),
                 onChanged: (value) {
                   if (error.isNotEmpty) setState(() => error = "");
@@ -80,8 +94,8 @@ class _PinScreenState extends State<PinScreen> {
               if (error.isNotEmpty)
                 Text(
                   error,
-                  style: const TextStyle(
-                    color: Colors.red,
+                  style: TextStyle(
+                    color: Colors.red.withValues(alpha: 0.6),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -98,7 +112,8 @@ class _PinScreenState extends State<PinScreen> {
                   ),
                   child: isLoading
                       ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text("دخــول", style: TextStyle(fontSize: 18)),
+                      : Text(AppLocalizations.of(context)!.login,
+                          style: TextStyle(fontSize: 18)),
                 ),
               ),
             ],
@@ -106,5 +121,14 @@ class _PinScreenState extends State<PinScreen> {
         ),
       ),
     );
+  }
+
+  Future<bool> _hasInternet() async {
+    try {
+      final result = await InternetAddress.lookup('google.com');
+      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+    } on SocketException {
+      return false;
+    }
   }
 }

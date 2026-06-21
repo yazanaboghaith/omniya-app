@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "515242522703",
+    "project_id": "omniyaapp-736a9",
+    "storage_bucket": "omniyaapp-736a9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:515242522703:android:4f838914b7a36ecc65123a",
+        "android_client_info": {
+          "package_name": "com.example.omniya"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyS3hfUPdRSIbeOr1eIPWU34zsmV6V1Pw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

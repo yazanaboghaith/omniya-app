@@ -11,22 +11,34 @@ class LoginController with ChangeNotifier {
   Future<LoginResult> login({
     required String username,
     required String password,
-    required int remember,
+    required String remember,
+    required String fcmToken,
+    required String deviceType,
+    required String deviceName,
+    // required String deviceUuid,
   }) async {
     try {
       isLoading = true;
       notifyListeners();
 
-      print("======> [Controller] إرسال طلب تسجيل الدخول... <======");
-      final uri = Uri.parse("${AppApi.Url}${AppApi.login}");
+      final uri = Uri.parse("${AppApi.url}${AppApi.login}");
 
       final body = {
         "username": username,
         "password": password,
-        "remember_me": remember.toString() == "1" ? "1" : "0",
+        "remember_me": remember,
+        "fcm_token": fcmToken,
+        "device_type": deviceType,
+        "device_name": deviceName,
+        // "device_uuid": deviceUuid,
       };
 
-      print("======> [Controller] Body: $body <======");
+      debugPrint(jsonEncode(body));
+
+      debugPrint("\n======> RAW BODY MAP <======");
+      body.forEach((key, value) {
+        debugPrint("$key => $value");
+      });
 
       final response = await http.post(
         uri,
@@ -39,21 +51,55 @@ class LoginController with ChangeNotifier {
         body: jsonEncode(body),
       );
 
-      print("======> [Controller] Status Code: ${response.statusCode} <======");
-      print("======> [Controller] Response Body: ${response.body} <======");
-
       isLoading = false;
       notifyListeners();
 
+      debugPrint("STATUS CODE => ${response.statusCode}");
+
+      debugPrint(response.body);
+
       final data = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
-        print("======> [Controller] الدخول صحيح، جاري حفظ التوكن... <======");
+      debugPrint("\nPARSED RESPONSE =>");
+      debugPrint(data.toString());
+      if (data["user"] != null) {
+        debugPrint("\n====== USER DATA ======");
+        data["user"].forEach((key, value) {
+          debugPrint("$key => $value");
+        });
+      }
 
-        // ✅ التعديل هنا: حماية التطبيق من القيم الـ null القادمة من السيرفر
-        await storage.saveToken(data["token"] ?? "");
-        await storage.saveRefreshToken(data["refresh_token"] ?? "");
-        await storage.storage.write(key: "last_username", value: username);
+      debugPrint("token => ${data["token"]}");
+      debugPrint("refresh_token => ${data["refresh_token"]}");
+      debugPrint("token_expiry => ${data["token_expiry"]}");
+      debugPrint("fcm_registered => ${data["fcm_registered"]}");
+
+      debugPrint("\n================ LOGIN END ================\n");
+      final savedToken = await storage.getToken();
+      final savedRefreshToken = await storage.getRefreshToken();
+      final savedExpiry = await storage.storage.read(
+        key: "token_expiry",
+      );
+
+      debugPrint("saved token => $savedToken");
+      debugPrint("saved refresh_token => $savedRefreshToken");
+      debugPrint("saved token_expiry => $savedExpiry");
+      if (response.statusCode == 200) {
+        debugPrint("======> SAVING TOKENS TO STORAGE <======");
+
+        await storage.saveToken(data["token"]);
+
+        await storage.saveRefreshToken(data["refresh_token"]);
+
+        await storage.storage.write(
+          key: "last_username",
+          value: username,
+        );
+
+        await storage.storage.write(
+          key: "token_expiry",
+          value: data["token_expiry"].toString(),
+        );
 
         return LoginResult(
           success: true,
@@ -62,19 +108,27 @@ class LoginController with ChangeNotifier {
         );
       }
 
-      print("======> [Controller] فشل الدخول: ${data["message"]} <======");
+      final errorMessage = data["message"] ??
+          data["error"] ??
+          data["errors"]?.toString() ??
+          "فشل تسجيل الدخول";
+
+      // debugPrint("ERROR MESSAGE:${errorMessage}");
+
       return LoginResult(
         success: false,
-        message: data["message"] ?? "فشل تسجيل الدخول",
+        message: errorMessage,
       );
     } catch (e) {
       isLoading = false;
       notifyListeners();
-      print("======> [Controller] خطأ (Catch): $e <======");
+
+      // قم بإلغاء التعليق عن هذا السطر لتعرف الخطأ الحقيقي في الكونسول
+      debugPrint("Catch Error: $e");
 
       return LoginResult(
         success: false,
-        message: "حدث خطأ في الاتصال بالسيرفر",
+        message: "حدث خطأ في الاتصال",
       );
     }
   }
@@ -85,5 +139,9 @@ class LoginResult {
   final String message;
   final Map<String, dynamic>? data;
 
-  LoginResult({required this.success, required this.message, this.data});
+  LoginResult({
+    required this.success,
+    required this.message,
+    this.data,
+  });
 }

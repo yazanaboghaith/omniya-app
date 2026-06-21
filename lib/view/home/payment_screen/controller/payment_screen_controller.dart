@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_notifier.dart';
 import 'package:omniya/const/url.dart';
 import 'package:omniya/model/bank_model.dart';
 import 'package:omniya/model/transactions_model.dart';
@@ -16,12 +15,14 @@ class PaymentBankController with ChangeNotifier {
   List<TransactionModel> transactions = [];
   bool isLoadingTransactions = false;
   bool isLoadingMore = false;
-
+  int currentPage = 1;
   String? nextPageUrl;
-  String currentSearch = "";
-  final String apifinancebanks = "${AppApi.Url}${AppApi.financebanks}";
-  final String apiaddbankPayment = "${AppApi.Url}${AppApi.addbankPayment}";
-  final String apitransactions = "${AppApi.Url}${AppApi.apitransactions}";
+  String? prevPageUrl;
+  String? previousPageUrl;
+  String? currentSearch;
+  final String apifinancebanks = "${AppApi.url}${AppApi.financebanks}";
+  final String apiaddbankPayment = "${AppApi.url}${AppApi.addbankPayment}";
+  final String apitransactions = "${AppApi.url}${AppApi.apitransactions}";
 
   Future<void> getBanks() async {
     isLoading = true;
@@ -81,32 +82,32 @@ class PaymentBankController with ChangeNotifier {
       debugPrint("RESPONSE BODY: ${response.body}");
       debugPrint("-----------------------");
 
-      final data = jsonDecode(response.body);
+      // final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final message = data["message"] ?? "تم إرسال الدفعة بنجاح";
+        // final message = data["message"] ?? "تم إرسال الدفعة بنجاح";
 
-        if (context != null && context.mounted) {
-          AppNotifier.instance.success(context, message);
-        }
+        // if (context != null && context.mounted) {
+        //   AppNotifier.instance.success(context, message,);
+        // }
         return true;
       } else {
-        final errorMessage =
-            data["message"] ?? data["error"] ?? "فشل في إرسال الدفعة";
-        if (context != null && context.mounted) {
-          AppNotifier.instance.error(context, errorMessage);
-        }
+        // final errorMessage =
+        //     data["message"] ?? data["error"] ?? "فشل في إرسال الدفعة";
+        // if (context != null && context.mounted) {
+        //   AppNotifier.instance.error(context, errorMessage);
+        // }
         return false;
       }
     } catch (e) {
       debugPrint("ERROR: $e");
       if (context != null && context.mounted) {
-        final isSessionExpired = e.toString().contains("SESSION_EXPIRED");
-        final msg = isSessionExpired
-            ? "انتهت جلستك، يرجى تسجيل الدخول"
-            : "حدث خطأ أثناء الاتصال";
+        // final isSessionExpired = e.toString().contains("SESSION_EXPIRED");
+        // final msg = isSessionExpired
+        //     ? "انتهت جلستك، يرجى تسجيل الدخول"
+        //     : "حدث خطأ أثناء الاتصال";
 
-        AppNotifier.instance.error(context, msg);
+        // AppNotifier.instance.error(context, msg);
       }
       return false;
     } finally {
@@ -146,21 +147,60 @@ class PaymentBankController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getTransactions({String? search}) async {
+  Future<void> getTransactions({
+    required int page,
+    String? search,
+  }) async {
     if (isLoadingTransactions) return;
+
     isLoadingTransactions = true;
     notifyListeners();
 
     try {
-      currentSearch = search ?? "";
-      final uri = Uri.parse(apitransactions).replace(
-        queryParameters: {
-          "page": "1",
-          "search": currentSearch.isEmpty ? null : currentSearch,
-        },
-      );
+      currentPage = page;
+      final Map<String, String> queryParams = {};
+      if (page > 1) {
+        queryParams["page"] = page.toString();
+      }
+      if (search != null && search.trim().isNotEmpty) {
+        queryParams["search"] = search.trim();
+      }
+      final uri =
+          Uri.parse(apitransactions).replace(queryParameters: queryParams);
+      debugPrint(" Request URL => $uri");
 
       final response = await apiClient.get(uri);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final res = TransactionResponse.fromJson(data);
+
+        transactions = res.results;
+
+        nextPageUrl = res.next;
+        prevPageUrl = res.previous;
+      } else {
+        debugPrint(" SERVER ERROR => Status Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      debugPrint(" CATCH ERROR => $e");
+    }
+
+    isLoadingTransactions = false;
+    notifyListeners();
+  }
+////////////////////
+////////////////////
+//////////////////
+////////////////////
+
+  Future<void> loadMoreTransactions() async {
+    if (nextPageUrl == null || isLoadingMore) return;
+    isLoadingMore = true;
+    notifyListeners();
+
+    try {
+      final response = await apiClient.get(Uri.parse(nextPageUrl!));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -169,33 +209,37 @@ class PaymentBankController with ChangeNotifier {
         nextPageUrl = res.next;
       }
     } catch (e) {
-      debugPrint("ERROR => $e");
-    }
-
-    isLoadingTransactions = false;
-    notifyListeners();
-  }
-
-  Future<void> loadMoreTransactions() async {
-    if (nextPageUrl == null || isLoadingMore) return;
-    isLoadingMore = true;
-    notifyListeners();
-
-    try {
-      // استخدام apiClient
-      final response = await apiClient.get(Uri.parse(nextPageUrl!));
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final res = TransactionResponse.fromJson(data);
-        transactions.addAll(res.results);
-        nextPageUrl = res.next;
-      }
-    } catch (e) {
       debugPrint("LOAD MORE ERROR => $e");
     }
 
     isLoadingMore = false;
     notifyListeners();
+  }
+
+//////////////////
+////////////////////
+///////////////////
+/////////////////
+  bool get hasNextPage => nextPageUrl != null;
+  bool get hasPreviousPage => prevPageUrl != null;
+
+  Future<void> nextPage() async {
+    if (!hasNextPage) return;
+
+    currentPage++;
+    notifyListeners();
+
+    debugPrint(" NEXT PAGE: $currentPage");
+    await getTransactions(page: currentPage, search: currentSearch);
+  }
+
+  Future<void> previousPage() async {
+    if (currentPage <= 1) return;
+
+    currentPage--;
+    notifyListeners();
+
+    debugPrint(" PREVIOUS PAGE: $currentPage");
+    await getTransactions(page: currentPage, search: currentSearch);
   }
 }

@@ -1,0 +1,361 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Arabic (`ar`).
+class AppLocalizationsAr extends AppLocalizations {
+  AppLocalizationsAr([String locale = 'ar']) : super(locale);
+
+  @override
+  String get account_Info => 'معلومات الحساب';
+
+  @override
+  String get recharge_package => 'شحن باقة';
+
+  @override
+  String get user_name => 'اسم المستخدم';
+
+  @override
+  String get phone => 'رقم الهاتف';
+
+  @override
+  String get service_name => 'اسم الخدمة';
+
+  @override
+  String get monthly_subscription => 'الرسم الشهري';
+
+  @override
+  String get expiry_date => 'تاريخ الصلاحية';
+
+  @override
+  String get language => 'اللغة';
+
+  @override
+  String get arabic => 'العربية';
+
+  @override
+  String get user_Status => 'حالة المستخدم';
+
+  @override
+  String get logout => 'تسجيل خروج';
+
+  @override
+  String get confirm_logout => 'هل أنت متأكد من تسجيل خروجك؟';
+
+  @override
+  String get confirm => 'تأكيد';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get logout_success => 'تم تسجيل الخروج بنجاح';
+
+  @override
+  String get logout_failed => 'حدث خطأ أثناء تسجيل الخروج';
+
+  @override
+  String get no_Internet => 'لا يوجد اتصال بالإنترنت';
+
+  @override
+  String get server_Error => 'مشكلة في الاتصال بالخادم';
+
+  @override
+  String get error => 'تنبيه خطأ';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String get current_Balance => 'الرصيد الحالي';
+
+  @override
+  String get currency => 'ل.س.ج';
+
+  @override
+  String get total_Usage => 'الاستهلاك الكلي';
+
+  @override
+  String get unlimited_Subscription => 'اشتراك غير محدود';
+
+  @override
+  String get current_Speed => 'السرعة الحالية';
+
+  @override
+  String get basic_Package => 'الباقة الاساسية';
+
+  @override
+  String get recharge_Package => 'شحن باقة';
+
+  @override
+  String get valid_Until => 'صالحة لغاية';
+
+  @override
+  String get remaining => 'المتبقي';
+
+  @override
+  String get from => 'من اصل';
+
+  @override
+  String get gigabyte => 'جيجا';
+
+  @override
+  String get extra_Packages => 'الباقات الإضافية';
+
+  @override
+  String get extra_Package => 'باقة إضافية';
+
+  @override
+  String get processing_Payment => 'جاري معالجة الدفعة...';
+
+  @override
+  String get confirm_Add_Bank_Payment => 'هل أنت متأكد من إضافة دفعة بنك؟';
+
+  @override
+  String get bank_Name => 'اسم البنك:';
+
+  @override
+  String get notification_Number => 'رقم الإشعار:';
+
+  @override
+  String get total_Amount => 'المبلغ الإجمالي:';
+
+  @override
+  String get payment_Added_Success => 'تم إضافة الدفعة بنجاح!';
+
+  @override
+  String get payment_Added_Failed => 'فشلت عملية إضافة الدفعة، يرجى المحاولة لاحقاً.';
+
+  @override
+  String get add_Bank_Payment => 'إضافة دفعة بنك';
+
+  @override
+  String get select_Bank => 'اختر البنك';
+
+  @override
+  String get example_Number => 'مثال: 992311';
+
+  @override
+  String get amount => 'القيمة (ل.س.ج)';
+
+  @override
+  String get example_Amount => 'مثال: 5000';
+
+  @override
+  String get select_Bank_Warning => 'يرجى اختيار اسم البنك للمتابعة';
+
+  @override
+  String get fill_Fields_Title => 'تعبئة الحقول';
+
+  @override
+  String get fill_All_Fields => 'يرجى تعبئة كافة الحقول للمتابعة';
+
+  @override
+  String get submit_Payment => 'إضافة دفعة';
+
+  @override
+  String get payment_Report => 'تقرير الدفعات';
+
+  @override
+  String get no_Data => 'لا يوجد بيانات';
+
+  @override
+  String get previous => 'السابق';
+
+  @override
+  String get page => 'صفحة';
+
+  @override
+  String get next => 'التالي';
+
+  @override
+  String get accepted => 'مقبول';
+
+  @override
+  String get number => 'رقم';
+
+  @override
+  String get search => 'بحث';
+
+  @override
+  String get success => 'نجاح';
+
+  @override
+  String get prepaid => 'مسبقة الدفع';
+
+  @override
+  String get postpaid => 'لاحقة الدفع';
+
+  @override
+  String get check_balance_before_purchase => 'يرجى التأكد من الرصيد قبل الشراء';
+
+  @override
+  String get no_packages => 'لا توجد باقات';
+
+  @override
+  String get buy_now => 'شراء الآن';
+
+  @override
+  String get buy_package => 'شراء باقة';
+
+  @override
+  String get confirm_buy_package => 'هل أنت متأكد من شراء الباقة؟';
+
+  @override
+  String get package_activated_success => 'تم تفعيل الباقة بنجاح!';
+
+  @override
+  String get activating_package => 'جاري تفعيل الباقة...';
+
+  @override
+  String get orders_report => 'تقرير الطلبات';
+
+  @override
+  String get order => 'طلب';
+
+  @override
+  String get rejected => 'مرفوض';
+
+  @override
+  String get date => 'التاريخ: ';
+
+  @override
+  String get invalid_code => 'الرمز الذي أدخلته غير صحيح';
+
+  @override
+  String get enter_pin => 'أدخل رمز PIN الخاص بك';
+
+  @override
+  String get login => 'دخول';
+
+  @override
+  String get error_loading_data => 'حدث خطأ أثناء تحميل البيانات';
+
+  @override
+  String get call_not_available => 'تعذر إجراء المكالمة في الوقت الحالي';
+
+  @override
+  String get contact_support_reset_password => 'يرجى التواصل مع خدمة العملاء لإعادة تعيين كلمة السر عبر:';
+
+  @override
+  String get call => 'اتصال';
+
+  @override
+  String get welcome => 'أهلاً بك';
+
+  @override
+  String get login_to_account => 'تسجيل الدخول إلى حسابك';
+
+  @override
+  String get username_or_phone => 'اسم المستخدم / رقم الهاتف';
+
+  @override
+  String get quick_login_disabled => 'تم إلغاء قفل الدخول السريع لتغيير اسم المستخدم';
+
+  @override
+  String get password => 'كلمة المرور';
+
+  @override
+  String get forgot_password => 'نسيت كلمة المرور؟';
+
+  @override
+  String get remember_me => 'تذكرني';
+
+  @override
+  String get or_use_quick_login => 'أو استخدم الدخول السريع';
+
+  @override
+  String get login_fingerprint => 'الدخول بالبصمة';
+
+  @override
+  String get login_pin => 'الدخول عبر PIN';
+
+  @override
+  String get enter_username => 'يرجى إدخال اسم المستخدم';
+
+  @override
+  String get enter_password => 'يرجى إدخال كلمة المرور';
+
+  @override
+  String get login_success => 'تم تسجيل الدخول بنجاح';
+
+  @override
+  String get login_error => 'حدث خطأ أثناء تسجيل الدخول';
+
+  @override
+  String get no_account => ' ليس لديك حساب؟';
+
+  @override
+  String get contact_us => 'تواص ل معنا';
+
+  @override
+  String get quick_access_security => 'حماية الدخول السريع';
+
+  @override
+  String get choose_security_method => 'لتسهيل الدخول في المرات القادمة، اختر طريقة الحماية:';
+
+  @override
+  String get fingerprint => 'بصمة';
+
+  @override
+  String get pin_code => 'رمز PIN';
+
+  @override
+  String get skip => 'تخطي';
+
+  @override
+  String get confirm_fingerprint_enable => 'قم بتأكيد البصمة لتفعيل الدخول السريع';
+
+  @override
+  String get fingerprint_enabled_success => 'تم تفعيل الدخول بالبصمة';
+
+  @override
+  String get fingerprint_failed_or_unavailable => 'فشل التحقق من البصمة أو ميزة البصمة غير متاحة';
+
+  @override
+  String get setup_pin => 'إعداد رمز PIN';
+
+  @override
+  String get pin_4_digits_only => 'أدخل 4 أرقام فقط';
+
+  @override
+  String get pin_must_be_4_digits => 'يجب أن يتكون الرمز من 4 أرقام';
+
+  @override
+  String get save => 'حفظ';
+
+  @override
+  String get verified_successfully => 'تم التحقق بنجاح';
+
+  @override
+  String get confirm_identity_fingerprint => 'يرجى تأكيد هويتك للدخول بالبصمة';
+
+  @override
+  String get fingerprint_verified_success => 'تم التحقق من البصمة بنجاح';
+
+  @override
+  String get unreaded => 'غير مقروء';
+
+  @override
+  String get all => 'الكل';
+
+  @override
+  String get financial => 'المالية';
+
+  @override
+  String get system => 'النظام';
+
+  @override
+  String get home => 'الرئيسية';
+
+  @override
+  String get payments => 'دفعاتي';
+
+  @override
+  String get requests => 'طلباتي';
+
+  @override
+  String get usage => 'الاستهلاك';
+}

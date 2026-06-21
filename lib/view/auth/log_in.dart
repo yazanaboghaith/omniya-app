@@ -1,15 +1,27 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:omniya/const/app_background.dart';
 import 'package:omniya/const/app_color.dart';
 import 'package:omniya/const/color.dart';
+import 'package:omniya/const/url.dart';
+import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/main.dart';
+import 'package:omniya/view/auth/devaiceservice/device_service.dart';
 import 'package:omniya/view/auth/services/auth_storage.dart';
+import 'package:omniya/view/auth/services/security_service.dart';
 import 'package:omniya/view/auth/controll/log_in_controller.dart';
 import 'package:omniya/view/home/home.dart';
+import 'package:omniya/view/home/notification/notifications.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key});
+  const Login({
+    super.key,
+    this.fromNotification = false,
+  });
+  final bool fromNotification;
 
   @override
   State<Login> createState() => _LoginState();
@@ -18,203 +30,319 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final userController = TextEditingController();
   final passwordController = TextEditingController();
-  final LocalAuthentication auth = LocalAuthentication();
   final LoginController loginController = LoginController();
   final AuthStorage storage = AuthStorage();
+  final SecurityService securityService = SecurityService();
 
   bool isPasswordHidden = true;
   bool rememberMe = false;
   String? securityType;
   bool hasSavedSession = false;
-
+  String? originalSavedUsername;
   @override
   void initState() {
     super.initState();
-    print("======> بدء تشغيل واجهة تسجيل الدخول <======");
     loadSavedUser();
   }
 
   Future<void> loadSavedUser() async {
-    print("======> جاري البحث عن بيانات جلسة سابقة... <======");
     try {
       final savedUsername = await storage.storage.read(key: "last_username");
       final token = await storage.storage.read(key: "token");
-      final secType = await storage.storage.read(key: "security_type");
+      final secType = await securityService.getSecurityType();
 
       if (!mounted) return;
 
       setState(() {
         if (savedUsername != null && token != null) {
-          print(
-            "======> تم العثور على جلسة سابقة للمستخدم: $savedUsername <======",
-          );
-          print("======> نوع الحماية المحفوظ: $secType <======");
+          originalSavedUsername = savedUsername;
           userController.text = savedUsername;
           hasSavedSession = true;
           securityType = secType;
-        } else {
-          print("======> لا توجد جلسة سابقة، تسجيل دخول جديد <======");
         }
       });
     } catch (e) {
-      print("======> خطأ في تحميل البيانات: $e <======");
-      showMsg("حدث خطأ أثناء تحميل البيانات");
+      showMsg(AppLocalizations.of(context)!.error_loading_data);
     }
+  }
+
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    if (await canLaunchUrl(launchUri)) {
+      await launchUrl(launchUri);
+    } else {
+      showMsg(AppLocalizations.of(context)!.call_not_available);
+    }
+  }
+
+  Future<void> openWhatsApp(String phone) async {
+    final formatted = formatWhatsAppNumber(phone);
+    final uri = Uri.parse("https://wa.me/$formatted");
+
+    await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    );
+  }
+
+  String formatWhatsAppNumber(String phone) {
+    String cleaned = phone.trim();
+    cleaned = cleaned.replaceAll('+', '');
+    if (cleaned.startsWith('0')) {
+      cleaned = '963' + cleaned.substring(1);
+    }
+    return cleaned;
+  }
+
+  void _showForgotPasswordDialog() {
+    double height = MediaQuery.of(context).size.height;
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.3),
+      builder: (BuildContext dialogContext) {
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+          child: Dialog(
+            backgroundColor: Colors.white30,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.forgot_password,
+                    style: AppTextStyles.text17Bold(context),
+                  ),
+                  SizedBox(height: height * 0.02),
+                  Text(
+                    AppLocalizations.of(context)!
+                        .contact_support_reset_password,
+                    style: AppTextStyles.text15(context),
+                  ),
+                  SizedBox(height: height * 0.02),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.pop(dialogContext);
+                            openWhatsApp(AppApi.mopileurl);
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withValues(alpha: 0.6),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Image.asset(
+                                  "assets/images/WhatsApp.png",
+                                  width: 22,
+                                  height: 22,
+                                  fit: BoxFit.cover,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "WhatsApp",
+                                  style: AppTextStyles.text13(context).copyWith(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: MediaQuery.of(context).size.width * 0.06),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.secondaryText,
+                          ),
+                          onPressed: () {
+                            Navigator.pop(dialogContext);
+                            _makePhoneCall('${AppApi.telephoneurl}');
+                          },
+                          icon:
+                              Icon(Icons.call, color: AppColors.text(context)),
+                          label: Text(
+                            AppLocalizations.of(context)!.call,
+                            style: AppTextStyles.text15white(context),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
 
-    return AppBackground(
-      child: Center(
-        child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.text(context).withValues(alpha: 0.1)
-                  : Colors.black.withValues(alpha: 0.05),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: AppColors.text(context).withValues(alpha: 0.1),
+    return Scaffold(
+      body: AppBackground(
+        child: Center(
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.text(context).withValues(alpha: 0.1)
+                    : Colors.black.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: AppColors.text(context).withValues(alpha: 0.1),
+                ),
               ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: height * 0.02),
-                  _buildLogo(context),
-                  SizedBox(height: height * 0.03),
-                  Text("أهلاً بك", style: AppTextStyles.text24(context)),
-                  Text(
-                    "تسجيل الدخول إلى حسابك",
-                    style: AppTextStyles.text15Grey(context),
-                  ),
-                  SizedBox(height: height * 0.03),
-                  _buildTextField(
-                    context,
-                    userController,
-                    "اسم المستخدم",
-                    Icons.person_outline,
-                  ),
-                  SizedBox(height: height * 0.02),
-                  _buildTextField(
-                    context,
-                    passwordController,
-                    "كلمة المرور",
-                    Icons.lock_outline,
-                    isPassword: true,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          print(
-                            "======> المستخدم ضغط على نسيان كلمة المرور <======",
-                          );
-                        },
-                        child: Text(
-                          "نسيت كلمة المرور؟",
-                          style: AppTextStyles.text15Grey(context),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: rememberMe,
-                        onChanged: (value) {
-                          setState(() {
-                            rememberMe = value ?? false;
-                            print(
-                              "======> حالة 'تذكرني' أصبحت: $rememberMe <======",
-                            );
-                          });
-                        },
-                      ),
-                      Text("تذكرني", style: AppTextStyles.text15(context)),
-                    ],
-                  ),
-                  SizedBox(height: height * 0.01),
-                  _buildLoginButton(context),
-                  SizedBox(height: height * 0.01),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: height * 0.02),
+                    _buildLogo(context),
+                    SizedBox(height: height * 0.03),
+                    Text(AppLocalizations.of(context)!.welcome,
+                        style: AppTextStyles.text24(context)),
+                    Text(
+                      AppLocalizations.of(context)!.login_to_account,
+                      style: AppTextStyles.text15Grey(context),
+                    ),
+                    SizedBox(height: height * 0.03),
+                    _buildTextField(
+                      context,
+                      userController,
+                      AppLocalizations.of(context)!.username_or_phone,
+                      Icons.person_outline,
+                      onChanged: (value) async {
+                        if (originalSavedUsername != null) {
+                          if (value.trim() != originalSavedUsername!.trim() &&
+                              hasSavedSession) {
+                            setState(() {
+                              hasSavedSession = false;
+                              securityType = null;
+                            });
+                            await securityService.clearSecurityData();
 
-                  // أزرار الدخول السريع تظهر فقط إذا كان هناك جلسة محفوظة وتم تحديد نوع حماية
-                  if (hasSavedSession && securityType != null)
-                    Center(
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 15),
-                          const Divider(),
-                          Text(
-                            "أو استخدم الدخول السريع",
+                            showMsg(AppLocalizations.of(context)!
+                                .quick_login_disabled);
+                          }
+                        }
+                      },
+                    ),
+                    SizedBox(height: height * 0.02),
+                    _buildTextField(
+                      context,
+                      passwordController,
+                      AppLocalizations.of(context)!.password,
+                      Icons.lock_outline,
+                      isPassword: true,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            _showForgotPasswordDialog();
+                          },
+                          child: Text(
+                            AppLocalizations.of(context)!.forgot_password,
                             style: AppTextStyles.text15Grey(context),
                           ),
-                          const SizedBox(height: 10),
-
-                          if (securityType == "bio")
-                            ElevatedButton.icon(
-                              onPressed: () async {
-                                print(
-                                  "======> بدء محاولة الدخول بالبصمة <======",
-                                );
-                                bool success = await loginWithBiometric();
-                                if (success && mounted) {
-                                  print(
-                                    "======> الدخول بالبصمة نجح! جاري الانتقال... <======",
-                                  );
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const Home(),
-                                    ),
-                                  );
-                                }
-                              },
-                              icon: const Icon(Icons.fingerprint, size: 24),
-                              label: const Text("الدخول بالبصمة"),
-                            ),
-
-                          if (securityType == "pin")
-                            ElevatedButton.icon(
-                              onPressed: () async {
-                                print(
-                                  "======> بدء محاولة الدخول عبر PIN <======",
-                                );
-                                bool success = await loginWithPinSilent();
-                                if (success && mounted) {
-                                  print(
-                                    "======> الدخول بالـ PIN نجح! جاري الانتقال... <======",
-                                  );
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const Home(),
-                                    ),
-                                  );
-                                } else {
-                                  print(
-                                    "======> الدخول بالـ PIN فشل أو تم الإلغاء <======",
-                                  );
-                                }
-                              },
-                              icon: const Icon(Icons.lock, size: 24),
-                              label: const Text("الدخول عبر PIN"),
-                            ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-
-                  SizedBox(height: height * 0.014),
-                  _buildFooter(context),
-                ],
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: rememberMe,
+                          onChanged: (value) {
+                            setState(() {
+                              rememberMe = value ?? false;
+                            });
+                          },
+                        ),
+                        Text(AppLocalizations.of(context)!.remember_me,
+                            style: AppTextStyles.text15(context)),
+                      ],
+                    ),
+                    SizedBox(height: height * 0.01),
+                    _buildLoginButton(context),
+                    SizedBox(height: height * 0.01),
+                    if (hasSavedSession && securityType != null)
+                      Center(
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 15),
+                            const Divider(),
+                            Text(
+                              AppLocalizations.of(context)!.or_use_quick_login,
+                              style: AppTextStyles.text15Grey(context),
+                            ),
+                            const SizedBox(height: 10),
+                            if (securityType == "bio")
+                              ElevatedButton.icon(
+                                onPressed: () async {
+                                  bool success = await loginWithBiometric();
+                                  if (success && mounted) {
+                                    if (!context.mounted) return;
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const Home(),
+                                      ),
+                                    );
+                                  }
+                                },
+                                icon: const Icon(Icons.fingerprint, size: 24),
+                                label: Text(AppLocalizations.of(context)!
+                                    .login_fingerprint),
+                              ),
+                            if (securityType == "pin")
+                              ElevatedButton.icon(
+                                onPressed: () async {
+                                  bool success = await loginWithPinSilent();
+                                  if (success && mounted) {
+                                    if (!context.mounted) return;
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const Home(),
+                                      ),
+                                    );
+                                  }
+                                },
+                                icon: const Icon(Icons.lock, size: 24),
+                                label: Text(
+                                    AppLocalizations.of(context)!.login_pin),
+                              ),
+                          ],
+                        ),
+                      ),
+                    SizedBox(height: height * 0.014),
+                    _buildFooter(context),
+                  ],
+                ),
               ),
             ),
           ),
@@ -239,10 +367,12 @@ class _LoginState extends State<Login> {
     String hint,
     IconData icon, {
     bool isPassword = false,
+    Function(String)? onChanged,
   }) {
     return TextField(
       controller: controller,
       obscureText: isPassword ? isPasswordHidden : false,
+      onChanged: onChanged,
       decoration: InputDecoration(
         hintText: hint,
         prefixIcon: Icon(icon),
@@ -263,7 +393,6 @@ class _LoginState extends State<Login> {
   }
 
   Widget _buildLoginButton(BuildContext context) {
-    // نستخدم ListenableBuilder للاستماع لتغيرات isLoading بداخل الـ controller
     return Center(
       child: SizedBox(
         width: 200,
@@ -280,71 +409,80 @@ class _LoginState extends State<Login> {
                 ),
               ),
               onPressed: loginController.isLoading
-                  ? null // تعطيل الزر أثناء التحميل
+                  ? null
                   : () async {
-                      print(
-                        "======> تم الضغط على زر تسجيل الدخول الأساسي <======",
-                      );
-
                       if (userController.text.trim().isEmpty) {
-                        showMsg("يرجى إدخال اسم المستخدم");
+                        showMsg(AppLocalizations.of(context)!.enter_username);
                         return;
                       }
+
                       if (passwordController.text.trim().isEmpty) {
-                        showMsg("يرجى إدخال كلمة المرور");
+                        showMsg(AppLocalizations.of(context)!.enter_password);
                         return;
                       }
 
-                      // 1. تنفيذ الدخول من السيرفر
-                      final result = await loginController.login(
-                        username: userController.text.trim(),
-                        password: passwordController.text.trim(),
-                        remember: rememberMe ? 1 : 0,
-                      );
+                      try {
+                        final deviceData = await DeviceService.getDeviceData();
 
-                      if (!mounted) return;
+                        final fcmToken = deviceData["fcm_token"];
+                        final deviceType = deviceData["device_type"];
+                        final deviceName = deviceData["device_name"];
 
-                      if (!result.success) {
-                        print(
-                          "======> فشل تسجيل الدخول من السيرفر: ${result.message} <======",
+                        final result = await loginController.login(
+                          username: userController.text.trim(),
+                          password: passwordController.text.trim(),
+                          remember: rememberMe ? "1" : "0",
+                          fcmToken: fcmToken,
+                          deviceType: deviceType,
+                          deviceName: deviceName,
                         );
-                        showMsg(result.message);
-                        return;
-                      }
 
-                      print("======> تسجيل الدخول من السيرفر نجح! <======");
+                        if (!mounted) return;
 
-                      // 2. إذا اختار المستخدم "تذكرني" نقوم بعرض خيارات الحماية (إذا لم يتم تعيينها مسبقاً)
-                      if (rememberMe) {
-                        String? currentType = await storage.storage.read(
-                          key: "security_type",
-                        );
-                        if (currentType == null) {
-                          print(
-                            "======> المستخدم اختار 'تذكرني' ولا يوجد حماية سابقة. جاري عرض نافذة الحماية... <======",
-                          );
-                          await showSecurityOptions();
-                        } else {
-                          print(
-                            "======> المستخدم لديه وسيلة حماية محفوظة مسبقاً: $currentType <======",
-                          );
+                        if (!result.success) {
+                          showMsg(result.message);
+                          return;
                         }
-                      }
 
-                      // 3. الانتقال إلى الصفحة الرئيسية
-                      if (mounted) {
-                        print("======> الانتقال إلى صفحة Home الآن... <======");
-                        showMsg("تم تسجيل الدخول بنجاح");
+                        showMsg(AppLocalizations.of(context)!.login_success);
+                        if (rememberMe) {
+                          final savedSecurity =
+                              await securityService.getSecurityType();
+                          if (savedSecurity == null) {
+                            await showSecurityOptions();
+                          }
+                        }
+
+                        await NotificationFlow.processPending();
+                        NotificationFlow.pendingMessage = null;
+
+                        if (widget.fromNotification) {
+                          if (!context.mounted) return;
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const Notifications(),
+                            ),
+                          );
+                          return;
+                        }
+                        if (!context.mounted) return;
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (_) => const Home()),
+                          MaterialPageRoute(
+                            builder: (_) => const Home(),
+                          ),
                         );
+                      } catch (e) {
+                        showMsg(AppLocalizations.of(context)!.login_error);
                       }
                     },
               child: loginController.isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
+                  ? CircularProgressIndicator(
+                      color: AppColors.text(context),
+                    )
                   : Text(
-                      "تسجيل الدخول",
+                      AppLocalizations.of(context)!.login,
                       style: AppTextStyles.text17Bold(context),
                     ),
             );
@@ -357,15 +495,21 @@ class _LoginState extends State<Login> {
   Widget _buildFooter(BuildContext context) {
     return Center(
       child: TextButton(
-        onPressed: () {},
+        onPressed: () {
+          // _makePhoneCall('0119351');
+          _showForgotPasswordDialog();
+        },
         child: RichText(
           text: TextSpan(
-            text: "ليس لديك حساب؟ ",
-            style: AppTextStyles.text15Grey(context),
+            style: const TextStyle(fontFamily: 'Cairo'),
             children: [
               TextSpan(
-                text: "تواصل معنا",
-                style: TextStyle(
+                text: AppLocalizations.of(context)!.no_account,
+                style: AppTextStyles.text15Grey(context),
+              ),
+              TextSpan(
+                text: AppLocalizations.of(context)!.contact_us,
+                style: AppTextStyles.text15Grey(context).copyWith(
                   color: AppColors.secondaryText,
                   fontWeight: FontWeight.bold,
                 ),
@@ -377,8 +521,6 @@ class _LoginState extends State<Login> {
     );
   }
 
-  // ===================== دوال الحماية السريعة =====================
-
   Future<bool> showSecurityOptions() async {
     String? selected;
 
@@ -386,9 +528,9 @@ class _LoginState extends State<Login> {
       context: context,
       barrierDismissible: false,
       builder: (_) => AlertDialog(
-        title: const Text("حماية الدخول السريع"),
-        content: const Text(
-          "لتسهيل الدخول في المرات القادمة، اختر طريقة الحماية:",
+        title: Text(AppLocalizations.of(context)!.quick_access_security),
+        content: Text(
+          AppLocalizations.of(context)!.choose_security_method,
         ),
         actions: [
           TextButton(
@@ -396,54 +538,48 @@ class _LoginState extends State<Login> {
               selected = "bio";
               Navigator.pop(context);
             },
-            child: const Text("بصمة"),
+            child: Text(AppLocalizations.of(context)!.fingerprint),
           ),
           TextButton(
             onPressed: () {
               selected = "pin";
               Navigator.pop(context);
             },
-            child: const Text("رمز PIN"),
+            child: Text(AppLocalizations.of(context)!.pin_code),
           ),
           TextButton(
             onPressed: () {
               selected = "none";
               Navigator.pop(context);
             },
-            child: const Text("تخطي"),
+            child: Text(AppLocalizations.of(context)!.skip),
           ),
         ],
       ),
     );
 
-    print("======> اختيار الحماية المفضل: $selected <======");
-
     if (selected == "bio") {
-      bool canCheckBiometrics = await auth.canCheckBiometrics;
-      if (canCheckBiometrics) {
-        await storage.storage.write(key: "security_type", value: "bio");
-        print("======> تم تفعيل بصمة الإصبع <======");
+      bool authenticated = await securityService.authenticateWithBiometrics(
+          AppLocalizations.of(context)!.confirm_fingerprint_enable);
+      if (authenticated) {
+        await securityService.setSecurityType("bio");
+        showMsg(AppLocalizations.of(context)!.fingerprint_enabled_success);
         return true;
       } else {
-        print("======> الجهاز لا يدعم البصمة <======");
-        showMsg("عذراً، جهازك لا يدعم البصمة");
+        showMsg(
+            AppLocalizations.of(context)!.fingerprint_failed_or_unavailable);
         return false;
       }
     } else if (selected == "pin") {
-      // إذا اختار PIN يجب أن نعرض له نافذة ليكتب الرقم السري ويحفظه
       bool pinSaved = await setupNewPin();
       if (pinSaved) {
-        await storage.storage.write(key: "security_type", value: "pin");
-        print("======> تم تفعيل وحفظ PIN <======");
         return true;
       }
     }
-
     return false;
   }
 
   Future<bool> setupNewPin() async {
-    print("======> جاري عرض نافذة إعداد PIN جديد... <======");
     final controller = TextEditingController();
     bool isSaved = false;
 
@@ -451,32 +587,37 @@ class _LoginState extends State<Login> {
       context: context,
       barrierDismissible: false,
       builder: (_) => AlertDialog(
-        title: const Text("إعداد رمز PIN"),
+        title: Text(AppLocalizations.of(context)!.setup_pin),
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
           obscureText: true,
           maxLength: 4,
-          decoration: const InputDecoration(hintText: "أدخل 4 أرقام فقط"),
+          decoration: InputDecoration(
+              hintText: AppLocalizations.of(context)!.pin_4_digits_only),
         ),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // تراجع
+              Navigator.pop(context);
             },
-            child: const Text("إلغاء", style: TextStyle(color: Colors.red)),
+            child: Text(AppLocalizations.of(context)!.cancel,
+                style: TextStyle(
+                  color: Colors.red.withValues(alpha: 0.6),
+                )),
           ),
           TextButton(
             onPressed: () async {
               if (controller.text.length == 4) {
-                await storage.storage.write(key: "pin", value: controller.text);
+                await securityService.savePin(controller.text);
                 isSaved = true;
+                if (!mounted) return;
                 Navigator.pop(context);
               } else {
-                showMsg("يجب أن يتكون الرمز من 4 أرقام");
+                showMsg(AppLocalizations.of(context)!.pin_must_be_4_digits);
               }
             },
-            child: const Text("حفظ"),
+            child: Text(AppLocalizations.of(context)!.save),
           ),
         ],
       ),
@@ -486,17 +627,12 @@ class _LoginState extends State<Login> {
   }
 
   Future<bool> loginWithPinSilent() async {
-    final savedPin = await storage.storage.read(key: "pin");
-    if (savedPin == null) {
-      print("======> خطأ: لا يوجد رمز PIN محفوظ! <======");
-      return false;
-    }
-
     final controller = TextEditingController();
+
     final result = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text("أدخل رمز PIN الخاص بك"),
+        title: Text(AppLocalizations.of(context)!.enter_pin),
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
@@ -506,43 +642,33 @@ class _LoginState extends State<Login> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text("إلغاء"),
+            onPressed: () => Navigator.pop(_, false),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(context, controller.text == savedPin);
+            onPressed: () async {
+              bool isValid = await securityService.verifyPin(controller.text);
+              Navigator.pop(_, isValid);
             },
-            child: const Text("دخول"),
+            child: Text(AppLocalizations.of(context)!.login),
           ),
         ],
       ),
     );
 
+    if (result == true) {
+      showMsg(AppLocalizations.of(context)!.verified_successfully);
+    }
     return result ?? false;
   }
 
   Future<bool> loginWithBiometric() async {
-    try {
-      final success = await auth.authenticate(
-        localizedReason: 'يرجى تأكيد هويتك للدخول بالبصمة',
-        options: const AuthenticationOptions(
-          biometricOnly: true,
-          stickyAuth: true,
-        ),
-      );
-
-      if (success) {
-        showMsg("تم التحقق من البصمة بنجاح");
-      } else {
-        print("======> المستخدم ألغى البصمة أو فشلت <======");
-      }
-      return success;
-    } catch (e) {
-      print("======> خطأ في البصمة: $e <======");
-      showMsg("البصمة غير متاحة أو حدث خطأ");
-      return false;
+    bool success = await securityService.authenticateWithBiometrics(
+        AppLocalizations.of(context)!.confirm_identity_fingerprint);
+    if (success) {
+      showMsg(AppLocalizations.of(context)!.fingerprint_verified_success);
     }
+    return success;
   }
 
   void showMsg(String msg) {

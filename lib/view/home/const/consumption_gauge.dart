@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:omniya/const/app_color.dart';
+import 'package:omniya/l10n/app_localizations.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class ConsumptionGauge extends StatelessWidget {
@@ -27,15 +28,13 @@ class ConsumptionGauge extends StatelessWidget {
             showTicks: false,
             startAngle: 270,
             endAngle: 270,
-
             axisLineStyle: AxisLineStyle(
               thickness: 0.15,
               color: isDark
                   ? AppColors.text(context).withValues(alpha: 0.15)
-                  : Colors.black.withValues(alpha:0.08),
+                  : Colors.black.withValues(alpha: 0.08),
               thicknessUnit: GaugeSizeUnit.factor,
             ),
-
             pointers: <GaugePointer>[
               RangePointer(
                 value: value,
@@ -48,7 +47,6 @@ class ConsumptionGauge extends StatelessWidget {
                 cornerStyle: CornerStyle.bothCurve,
               ),
             ],
-
             annotations: <GaugeAnnotation>[
               GaugeAnnotation(
                 positionFactor: 0.1,
@@ -60,15 +58,10 @@ class ConsumptionGauge extends StatelessWidget {
                       '${value.toStringAsFixed(1)}%',
                       style: AppTextStyles.text17Bold(context),
                     ),
-
                     const SizedBox(height: 4),
-
                     Text(
-                      'الاستهلاك',
-                      style: TextStyle(
-                        color: AppColors.grey(context),
-                        fontSize: 12,
-                      ),
+                      AppLocalizations.of(context)!.usage,
+                      style: AppTextStyles.text13Grey(context),
                     ),
                   ],
                 ),

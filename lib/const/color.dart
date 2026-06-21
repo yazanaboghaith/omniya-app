@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 final kwhitetextColor = Color(0xFFF5F5F5);
 final kblacktextColor = Colors.black;
-final Kgreycolor = Colors.white60;
+// final Kgreycolor = Colors.white60;
 final kprimareycolor = Color(0xFF92509F);
 final ksecondarycolor = Color(0xFF243D6B);
 final kspeedcolor = Color(0xFF395FA5);
@@ -48,11 +48,11 @@ final k13blacktextcolorbold = TextStyle(
   fontSize: 13,
   fontWeight: FontWeight.bold,
 );
-final K50textwhite = TextStyle(
-  color: kwhitetextColor,
-  fontSize: 50,
-  fontWeight: FontWeight.bold,
-);
+// final K50textwhite = TextStyle(
+//   color: kwhitetextColor,
+//   fontSize: 50,
+//   fontWeight: FontWeight.bold,
+// );
 final k20textgrey = TextStyle(color: Colors.white60, fontSize: 20);
 final k15textgrey = TextStyle(color: Colors.white60, fontSize: 15);
 

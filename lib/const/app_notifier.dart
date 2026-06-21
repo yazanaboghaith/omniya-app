@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:ui'; // مهم جداً لتفعيل الـ ImageFilter
 import 'package:flutter/material.dart';
 import 'package:omniya/const/app_color.dart';
+import 'package:omniya/l10n/app_localizations.dart';
 
 enum NotifyType { success, error }
 
@@ -12,84 +14,140 @@ class AppNotifier {
 
   void show({
     required BuildContext context,
+    String? title,
     required String message,
-    required NotifyType type,
-    int seconds = 2,
+    required bool isSuccess, // لتحديد حالة الأيقونة والألوان بناءً على طلبك
+    String buttonText = "فهمت",
+    VoidCallback? onButtonPressed,
+    int seconds = 0,
   }) {
     _entry?.remove();
 
     _entry = OverlayEntry(
       builder: (context) {
-        return _NotifyWidget(message: message, type: type);
+        return _NotifyWidget(
+          title: title,
+          message: message,
+          isSuccess: isSuccess,
+          buttonText: buttonText,
+          onButtonPressed: onButtonPressed,
+          onClose: () {
+            _entry?.remove();
+            _entry = null;
+          },
+        );
       },
     );
 
-    Overlay.of(context).insert(_entry!);
+    Overlay.of(context, rootOverlay: true).insert(_entry!);
 
-    Timer(Duration(seconds: seconds), () {
-      _entry?.remove();
-      _entry = null;
-    });
+    if (seconds > 0) {
+      Timer(Duration(seconds: seconds), () {
+        _entry?.remove();
+        _entry = null;
+      });
+    }
   }
 
   void success(BuildContext context, String msg) {
-    show(context: context, message: msg, type: NotifyType.success);
+    show(
+        context: context,
+        message: msg,
+        title: AppLocalizations.of(context)!.success,
+        isSuccess: true);
   }
 
   void error(BuildContext context, String msg) {
-    show(context: context, message: msg, type: NotifyType.error);
+    show(
+        context: context,
+        message: msg,
+        title: AppLocalizations.of(context)!.bank_Name,
+        isSuccess: false);
   }
 }
 
-//////////////////////////
-/////////////////////////
-//////////////////////////
-/////////////////////////
-/////////////////////////
-
 class _NotifyWidget extends StatelessWidget {
+  final String? title;
   final String message;
-  final NotifyType type;
+  final bool isSuccess;
+  final String buttonText;
+  final VoidCallback? onButtonPressed;
+  final VoidCallback onClose;
 
-  const _NotifyWidget({required this.message, required this.type});
+  const _NotifyWidget({
+    this.title,
+    required this.message,
+    required this.isSuccess,
+    required this.buttonText,
+    required this.onButtonPressed,
+    required this.onClose,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final isSuccess = type == NotifyType.success;
-
     return Material(
-      color: Colors.transparent,
+      color: Colors.black12,
       child: Center(
-        child: Container(
-          width: 260,
-          padding: EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(28),
-            border: Border.all(
-              color: AppColors.text(context).withValues(alpha: 0.15),
-              width: 1,
-            ),
-            gradient: LinearGradient(
-              colors: [AppColors.secondary, AppColors.primary],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                isSuccess ? Icons.check_circle : Icons.error,
-                color: isSuccess ? Colors.green : Colors.red,
-                size: 50,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(25),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.85,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white30,
+                borderRadius: BorderRadius.circular(25),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  width: 1,
+                ),
               ),
-              const SizedBox(height: 10),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white, fontSize: 14),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (title != null) ...[
+                    Text(
+                      title!,
+                      style: AppTextStyles.text17Bold(context),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                  Text(
+                    message,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.text15(context),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white30,
+                        foregroundColor: Colors.black87,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      onPressed: () {
+                        onButtonPressed?.call();
+                        onClose();
+                      },
+                      child: Text(
+                        buttonText,
+                        style: AppTextStyles.text15(context).copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

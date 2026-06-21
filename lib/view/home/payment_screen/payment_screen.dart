@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_background.dart';
-import 'package:omniya/const/app_color.dart';
 import 'package:omniya/const/app_notifier.dart';
 import 'package:omniya/model/bank_model.dart';
-import 'package:omniya/model/transactions_model.dart';
+import 'package:omniya/model/payment_methods_response.dart';
+import 'package:omniya/view/home/payment_screen/addbank_payment_card.dart';
+import 'package:omniya/view/home/payment_screen/controller/bankController.dart';
 import 'package:omniya/view/home/payment_screen/controller/payment_screen_controller.dart';
+import 'package:omniya/view/home/payment_screen/payment_tabs.dart';
+import 'package:omniya/view/home/payment_screen/payments_report_card.dart';
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -14,35 +16,224 @@ class PaymentScreen extends StatefulWidget {
   State<PaymentScreen> createState() => _PaymentScreenState();
 }
 
-class _PaymentScreenState extends State<PaymentScreen> {
+class _PaymentScreenState extends State<PaymentScreen>
+    with WidgetsBindingObserver {
   final PaymentBankController bankController = PaymentBankController();
+  final Bankcontroller paymentController = Bankcontroller();
+
   final TextEditingController refNoController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
+  bool _checkingPaymentUI = false;
   BankModel? selectedBank;
   int? selectedBankId;
   String? selectedBankName;
-  Timer? _debounce;
+
+  String selectedMethod = "bank";
+
+  bool _isCheckingPayment = false;
+  bool _wentToGateway = false;
+
+  void _log(String msg) {
+    debugPrint(" [PAYMENT] $msg");
+  }
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
-    _loadData();
+    refNoController.addListener(_onFormChanged);
+    amountController.addListener(_onFormChanged);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadInitialData();
+    });
+  }
+
+  Future<void> _loadInitialData() async {
+    await Future.wait([
+      bankController.getBanks(),
+      bankController.getTransactions(page: 1),
+      paymentController.getPaymentMethods(),
+    ]);
+  }
+
+  void _onFormChanged() {
+    setState(() {});
   }
 
   Future<void> _loadData() async {
+    _log("Loading data...");
+
     await Future.wait([
       bankController.getBanks(),
-      bankController.getTransactions(),
+      bankController.getTransactions(page: 1),
+      paymentController.getPaymentMethods(),
     ]);
 
-    if (!mounted) return;
+    _log("Data loaded");
+  }
 
-    setState(() {});
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    _log("Lifecycle => $state");
+
+    if (state != AppLifecycleState.resumed) return;
+
+    final session = paymentController.session;
+
+    if (!session.isActive ||
+        session.transactionId == null ||
+        _isCheckingPayment ||
+        !_wentToGateway) {
+      return;
+    }
+
+    setState(() {
+      _checkingPaymentUI = true;
+    });
+
+    _checkPaymentAfterReturn();
+  }
+
+  bool get isBankFormValid {
+    return selectedBank != null &&
+        refNoController.text.trim().isNotEmpty &&
+        amountController.text.trim().isNotEmpty;
+  }
+
+  Future<void> _checkPaymentAfterReturn() async {
+    _isCheckingPayment = true;
+
+    try {
+      final result = await paymentController.checkPayment();
+
+      if (!mounted) return;
+
+      AppNotifier.instance.show(
+        context: context,
+        title: result ? "Payment Success" : "Payment Pending",
+        message: result ? "تم تأكيد الدفع بنجاح" : "لم يتم تأكيد الدفع بعد",
+        isSuccess: result,
+      );
+
+      _resetSession();
+    } catch (e) {
+      _log("Check payment error: $e");
+
+      if (mounted) {
+        AppNotifier.instance.show(
+          context: context,
+          title: "Payment Error",
+          message: "حدث خطأ أثناء التحقق من حالة الدفع",
+          isSuccess: false,
+        );
+      }
+    } finally {
+      _isCheckingPayment = false;
+
+      if (mounted) {
+        setState(() {
+          _checkingPaymentUI = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _showGatewayPaymentDialog(PaymentMethod method) async {
+    final TextEditingController amountCtrl = TextEditingController();
+    bool loading = false;
+
+    await showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: const Text("إدخال مبلغ الدفع"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("بوابة: ${method.name}"),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: amountCtrl,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: "المبلغ",
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  if (loading)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 20),
+                      child: CircularProgressIndicator(),
+                    ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: const Text("إلغاء"),
+                ),
+                ElevatedButton(
+                  onPressed: loading
+                      ? null
+                      : () async {
+                          final amount = amountCtrl.text.trim();
+
+                          if (amount.isEmpty) return;
+
+                          setStateDialog(() => loading = true);
+
+                          _log("Creating payment...");
+                          _log("Amount => $amount");
+                          _log("Gateway => ${method.value}");
+
+                          final success = await paymentController.createPayment(
+                            amount: amount,
+                            paymentType: method.value,
+                          );
+
+                          if (!success) {
+                            setStateDialog(() => loading = false);
+                            _log("Payment creation failed");
+                            return;
+                          }
+
+                          final session = paymentController.session;
+
+                          _log("Transaction ID => ${session.transactionId}");
+                          _log("URL => ${session.paymentUrl}");
+
+                          session.isActive = true;
+                          _wentToGateway = true;
+
+                          Navigator.pop(dialogContext);
+
+                          await paymentController.openPaymentUrl();
+
+                          _log("Browser opened");
+                        },
+                  child: const Text("تأكيد"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _resetSession() {
+    _log("Reset session");
+    _wentToGateway = false;
+    paymentController.session.clear();
   }
 
   @override
   void dispose() {
-    _debounce?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     refNoController.dispose();
     amountController.dispose();
     super.dispose();
@@ -50,417 +241,236 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final w = MediaQuery.of(context).size.width;
+    return PopScope(
+      canPop: !_checkingPaymentUI,
+      child: SafeArea(
+        child: Stack(
+          children: [
+            RefreshIndicator(
+              onRefresh: _loadData,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: [
+                    PaymentTabsWidget(
+                      selectedMethod: selectedMethod,
+                      onMethodChanged: (m) =>
+                          setState(() => selectedMethod = m),
+                    ),
+                    const SizedBox(height: 20),
+                    if (selectedMethod == "bank")
+                      AddBankPaymentCard(
+                        isFormValid: isBankFormValid,
+                        bankController: bankController,
+                        refNoController: refNoController,
+                        amountController: amountController,
+                        selectedBank: selectedBank,
+                        onBankChanged: (value) {
+                          setState(() {
+                            selectedBank = value;
+                            selectedBankId = value?.id;
+                            selectedBankName = value?.nameAr;
+                          });
+                        },
+                        onSubmit: () async {
+                          if (selectedBank == null ||
+                              refNoController.text.trim().isEmpty ||
+                              amountController.text.trim().isEmpty) {
+                            AppNotifier.instance.show(
+                              context: context,
+                              title: "بيانات ناقصة",
+                              message: "يرجى تعبئة جميع الحقول.",
+                              isSuccess: false,
+                            );
+                            return;
+                          }
 
-    return AppBackground(
-      showHeader: true,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: RefreshIndicator(
-          onRefresh: () async {
-            await _loadData();
-          },
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(
-              horizontal: w * 0.04,
-              vertical: w * 0.02,
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: w * 0.05),
-                _buildAddPaymentCard(w, context),
-                SizedBox(height: w * 0.05),
-                AnimatedBuilder(
-                  animation: bankController,
-                  builder: (context, _) {
-                    return _buildPaymentsReportCard(w, context);
-                  },
+                          _showConfirmDialog();
+                        },
+                      )
+                    else
+                      AnimatedBuilder(
+                        animation: paymentController,
+                        builder: (context, _) {
+                          return OnlinePaymentGateways(
+                            paymentMethodsController: paymentController,
+                            onGatewayTap: _showGatewayPaymentDialog,
+                          );
+                        },
+                      ),
+                    const SizedBox(height: 30),
+                    AnimatedBuilder(
+                      animation: bankController,
+                      builder: (context, _) {
+                        return PaymentsReportCard(
+                          bankController: bankController,
+                        );
+                      },
+                    ),
+                  ],
                 ),
-                SizedBox(height: w * 0.25),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAddPaymentCard(double w, BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(w * 0.05),
-      decoration: _glassDecoration(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("إضافة دفعة بنك", style: AppTextStyles.text19Bold(context)),
-          SizedBox(height: w * 0.04),
-
-          Text("اسم البنك", style: AppTextStyles.text15(context)),
-          SizedBox(height: 6),
-          AnimatedBuilder(
-            animation: bankController,
-            builder: (context, _) {
-              return Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? AppColors.text(context).withValues(alpha: 0.08)
-                      : Colors.black.withValues(alpha: 0.01),
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(
-                    color: AppColors.text(context).withValues(alpha: 0.15),
+            if (_checkingPaymentUI)
+              const Positioned.fill(
+                child: ColoredBox(
+                  color: Colors.black54,
+                  child: Center(
+                    child: CircularProgressIndicator(),
                   ),
                 ),
-                child: bankController.isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : Material(
-                        color: Colors.transparent,
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<BankModel>(
-                            isExpanded: true,
-                            value: selectedBank,
-                            hint: Text(
-                              "اختر البنك",
-                              style: TextStyle(color: AppColors.text(context)),
-                            ),
-                            icon: Icon(
-                              Icons.keyboard_arrow_down,
-                              color: AppColors.text(context),
-                            ),
-                            dropdownColor: isDark
-                                ? AppColors.secondary
-                                : AppColors.secondary,
-
-                            items: bankController.banks.map((bank) {
-                              return DropdownMenuItem(
-                                value: bank,
-                                child: Center(
-                                  child: Text(
-                                    bank.nameAr,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                selectedBank = value;
-                                selectedBankId = value?.id;
-                                selectedBankName = value?.nameAr;
-                              });
-                              debugPrint("ID: $selectedBankId");
-                              debugPrint("NAME: $selectedBankName");
-                            },
-                          ),
-                        ),
-                      ),
-              );
-            },
-          ),
-          SizedBox(height: w * 0.04),
-          Row(
-            children: [
-              Expanded(
-                child: _buildInput(
-                  context,
-                  w,
-                  "رقم الاشعار",
-                  "مثال: 992311",
-                  refNoController,
-                  TextInputType.number,
-                ),
               ),
-              SizedBox(width: w * 0.03),
-              Expanded(
-                child: _buildInput(
-                  context,
-                  w,
-                  "القيمة (ل.س)",
-                  "مثال: 5000",
-                  amountController,
-                  TextInputType.number,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: w * 0.06),
-          SizedBox(
-            width: double.infinity,
-            height: w * 0.12,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.grey(
-                  context,
-                ).withValues(alpha: isDark ? 0.5 : 0.1),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-              ),
-
-              onPressed: bankController.isSendingPayment
-                  ? null
-                  : () async {
-                      if (selectedBankId == null) {
-                        AppNotifier.instance.error(
-                          context,
-                          "يرجى اختيار اسم البنك",
-                        );
-                        return;
-                      }
-
-                      if (refNoController.text.trim().isEmpty ||
-                          amountController.text.trim().isEmpty) {
-                        AppNotifier.instance.error(
-                          context,
-                          "يرجى تعبأة جميع الحقول",
-                        );
-                        return;
-                      }
-
-                      final success = await bankController.addBankPayment(
-                        bankId: selectedBankId!,
-                        amount: amountController.text.trim(),
-                        bankRefNo: refNoController.text.trim(),
-                        context: context,
-                      );
-
-                      if (success) {
-                        refNoController.clear();
-                        amountController.clear();
-
-                        setState(() {
-                          selectedBank = null;
-                          selectedBankId = null;
-                          selectedBankName = null;
-                        });
-                      }
-                    },
-
-              child: bankController.isSendingPayment
-                  ? const SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : Text(
-                      "إضافة دفعة",
-                      style: AppTextStyles.text17Bold(context),
-                    ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildInput(
-    BuildContext context,
-    double w,
-    String label,
-    String hint,
-    TextEditingController controller,
-    TextInputType keyboardType,
-  ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  Future<void> _showConfirmDialog() async {
+    final bank = selectedBank;
+    final amount = amountController.text.trim();
+    final refNo = refNoController.text.trim();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: AppTextStyles.text15(context)),
-        const SizedBox(height: 6),
-
-        TextField(
-          keyboardType: keyboardType,
-          controller: controller,
-          style: TextStyle(color: AppColors.text(context)),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(
-              color: AppColors.text(context).withValues(alpha: 0.5),
-              fontSize: 13,
-            ),
-            filled: true,
-            fillColor: isDark
-                ? AppColors.text(context).withValues(alpha: 0.08)
-                : Colors.black.withValues(alpha: 0.01),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(28),
-              borderSide: BorderSide(
-                color: AppColors.text(context).withValues(alpha: 0.15),
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(28),
-              borderSide: BorderSide(color: AppColors.primary),
-            ),
+    await showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return Dialog(
+          backgroundColor: Colors.white30,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPaymentsReportCard(double w, BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 45),
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.all(w * 0.05),
-        decoration: _glassDecoration(context),
-        child: AnimatedBuilder(
-          animation: bankController,
-          builder: (context, _) {
-            return Column(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: _glassDialogDecoration(context),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("تقرير الدفعات", style: AppTextStyles.text17Bold(context)),
-                SizedBox(height: w * 0.04),
-                _buildSearchField(context),
-                SizedBox(height: w * 0.04),
-
-                if (bankController.isLoadingTransactions)
-                  const Center(child: CircularProgressIndicator())
-                else if (bankController.transactions.isEmpty)
-                  const Text("لا يوجد بيانات")
-                else
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: bankController.transactions.length,
-                    itemBuilder: (context, index) {
-                      final item = bankController.transactions[index];
-                      return _buildPaymentItemFromApi(w, context, item);
-                    },
-                  ),
+                const Text(
+                  "تأكيد الدفع",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 15),
+                Text("اسم البنك: ${bank?.nameAr ?? ''}"),
+                const SizedBox(height: 8),
+                Text("القيمة: $amount"),
+                const SizedBox(height: 8),
+                Text("رقم الاشعار: $refNo"),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("إلغاء"),
+                      ),
+                    ),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          Navigator.pop(context);
+                          await _submitBankPayment();
+                        },
+                        child: const Text("تأكيد"),
+                      ),
+                    ),
+                  ],
+                ),
               ],
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSearchField(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return TextField(
-      onChanged: (value) {
-        if (_debounce?.isActive ?? false) _debounce!.cancel();
-        _debounce = Timer(const Duration(milliseconds: 200), () {
-          if (!mounted) return;
-
-          bankController.getTransactions(search: value.trim());
-        });
+            ),
+          ),
+        );
       },
-      style: TextStyle(color: AppColors.text(context)),
-      decoration: InputDecoration(
-        hintText: "بحث...",
-        hintStyle: TextStyle(
-          color: AppColors.text(context).withValues(alpha: 0.5),
-        ),
-        filled: true,
-        fillColor: isDark
-            ? AppColors.text(context).withValues(alpha: 0.08)
-            : Colors.black.withValues(alpha: 0.01),
-        prefixIcon: Icon(Icons.search, color: AppColors.text(context)),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
-      ),
     );
   }
 
-  Widget _buildPaymentItemFromApi(
-    double w,
-    BuildContext context,
-    TransactionModel item,
-  ) {
+  BoxDecoration _glassDialogDecoration(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isAccepted =
-        item.status == "مقبول" ||
-        item.status == "approved" ||
-        item.status == "1";
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.all(w * 0.04),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: AppColors.text(context).withValues(alpha: 0.15),
-        ),
-        color: isDark
-            ? AppColors.text(context).withValues(alpha: 0.06)
-            : Colors.black.withValues(alpha: 0.03),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("Invoice Payment", style: AppTextStyles.text17Bold(context)),
-              Text("رقم: 13953361", style: AppTextStyles.text13Grey(context)),
-              Text("2026-04-20", style: AppTextStyles.text13Grey(context)),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text("10 ل.س", style: AppTextStyles.text17Bold(context)),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: isAccepted
-                      ? Colors.green.withValues(alpha: 0.6)
-                      : Colors.red.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  isAccepted ? "مقبول" : "مرفوض",
-                  style: AppTextStyles.text13(context),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
-  BoxDecoration _glassDecoration(BuildContext context) {
     return BoxDecoration(
-      borderRadius: BorderRadius.circular(28),
+      borderRadius: BorderRadius.circular(24),
       border: Border.all(
-        color: AppColors.text(context).withValues(alpha: 0.15),
+        color: Colors.white.withOpacity(0.15),
         width: 1,
       ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.25),
+          blurRadius: 30,
+          offset: const Offset(0, 10),
+        ),
+      ],
       gradient: LinearGradient(
-        colors: [
-          AppColors.text(context).withValues(alpha: 0.25),
-          AppColors.text(context).withValues(alpha: 0.25),
-        ],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
+        colors: isDark
+            ? [
+                Colors.white.withOpacity(0.2),
+                Colors.white.withOpacity(0.2),
+              ]
+            : [
+                Colors.white.withOpacity(0.2),
+                Colors.white.withOpacity(0.2),
+              ],
       ),
     );
+  }
+
+  Future<void> _submitBankPayment() async {
+    setState(() {
+      _checkingPaymentUI = true; 
+    });
+
+    try {
+      final success = await bankController.addBankPayment(
+        bankId: selectedBank!.id,
+        amount: amountController.text.trim(),
+        bankRefNo: refNoController.text.trim(),
+        context: context,
+      );
+
+      if (!mounted) return;
+
+      if (success) {
+        AppNotifier.instance.show(
+          context: context,
+          title: "تمت العملية",
+          message: "تم إرسال الدفعة بنجاح.",
+          isSuccess: true,
+        );
+
+        refNoController.clear();
+        amountController.clear();
+
+        setState(() {
+          selectedBank = null;
+          selectedBankId = null;
+          selectedBankName = null;
+        });
+
+        await bankController.getTransactions(page: 1);
+      } else {
+        AppNotifier.instance.show(
+          context: context,
+          title: "فشل العملية",
+          message: "تعذر إرسال الدفعة.",
+          isSuccess: false,
+        );
+      }
+    } catch (e) {
+      AppNotifier.instance.show(
+        context: context,
+        title: "خطأ",
+        message: "حدث خطأ أثناء الإرسال",
+        isSuccess: false,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _checkingPaymentUI = false;
+        });
+      }
+    }
   }
 }

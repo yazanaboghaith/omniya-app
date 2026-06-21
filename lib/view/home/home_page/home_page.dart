@@ -1,8 +1,7 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_background.dart';
 import 'package:omniya/const/app_color.dart';
+import 'package:omniya/l10n/app_localizations.dart';
 import 'package:omniya/view/home/const/consumption_gauge.dart';
 import 'package:omniya/view/home/const/speedometer.dart';
 import 'package:omniya/view/home/home_page/controller/home_page_controller.dart';
@@ -37,47 +36,13 @@ class _HomePageState extends State<HomePage> {
     final h = size.height;
     final controller = context.watch<HomePageController>();
     final user = controller.user;
-
-    return AppBackground(
-      showHeader: true,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        extendBody: true,
-        body: Stack(
-          children: [
-            SafeArea(
-              bottom: false,
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  if (!mounted) return;
-                  await context.read<HomePageController>().getUserDetails();
-                },
-                child: _buildHomeContent(controller, user, w, h),
-              ),
-            ),
-            if (isRefreshing)
-              Positioned.fill(
-                child: Container(
-                  color: Colors.black.withValues(alpha: 0.4),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircularProgressIndicator(
-                          color: AppColors.text(context),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          "جاري التحديث...",
-                          style: TextStyle(color: AppColors.text(context)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
+    return SafeArea(
+      child: RefreshIndicator(
+        onRefresh: () async {
+          if (!mounted) return;
+          await context.read<HomePageController>().getUserDetails();
+        },
+        child: _buildHomeContent(controller, user, w, h),
       ),
     );
   }
@@ -99,7 +64,7 @@ class _HomePageState extends State<HomePage> {
     if (controller.state == HomeState.noInternet) {
       return _buildErrorWidget(
         icon: Icons.wifi_off_rounded,
-        title: 'لا يوجد اتصال بالإنترنت',
+        title: AppLocalizations.of(context)!.no_Internet,
         message: controller.errorMessage,
         onRetry: () => controller.getUserDetails(),
         w: w,
@@ -109,7 +74,7 @@ class _HomePageState extends State<HomePage> {
     if (controller.state == HomeState.serverError) {
       return _buildErrorWidget(
         icon: Icons.dns_rounded,
-        title: 'مشكلة في الاتصال بالخادم',
+        title: AppLocalizations.of(context)!.server_Error,
         message: controller.errorMessage,
         onRetry: () => controller.getUserDetails(),
         w: w,
@@ -119,7 +84,7 @@ class _HomePageState extends State<HomePage> {
     if (controller.state == HomeState.unexpectedError) {
       return _buildErrorWidget(
         icon: Icons.error_outline_rounded,
-        title: 'تنبيه خطأ',
+        title: AppLocalizations.of(context)!.error,
         message: controller.errorMessage,
         onRetry: () async {
           setState(() => isRefreshing = true);
@@ -136,21 +101,20 @@ class _HomePageState extends State<HomePage> {
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.only(
+        top: 10,
         left: w * 0.05,
         right: w * 0.05,
-        bottom: w * 0.13,
+        bottom: 20,
       ),
       child: Column(
         children: [
-          SizedBox(height: h * 0.03),
           _buildBalanceCard(w, user),
           SizedBox(height: h * 0.02),
           _buildStatusRow(w, user),
           SizedBox(height: h * 0.02),
           _buildPrimaryPackageCard(w, user),
-          SizedBox(height: h * 0.02),
+          SizedBox(height: h * 0.01),
           _buildAddonPackagesSection(w, user),
-          SizedBox(height: h * 0.12),
         ],
       ),
     );
@@ -179,13 +143,13 @@ class _HomePageState extends State<HomePage> {
               size: 75,
               color: AppColors.text(context).withValues(alpha: 0.6),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: w * 0.02),
             Text(
               title,
               textAlign: TextAlign.center,
               style: AppTextStyles.text19Bold(context),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: w * 0.02),
             Text(
               message,
               textAlign: TextAlign.center,
@@ -195,7 +159,7 @@ class _HomePageState extends State<HomePage> {
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 30),
+            SizedBox(height: w * 0.3),
             Center(
               child: ElevatedButton.icon(
                 onPressed: onRetry,
@@ -215,7 +179,7 @@ class _HomePageState extends State<HomePage> {
                   color: AppColors.text(context),
                 ),
                 label: Text(
-                  'إعادة المحاولة',
+                  AppLocalizations.of(context)!.retry,
                   style: TextStyle(color: AppColors.text(context)),
                 ),
               ),
@@ -237,7 +201,8 @@ class _HomePageState extends State<HomePage> {
           decoration: _glassDecoration(context),
           child: Column(
             children: [
-              Text("الرصيد الحالي", style: AppTextStyles.text20Grey(context)),
+              Text(AppLocalizations.of(context)!.current_Balance,
+                  style: AppTextStyles.text20Grey(context)),
               SizedBox(height: w * 0.03),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -249,7 +214,8 @@ class _HomePageState extends State<HomePage> {
                     style: AppTextStyles.text50(context),
                   ),
                   SizedBox(width: w * 0.01),
-                  Text("ل.ج.س", style: AppTextStyles.text17Bold(context)),
+                  Text(AppLocalizations.of(context)!.currency,
+                      style: AppTextStyles.text17Bold(context)),
                 ],
               ),
             ],
@@ -260,20 +226,41 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildStatusRow(double w, dynamic user) {
+    final bool isUnlimited = user?.baseService?.unlimitted ?? false;
+
+    debugPrint(
+      'Unlimited => ${user?.baseService?.unlimitted}',
+    );
     return Row(
       children: [
         Expanded(
           child: Container(
+            height: w * 0.42,
             padding: EdgeInsets.symmetric(vertical: w * 0.04),
             decoration: _glassDecoration(context),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ConsumptionGauge(
-                  value: (user?.quota?.totalUsagePercent ?? 0).toDouble(),
+                SizedBox(
+                  height: w * 0.25,
+                  child: Center(
+                    child: isUnlimited
+                        ? Icon(
+                            Icons.all_inclusive,
+                            size: w * 0.18,
+                            color: AppColors.text(context),
+                          )
+                        : ConsumptionGauge(
+                            value: (user?.quota?.totalUsagePercent ?? 0)
+                                .toDouble(),
+                          ),
+                  ),
                 ),
-                SizedBox(height: w * 0.01),
+                SizedBox(height: w * 0.03),
                 Text(
-                  "الاستهلاك الكلي",
+                  isUnlimited
+                      ? AppLocalizations.of(context)!.unlimited_Subscription
+                      : AppLocalizations.of(context)!.total_Usage,
                   style: AppTextStyles.text13Grey(context),
                 ),
               ],
@@ -288,11 +275,11 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: [
                 SpeedometerWidget(
-                  speed: (user?.quota?.currentSpeedValue ?? 0).toDouble(),
+                  speedText: user?.quota?.currentSpeed ?? '',
                 ),
                 SizedBox(height: w * 0.01),
                 Text(
-                  "السرعة الحالية",
+                  AppLocalizations.of(context)!.current_Speed,
                   style: AppTextStyles.text13Grey(context),
                 ),
               ],
@@ -306,10 +293,10 @@ class _HomePageState extends State<HomePage> {
   Widget _buildPrimaryPackageCard(double w, dynamic user) {
     double totalQuota = (user?.baseService?.quota ?? 0).toDouble();
     double remainingQuota = (user?.quota?.remainingDefault ?? 0).toDouble();
+    final bool isUnlimited = user?.baseService?.unlimitted ?? false;
 
-    double progressPercent = totalQuota > 0
-        ? (remainingQuota / totalQuota)
-        : 0.0;
+    double progressPercent =
+        totalQuota > 0 ? (remainingQuota / totalQuota) : 0.0;
     if (progressPercent > 1.0) progressPercent = 1.0;
 
     return Container(
@@ -318,38 +305,56 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                user?.baseService?.label ?? "الباقات الاساسية",
-                style: AppTextStyles.text17Bold(context),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    PageTransition(
-                      type: PageTransitionType.fade,
-                      child: const RechargePackage(),
-                    ),
-                  );
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: w * 0.03,
-                    vertical: w * 0.025,
-                  ),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: AppColors.text(context).withValues(alpha: 0.3),
-                  ),
-                  child: Text(
-                    "شحن باقة",
-                    style: AppTextStyles.text13BlackBold(),
-                  ),
+          Padding(
+            padding: EdgeInsets.only(bottom: w * 0.02),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.basic_Package,
+                  style: AppTextStyles.text17Bold(context),
                 ),
-              ),
+                if (!isUnlimited)
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        PageTransition(
+                          type: PageTransitionType.fade,
+                          child: const RechargePackage(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: w * 0.03,
+                        vertical: w * 0.025,
+                      ),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(w * 0.07),
+                          border: Border.all(
+                            color:
+                                AppColors.text(context).withValues(alpha: 0.15),
+                          ),
+                          color: Colors.green.withValues(alpha: 0.6)),
+                      child: Text(
+                        AppLocalizations.of(context)!.recharge_Package,
+                        style: AppTextStyles.text13BlackBold(),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Row(
+            children: [
+              // Expanded(
+              //   child: Text(
+              //     user?.baseService?.label ?? '',
+              //     style: AppTextStyles.text15(context),
+              //     overflow: TextOverflow.ellipsis,
+              //   ),
+              // ),
             ],
           ),
           SizedBox(height: w * 0.05),
@@ -370,7 +375,9 @@ class _HomePageState extends State<HomePage> {
                         color: AppColors.text(context).withValues(alpha: 0.05),
                       ),
                       Container(
-                        width: constraints.maxWidth * progressPercent,
+                        width: isUnlimited
+                            ? constraints.maxWidth
+                            : constraints.maxWidth * progressPercent,
                         decoration: const BoxDecoration(
                           gradient: LinearGradient(
                             colors: [AppColors.primary, AppColors.speed],
@@ -387,15 +394,41 @@ class _HomePageState extends State<HomePage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "صالحة لغاية ${user?.expiryDate ?? '--'}",
-                textDirection: TextDirection.rtl,
-                style: AppTextStyles.text10Grey(context),
+              Expanded(
+                child: Text(
+                  "${AppLocalizations.of(context)!.valid_Until} ${user?.expiryDate ?? '--'}",
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.right,
+                  style: AppTextStyles.text10Grey(context),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              Text(
-                "المتبقي ${user?.quota?.remainingDefault ?? 0} جيجا من اصل ${user?.baseService?.quota ?? 0} جيجا",
-                textDirection: TextDirection.rtl,
-                style: AppTextStyles.text10Grey(context),
+              const SizedBox(width: 12),
+              Expanded(
+                child: isUnlimited
+                    ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.all_inclusive,
+                            size: 16,
+                            color: AppColors.grey(context),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            AppLocalizations.of(context)!
+                                .unlimited_Subscription,
+                            style: AppTextStyles.text10Grey(context),
+                          ),
+                        ],
+                      )
+                    : Text(
+                        "${AppLocalizations.of(context)!.remaining} ${user?.quota?.remainingDefault ?? 0} ${AppLocalizations.of(context)!.from} ${user?.baseService?.quota ?? 0} AppLocalizations.of(context)!.gigabyte",
+                        textDirection: TextDirection.rtl,
+                        textAlign: TextAlign.left,
+                        style: AppTextStyles.text10Grey(context),
+                        overflow: TextOverflow.ellipsis,
+                      ),
               ),
             ],
           ),
@@ -414,114 +447,133 @@ class _HomePageState extends State<HomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: EdgeInsets.only(bottom: w * 0.02),
-          child: Text(
-            "الباقات الاضافية",
-            style: AppTextStyles.text17Bold(context),
-          ),
-        ),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: packagesList.length,
-          itemBuilder: (context, index) {
-            final package = packagesList[index];
-            double packagePercent =
-                ((package.packagePercent ?? 0).toDouble() / 100.0).clamp(
-                  0.0,
-                  1.0,
-                );
-            return Container(
-              margin: EdgeInsets.only(bottom: w * 0.03),
-              padding: EdgeInsets.all(w * 0.04),
-              decoration: _glassDecoration(context),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    package.name ?? "باقة إضافية",
-                    style: AppTextStyles.text15(context),
-                  ),
-                  SizedBox(height: w * 0.04),
-                  Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: Container(
-                      height: w * 0.02,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: AppColors.text(context).withValues(alpha: 0.2),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            return Stack(
-                              children: [
-                                Container(
-                                  width: double.infinity,
-                                  color: AppColors.text(
-                                    context,
-                                  ).withValues(alpha: 0.05),
-                                ),
-                                Container(
-                                  width: constraints.maxWidth * packagePercent,
-                                  decoration: const BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        AppColors.primary,
-                                        AppColors.speed,
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: w * 0.03),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "صالحة لغاية ${package.expireAt ?? '--'}",
-                        textDirection: TextDirection.rtl,
-                        style: AppTextStyles.text10Grey(context),
-                      ),
-                      Text(
-                        "المتبقي ${package.packageRemaining ?? 0} جيجا من اصل ${package.packageLimit ?? 0} جيجا",
-                        textDirection: TextDirection.rtl,
-                        style: AppTextStyles.text10Grey(context),
-                      ),
-                    ],
-                  ),
-                ],
+        SizedBox(height: w * 0.04),
+        Container(
+          padding: EdgeInsets.all(w * 0.04),
+          decoration: _glassDecoration(context),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                AppLocalizations.of(context)!.extra_Packages,
+                style: AppTextStyles.text17Bold(context),
               ),
-            );
-          },
+              SizedBox(height: w * 0.04),
+              Column(
+                children: List.generate(packagesList.length, (index) {
+                  final package = packagesList[index];
+
+                  final packagePercent =
+                      ((package.packagePercent ?? 0).toDouble() / 100.0)
+                          .clamp(0.0, 1.0);
+
+                  return Container(
+                    margin: EdgeInsets.only(
+                      bottom: index == packagesList.length - 1 ? 0 : w * 0.04,
+                    ),
+                    padding: EdgeInsets.all(w * 0.03),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: AppColors.text(context).withValues(alpha: 0.12),
+                      ),
+                      color: AppColors.text(context).withValues(alpha: 0.05),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          package.name ??
+                              AppLocalizations.of(context)!.extra_Package,
+                          style: AppTextStyles.text15(context),
+                        ),
+                        SizedBox(height: w * 0.03),
+                        Container(
+                          height: w * 0.02,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color:
+                                AppColors.text(context).withValues(alpha: 0.2),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                return Stack(
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      color: AppColors.text(context)
+                                          .withValues(alpha: 0.05),
+                                    ),
+                                    Container(
+                                      width:
+                                          constraints.maxWidth * packagePercent,
+                                      decoration: const BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            AppColors.primary,
+                                            AppColors.speed,
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: w * 0.02),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "${AppLocalizations.of(context)!.valid_Until} ${package.expireAt ?? '--'}",
+                              style: AppTextStyles.text10Grey(context),
+                            ),
+                            Text(
+                              "${AppLocalizations.of(context)!.remaining} ${package.packageRemaining ?? 0} / ${package.packageLimit ?? 0}",
+                              style: AppTextStyles.text10Grey(context),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ],
+          ),
         ),
       ],
     );
   }
 
   BoxDecoration _glassDecoration(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    double w = MediaQuery.of(context).size.width;
     return BoxDecoration(
-      borderRadius: BorderRadius.circular(28),
+      borderRadius: BorderRadius.circular(w * 0.07),
       border: Border.all(
-        color: AppColors.text(context).withValues(alpha: 0.15),
         width: 1,
+        color: AppColors.text(context).withValues(alpha: 0.1),
       ),
-      gradient: LinearGradient(
-        colors: [
-          AppColors.text(context).withValues(alpha: 0.25),
-          AppColors.text(context).withValues(alpha: 0.25),
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.08),
+          blurRadius: 20,
+          offset: const Offset(0, 8),
+        ),
+        BoxShadow(
+          color: Colors.white.withValues(alpha: 0.03),
+          blurRadius: 6,
+          offset: const Offset(0, 2),
+        ),
+      ],
+      color: isDark
+          ? AppColors.text(context).withValues(alpha: 0.08)
+          : Colors.black.withValues(alpha: 0.04),
     );
   }
 }

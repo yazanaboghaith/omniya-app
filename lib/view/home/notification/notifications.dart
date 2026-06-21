@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/model/notification_model.dart';
+import 'package:omniya/view/home/notification/controller/notifications_controller.dart';
+import 'package:provider/provider.dart';
+
 import 'package:omniya/const/app_background.dart';
 import 'package:omniya/const/app_color.dart';
 
@@ -11,66 +16,123 @@ class Notifications extends StatefulWidget {
 
 class _NotificationsState extends State<Notifications> {
   int _selectedFilterIndex = 0;
-  final List<String> _filters = ["الكل", "المالية", "النظام"];
 
-  final List<Map<String, dynamic>> _notifications = [
-    {
-      "title": "تم شحن الباقة بنجاح",
-      "body": "لقد تمت إضافة 10 غيغا بايت إلى حسابك بنجاح.",
-      "time": "منذ دقيقتين",
-      "iconColor": const Color(0xFF384042),
-      "isUnread": true,
-    },
-    {
-      "title": "تحديث النظام",
-      "body": "سيكون هناك أعمال صيانة دورية للنظام.",
-      "time": "أمس 10:30 م",
-      "iconColor": const Color(0xFF243B59),
-      "isUnread": false,
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationsController>().getNotifications(
+            type: "all",
+          );
+    });
+  }
+
+  String getFilterType(int index) {
+    switch (index) {
+      case 0:
+        return "all";
+      case 1:
+        return "unreaded";
+      case 2:
+        return "financial";
+      case 3:
+        return "system";
+      default:
+        return "all";
+    }
+  }
+
+  Future<void> _refreshNotifications() async {
+    await context.read<NotificationsController>().getNotifications(
+          type: getFilterType(_selectedFilterIndex),
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
 
-    return AppBackground(
-      showHeader: false,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Directionality(
-          textDirection: TextDirection.rtl,
-          child: SafeArea(
-            child: Column(
-              children: [
-                _buildHeader(w, context),
-                _buildFilters(w, context),
+    return Consumer<NotificationsController>(
+      builder: (context, controller, child) {
+        return AppBackground(
+          showHeader: false,
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  _buildHeader(w, context),
+                  _buildFilters(w, context, controller),
+                  SizedBox(height: w * 0.02),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        RefreshIndicator(
+                          onRefresh: _refreshNotifications,
+                          child: controller.isLoadingNotification &&
+                                  controller.notifications.isEmpty
+                              ? const Center(child: CircularProgressIndicator())
+                              : controller.notifications.isEmpty
+                                  ? ListView(
+                                      children: [
+                                        SizedBox(height: w * 0.5),
+                                        Center(child: Text("لا توجد إشعارات")),
+                                      ],
+                                    )
+                                  : ListView.builder(
+                                      padding: EdgeInsets.only(
+                                        top: w * 0.03,
+                                        bottom: w * 0.05,
+                                      ),
+                                      itemCount:
+                                          controller.notifications.length,
+                                      itemBuilder: (context, index) {
+                                        final item =
+                                            controller.notifications[index];
+                                        final type =
+                                            getFilterType(_selectedFilterIndex);
 
-                Expanded(
-                  child: ListView.builder(
-                    padding: EdgeInsets.only(top: w * 0.03, bottom: w * 0.05),
-                    itemCount: _notifications.length,
-                    itemBuilder: (context, index) {
-                      return _buildNotificationCard(
-                        _notifications[index],
-                        w,
-                        context,
-                      );
-                    },
+                                        return _buildNotificationCard(
+                                          item,
+                                          w,
+                                          context,
+                                          type,
+                                        );
+                                      },
+                                    ),
+                        ),
+                        _buildTopFade(context),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTopFade(BuildContext context) {
+    return IgnorePointer(
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Container(
+          height: 25,
+          decoration: BoxDecoration(),
         ),
       ),
     );
   }
 
-  // ================= HEADER =================
   Widget _buildHeader(double w, BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: w * 0.05, vertical: w * 0.04),
+      padding: EdgeInsets.symmetric(
+        horizontal: w * 0.05,
+        vertical: w * 0.04,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -92,9 +154,7 @@ class _NotificationsState extends State<Notifications> {
                   onPressed: () => Navigator.pop(context),
                 ),
               ),
-
               SizedBox(width: w * 0.03),
-
               Text(
                 "الإشعارات",
                 style: AppTextStyles.text24(
@@ -103,37 +163,45 @@ class _NotificationsState extends State<Notifications> {
               ),
             ],
           ),
-
-          TextButton(
-            onPressed: () {},
-            child: Text(
-              "قراءة الكل",
-              style: TextStyle(
-                color: AppColors.secondaryText,
-                fontSize: w * 0.035,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 
-  // ================= FILTERS =================
-  Widget _buildFilters(double w, BuildContext context) {
+  Widget _buildFilters(
+    double w,
+    BuildContext context,
+    NotificationsController controller,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: w * 0.05, vertical: w * 0.02),
+    final filters = [
+      AppLocalizations.of(context)!.all,
+      AppLocalizations.of(context)!.unreaded,
+      AppLocalizations.of(context)!.financial,
+      AppLocalizations.of(context)!.system,
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
       child: Row(
-        children: List.generate(_filters.length, (index) {
+        children: List.generate(filters.length, (index) {
           final isSelected = _selectedFilterIndex == index;
 
           return Padding(
             padding: EdgeInsets.only(left: w * 0.025),
             child: GestureDetector(
-              onTap: () => setState(() => _selectedFilterIndex = index),
+              onTap: () async {
+                if (_selectedFilterIndex == index) return;
+
+                setState(() {
+                  _selectedFilterIndex = index;
+                });
+
+                await controller.getNotifications(
+                  type: getFilterType(index),
+                );
+              },
               child: Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: w * 0.06,
@@ -141,24 +209,24 @@ class _NotificationsState extends State<Notifications> {
                 ),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(w * 0.05),
-
                   color: isSelected
                       ? (isDark
-                            ? AppColors.text(context).withValues(alpha: 0.15)
-                            : Colors.black.withValues(alpha: 0.08))
+                          ? AppColors.text(context).withValues(alpha: 0.15)
+                          : Colors.black.withValues(alpha: 0.08))
                       : (isDark
-                            ? AppColors.text(context).withValues(alpha: 0.08)
-                            : Colors.black.withValues(alpha: 0.04)),
+                          ? AppColors.text(context).withValues(alpha: 0.08)
+                          : Colors.black.withValues(alpha: 0.04)),
                 ),
                 child: Text(
-                  _filters[index],
-                  style: TextStyle(
-                    color: isSelected
-                        ? AppColors.primary
-                        : AppColors.text(context),
-                    fontWeight: FontWeight.bold,
-                    fontSize: w * 0.032,
-                  ),
+                  filters[index],
+                  style: isSelected
+                      ? AppColors.textBold(context).copyWith(
+                          fontSize: w * 0.032,
+                        )
+                      : TextStyle(
+                          color: AppColors.text(context),
+                          fontSize: w * 0.032,
+                        ),
                 ),
               ),
             ),
@@ -168,90 +236,106 @@ class _NotificationsState extends State<Notifications> {
     );
   }
 
-  // ================= CARD =================
   Widget _buildNotificationCard(
-    Map<String, dynamic> item,
+    NotificationItem item,
     double w,
     BuildContext context,
+    String? currentType,
   ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: w * 0.05, vertical: w * 0.02),
-      padding: EdgeInsets.all(w * 0.04),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(w * 0.07),
+    return GestureDetector(
+      onTap: () async {
+        final controller = context.read<NotificationsController>();
 
-        // border theme-aware
-        border: Border.all(
-          color: AppColors.text(context).withValues(alpha: 0.15),
+        final success = await controller.trackOpen(item.id.toString());
+
+        if (success) {
+          await controller.getNotifications(
+            type: currentType ?? "all",
+          );
+        }
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: w * 0.05,
+          vertical: w * 0.02,
         ),
-
-        // background theme-aware
-        color: isDark
-            ? AppColors.text(context).withValues(alpha: 0.08)
-            : Colors.black.withValues(alpha: 0.04),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: w * 0.12,
-            height: w * 0.12,
-            decoration: BoxDecoration(
-              color: item['iconColor'],
-              borderRadius: BorderRadius.circular(w * 0.03),
-            ),
+        padding: EdgeInsets.all(w * 0.04),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(w * 0.07),
+          border: Border.all(
+            color: AppColors.text(context).withValues(alpha: 0.15),
           ),
-
-          SizedBox(width: w * 0.03),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item['title'],
-                  style: AppTextStyles.text17Bold(
-                    context,
-                  ).copyWith(fontSize: w * 0.042),
+          color: isDark
+              ? AppColors.text(context).withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.04),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 25),
+              child: SizedBox(
+                width: w * 0.12,
+                height: w * 0.12,
+                // decoration: BoxDecoration(
+                //   color: item.isRead
+                //       ? const Color(0xFF243B59)
+                //       : const Color(0xFF384042),
+                //   borderRadius: BorderRadius.circular(w * 0.03),
+                // ),
+                child: Image.asset(
+                  "assets/images/icon1.png",
+                  fit: BoxFit.cover,
                 ),
-
-                SizedBox(height: w * 0.015),
-
-                Text(
-                  item['body'],
-                  style: AppTextStyles.text13(context).copyWith(
-                    height: 1.5,
-                    fontSize: w * 0.032,
-                    color: AppColors.text(context),
+              ),
+            ),
+            SizedBox(width: w * 0.03),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.title,
+                    style: AppTextStyles.text17Bold(
+                      context,
+                    ).copyWith(fontSize: w * 0.042),
                   ),
-                ),
-
-                SizedBox(height: w * 0.03),
-
-                Text(
-                  item['time'],
-                  style: AppTextStyles.text13Grey(
-                    context,
-                  ).copyWith(fontSize: w * 0.03),
-                ),
-              ],
+                  SizedBox(height: w * 0.015),
+                  Text(
+                    item.body,
+                    style: AppTextStyles.text13(context).copyWith(
+                      height: 1.5,
+                      fontSize: w * 0.032,
+                      color: AppColors.text(context),
+                    ),
+                  ),
+                  SizedBox(height: w * 0.03),
+                  Text(
+                    item.createdAt,
+                    style: AppTextStyles.text13Grey(
+                      context,
+                    ).copyWith(fontSize: w * 0.03),
+                  ),
+                ],
+              ),
             ),
-          ),
-
-          Container(
-            margin: EdgeInsets.only(top: w * 0.015, right: w * 0.03),
-            width: w * 0.03,
-            height: w * 0.03,
-            decoration: BoxDecoration(
-              color: item['isUnread']
-                  ? AppColors.secondaryText
-                  : Colors.transparent,
-              shape: BoxShape.circle,
+            Container(
+              margin: EdgeInsets.only(
+                top: w * 0.015,
+                right: w * 0.03,
+              ),
+              width: w * 0.03,
+              height: w * 0.03,
+              decoration: BoxDecoration(
+                color:
+                    !item.isRead ? AppColors.secondaryText : Colors.transparent,
+                shape: BoxShape.circle,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

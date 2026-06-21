@@ -11,6 +11,20 @@ class AppColors {
     return isDark ? Colors.white : Colors.black;
   }
 
+  static Color textwhite(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return isDark ? Colors.black : Colors.white;
+  }
+
+  static TextStyle textBold(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return TextStyle(
+      color: isDark ? Colors.white : Colors.black,
+      fontWeight: FontWeight.bold,
+    );
+  }
+
   static Color grey(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return isDark ? Colors.white60 : Colors.black54;
@@ -49,6 +63,18 @@ class AppTextStyles {
   }) {
     return TextStyle(
       color: color ?? AppColors.text(context),
+      fontSize: 15,
+      fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+    );
+  }
+
+  static TextStyle text15white(
+    BuildContext context, {
+    bool isBold = false,
+    Color? color,
+  }) {
+    return TextStyle(
+      color: color ?? AppColors.textwhite(context),
       fontSize: 15,
       fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
     );
