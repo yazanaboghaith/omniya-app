@@ -120,6 +120,30 @@
 "home":"الرئيسية",
 "payments":"دفعاتي",
 "requests":"طلباتي",
-"usage":"الاستهلاك"
+"usage":"الاستهلاك",
+"renew_Subscription":"تمديد اشتراك",
+"subscriptionextensionoptions":"خيارات تمديد الاشتراك",
+"extensionfor1day":"تمديد لمدة 1 يوم",
+"freeofcharge":"بشكل مجاني",
+"day":"يوم واحد",
+  "subscription_extension_options": "خيارات تمديد الاشتراك",
+  "renew_subscription": "تمديد اشتراك",
+
+  "extension_for_1_day": "تمديد لمدة يوم واحد",
+  "extension_for_2_days": "تمديد لمدة يومين",
+  "extension_for_3_days": "تمديد لمدة 3 أيام",
+
+  "free": "مجاني",
+  "free_of_charge": "بشكل مجاني",
+
+  "day": "يوم",
+  "days": "أيام",
+
+  "confirm_extension": "تأكيد التمديد",
+  "confirm_extension_message": "هل أنت متأكد من رغبتك في تمديد الاشتراك لمدة",
+  "cost": "التكلفة",
+
+  "extension_success": "تم تمديد الاشتراك بنجاح",
+  "extension_failed": "فشل تمديد الاشتراك، يرجى المحاولة لاحقاً"
 
 }

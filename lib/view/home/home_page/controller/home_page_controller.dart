@@ -19,7 +19,7 @@ class HomePageController with ChangeNotifier {
 
   UserModel? user;
   final String apiUserDetails = "${AppApi.url}${AppApi.userdetails}";
-
+  final String apiorderstempextend = "${AppApi.url}${AppApi.orderstempextend}";
   HomeState state = HomeState.loading;
   String errorMessage = '';
 
@@ -69,6 +69,64 @@ class HomePageController with ChangeNotifier {
       } else {
         _updateState(HomeState.unexpectedError, error: 'حدث خطأ غير متوقع.');
       }
+    }
+  }
+
+  ///////////////////////
+  //////////////////////
+  //////////////////////
+  Future<void> extendSubscription({
+    required int days,
+  }) async {
+    try {
+      debugPrint("========== EXTEND SUBSCRIPTION START ==========");
+      debugPrint("Days received: $days");
+      debugPrint("API URL: $apiorderstempextend");
+
+      _updateState(HomeState.loading);
+      debugPrint("STATE => loading");
+
+      final url = Uri.parse(apiorderstempextend);
+
+      final body = {
+        "days": days,
+        "is_mobile": 1,
+      };
+
+      debugPrint("REQUEST BODY => $body");
+
+      final response = await apiClient.post(url, body);
+
+      debugPrint("RESPONSE RECEIVED");
+      debugPrint("STATUS CODE => ${response.statusCode}");
+      debugPrint("BODY => ${utf8.decode(response.bodyBytes)}");
+
+      if (response.statusCode == 200) {
+        debugPrint("SUCCESS => calling getUserDetails()");
+        await getUserDetails();
+        debugPrint("getUserDetails FINISHED");
+      } else {
+        debugPrint("ERROR RESPONSE FLOW");
+
+        final data = jsonDecode(utf8.decode(response.bodyBytes));
+
+        debugPrint("ERROR MESSAGE FROM SERVER => ${data["error"]}");
+
+        _updateState(
+          HomeState.unexpectedError,
+          error: data["error"] ?? "لا يمكن التمديد في الوقت الحالي",
+        );
+      }
+
+      debugPrint("========== EXTEND SUBSCRIPTION END ==========");
+    } catch (e) {
+      debugPrint("========== EXTEND SUBSCRIPTION EXCEPTION ==========");
+      debugPrint("ERROR => $e");
+
+      _updateState(
+        HomeState.unexpectedError,
+        error: e.toString(),
+      );
     }
   }
 }

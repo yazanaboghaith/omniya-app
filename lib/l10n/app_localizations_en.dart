@@ -358,4 +358,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usage => 'Usage';
+
+  @override
+  String get renew_Subscription => 'Renew Subscription ';
+
+  @override
+  String get subscriptionextensionoptions => 'Subscription extension options';
+
+  @override
+  String get extensionfor1day => 'Extension for 1 day';
+
+  @override
+  String get free => 'Free';
+
+  @override
+  String get freeofcharge => 'Free of charge';
+
+  @override
+  String get day => 'day';
+
+  @override
+  String get subscription_extension_options => 'Subscription extension options';
+
+  @override
+  String get renew_subscription => 'Renew Subscription';
+
+  @override
+  String get extension_for_1_day => 'Extension for 1 day';
+
+  @override
+  String get extension_for_2_days => 'Extension for 2 days';
+
+  @override
+  String get extension_for_3_days => 'Extension for 3 days';
+
+  @override
+  String get free_of_charge => 'Free of charge';
+
+  @override
+  String get days => 'days';
+
+  @override
+  String get confirm_extension => 'Confirm Extension';
+
+  @override
+  String get confirm_extension_message => 'Are you sure you want to extend the subscription for';
+
+  @override
+  String get cost => 'cost';
+
+  @override
+  String get extension_success => 'Subscription extended successfully';
+
+  @override
+  String get extension_failed => 'Failed to extend subscription, please try again later';
 }

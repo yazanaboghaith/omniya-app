@@ -796,6 +796,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Usage'**
   String get usage;
+
+  /// No description provided for @renew_Subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Renew Subscription '**
+  String get renew_Subscription;
+
+  /// No description provided for @subscriptionextensionoptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription extension options'**
+  String get subscriptionextensionoptions;
+
+  /// No description provided for @extensionfor1day.
+  ///
+  /// In en, this message translates to:
+  /// **'Extension for 1 day'**
+  String get extensionfor1day;
+
+  /// No description provided for @free.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get free;
+
+  /// No description provided for @freeofcharge.
+  ///
+  /// In en, this message translates to:
+  /// **'Free of charge'**
+  String get freeofcharge;
+
+  /// No description provided for @day.
+  ///
+  /// In en, this message translates to:
+  /// **'day'**
+  String get day;
+
+  /// No description provided for @subscription_extension_options.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription extension options'**
+  String get subscription_extension_options;
+
+  /// No description provided for @renew_subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Renew Subscription'**
+  String get renew_subscription;
+
+  /// No description provided for @extension_for_1_day.
+  ///
+  /// In en, this message translates to:
+  /// **'Extension for 1 day'**
+  String get extension_for_1_day;
+
+  /// No description provided for @extension_for_2_days.
+  ///
+  /// In en, this message translates to:
+  /// **'Extension for 2 days'**
+  String get extension_for_2_days;
+
+  /// No description provided for @extension_for_3_days.
+  ///
+  /// In en, this message translates to:
+  /// **'Extension for 3 days'**
+  String get extension_for_3_days;
+
+  /// No description provided for @free_of_charge.
+  ///
+  /// In en, this message translates to:
+  /// **'Free of charge'**
+  String get free_of_charge;
+
+  /// No description provided for @days.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get days;
+
+  /// No description provided for @confirm_extension.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Extension'**
+  String get confirm_extension;
+
+  /// No description provided for @confirm_extension_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to extend the subscription for'**
+  String get confirm_extension_message;
+
+  /// No description provided for @cost.
+  ///
+  /// In en, this message translates to:
+  /// **'cost'**
+  String get cost;
+
+  /// No description provided for @extension_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription extended successfully'**
+  String get extension_success;
+
+  /// No description provided for @extension_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to extend subscription, please try again later'**
+  String get extension_failed;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

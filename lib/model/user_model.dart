@@ -17,6 +17,7 @@ class UserModel {
   final String? refreshToken;
   final int? tokenExpiry;
   final bool? fcmRegistered;
+  final bool isExpired;
   UserModel({
     required this.id,
     required this.username,
@@ -28,6 +29,7 @@ class UserModel {
     required this.status,
     required this.expiryDate,
     required this.baseService,
+    required this.isExpired,
     required this.quota,
     required this.arabicStatus,
     required this.packages,
@@ -54,6 +56,7 @@ class UserModel {
       packages: _toList(
         json['packages'],
       ).map((e) => Package.fromJson(e)).toList(),
+      isExpired: json['is_expired'] == true,
       arabicStatus: _toString(json['arabic_status']),
       addonServices: _toList(
         json['addon_services'],

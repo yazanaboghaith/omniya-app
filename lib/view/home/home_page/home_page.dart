@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:omniya/const/app_color.dart';
 import 'package:omniya/l10n/app_localizations.dart';
 import 'package:omniya/view/home/const/consumption_gauge.dart';
+import 'package:omniya/view/home/const/renew_subscription_dialogs.dart';
 import 'package:omniya/view/home/const/speedometer.dart';
 import 'package:omniya/view/home/home_page/controller/home_page_controller.dart';
 import 'package:omniya/view/home/recharge_package/recharge_package.dart';
@@ -112,7 +113,7 @@ class _HomePageState extends State<HomePage> {
           SizedBox(height: h * 0.02),
           _buildStatusRow(w, user),
           SizedBox(height: h * 0.02),
-          _buildPrimaryPackageCard(w, user),
+          _buildPrimaryPackageCard(w, user, controller),
           SizedBox(height: h * 0.01),
           _buildAddonPackagesSection(w, user),
         ],
@@ -290,11 +291,15 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildPrimaryPackageCard(double w, dynamic user) {
+  Widget _buildPrimaryPackageCard(
+    double w,
+    dynamic user,
+    HomePageController controller,
+  ) {
     double totalQuota = (user?.baseService?.quota ?? 0).toDouble();
     double remainingQuota = (user?.quota?.remainingDefault ?? 0).toDouble();
     final bool isUnlimited = user?.baseService?.unlimitted ?? false;
-
+    final bool isExpired = user?.isExpired ?? false;
     double progressPercent =
         totalQuota > 0 ? (remainingQuota / totalQuota) : 0.0;
     if (progressPercent > 1.0) progressPercent = 1.0;
@@ -317,13 +322,17 @@ class _HomePageState extends State<HomePage> {
                 if (!isUnlimited)
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        PageTransition(
-                          type: PageTransitionType.fade,
-                          child: const RechargePackage(),
-                        ),
-                      );
+                      if (isExpired) {
+                        RenewSubscriptionDialogs.show(context, controller);
+                      } else {
+                        Navigator.push(
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.fade,
+                            child: const RechargePackage(),
+                          ),
+                        );
+                      }
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(
@@ -331,31 +340,23 @@ class _HomePageState extends State<HomePage> {
                         vertical: w * 0.025,
                       ),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(w * 0.07),
-                          border: Border.all(
-                            color:
-                                AppColors.text(context).withValues(alpha: 0.15),
-                          ),
-                          color: Colors.green.withValues(alpha: 0.6)),
+                        borderRadius: BorderRadius.circular(w * 0.07),
+                        border: Border.all(
+                          color:
+                              AppColors.text(context).withValues(alpha: 0.15),
+                        ),
+                        color: Colors.green.withValues(alpha: 0.6),
+                      ),
                       child: Text(
-                        AppLocalizations.of(context)!.recharge_Package,
-                        style: AppTextStyles.text13BlackBold(),
+                        isExpired
+                            ? AppLocalizations.of(context)!.renew_Subscription
+                            : AppLocalizations.of(context)!.recharge_Package,
+                        style: AppTextStyles.text13(context),
                       ),
                     ),
                   ),
               ],
             ),
-          ),
-          Row(
-            children: [
-              // Expanded(
-              //   child: Text(
-              //     user?.baseService?.label ?? '',
-              //     style: AppTextStyles.text15(context),
-              //     overflow: TextOverflow.ellipsis,
-              //   ),
-              // ),
-            ],
           ),
           SizedBox(height: w * 0.05),
           Container(

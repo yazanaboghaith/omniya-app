@@ -358,4 +358,58 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get usage => 'الاستهلاك';
+
+  @override
+  String get renew_Subscription => 'تمديد اشتراك';
+
+  @override
+  String get subscriptionextensionoptions => 'خيارات تمديد الاشتراك';
+
+  @override
+  String get extensionfor1day => 'تمديد لمدة 1 يوم';
+
+  @override
+  String get free => 'مجاني';
+
+  @override
+  String get freeofcharge => 'بشكل مجاني';
+
+  @override
+  String get day => 'يوم';
+
+  @override
+  String get subscription_extension_options => 'خيارات تمديد الاشتراك';
+
+  @override
+  String get renew_subscription => 'تمديد اشتراك';
+
+  @override
+  String get extension_for_1_day => 'تمديد لمدة يوم واحد';
+
+  @override
+  String get extension_for_2_days => 'تمديد لمدة يومين';
+
+  @override
+  String get extension_for_3_days => 'تمديد لمدة 3 أيام';
+
+  @override
+  String get free_of_charge => 'بشكل مجاني';
+
+  @override
+  String get days => 'أيام';
+
+  @override
+  String get confirm_extension => 'تأكيد التمديد';
+
+  @override
+  String get confirm_extension_message => 'هل أنت متأكد من رغبتك في تمديد الاشتراك لمدة';
+
+  @override
+  String get cost => 'التكلفة';
+
+  @override
+  String get extension_success => 'تم تمديد الاشتراك بنجاح';
+
+  @override
+  String get extension_failed => 'فشل تمديد الاشتراك، يرجى المحاولة لاحقاً';
 }
