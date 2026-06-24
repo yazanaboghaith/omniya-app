@@ -72,7 +72,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get current_Balance => 'الرصيد الحالي';
 
   @override
-  String get currency => 'ل.س.ج';
+  String get currency => 'SYP';
 
   @override
   String get total_Usage => 'الاستهلاك الكلي';
@@ -85,9 +85,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get basic_Package => 'الباقة الاساسية';
-
-  @override
-  String get recharge_Package => 'شحن باقة';
 
   @override
   String get valid_Until => 'صالحة لغاية';
@@ -141,7 +138,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get amount => 'القيمة (ل.س.ج)';
 
   @override
-  String get example_Amount => 'مثال: 5000';
+  String get example_Amount => 'Example: 5000';
 
   @override
   String get select_Bank_Warning => 'يرجى اختيار اسم البنك للمتابعة';
@@ -285,10 +282,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get login_error => 'حدث خطأ أثناء تسجيل الدخول';
 
   @override
-  String get no_account => ' ليس لديك حساب؟';
+  String get no_account => 'ليس لديك حساب؟';
 
   @override
-  String get contact_us => 'تواص ل معنا';
+  String get contact_us => 'تواصل معنا';
 
   @override
   String get quick_access_security => 'حماية الدخول السريع';
@@ -360,28 +357,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get usage => 'الاستهلاك';
 
   @override
-  String get renew_Subscription => 'تمديد اشتراك';
-
-  @override
-  String get subscriptionextensionoptions => 'خيارات تمديد الاشتراك';
-
-  @override
-  String get extensionfor1day => 'تمديد لمدة 1 يوم';
-
-  @override
-  String get free => 'مجاني';
-
-  @override
-  String get freeofcharge => 'بشكل مجاني';
-
-  @override
-  String get day => 'يوم';
+  String get renew_subscription => 'تمديد الاشتراك';
 
   @override
   String get subscription_extension_options => 'خيارات تمديد الاشتراك';
-
-  @override
-  String get renew_subscription => 'تمديد اشتراك';
 
   @override
   String get extension_for_1_day => 'تمديد لمدة يوم واحد';
@@ -393,10 +372,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get extension_for_3_days => 'تمديد لمدة 3 أيام';
 
   @override
-  String get free_of_charge => 'بشكل مجاني';
+  String get free => 'مجاني';
 
   @override
-  String get days => 'أيام';
+  String get free_of_charge => 'بشكل مجاني';
 
   @override
   String get confirm_extension => 'تأكيد التمديد';
@@ -405,11 +384,58 @@ class AppLocalizationsAr extends AppLocalizations {
   String get confirm_extension_message => 'هل أنت متأكد من رغبتك في تمديد الاشتراك لمدة';
 
   @override
-  String get cost => 'التكلفة';
-
-  @override
   String get extension_success => 'تم تمديد الاشتراك بنجاح';
 
   @override
   String get extension_failed => 'فشل تمديد الاشتراك، يرجى المحاولة لاحقاً';
+
+  @override
+  String get day => 'يوم';
+
+  @override
+  String get two_days => 'يومين';
+
+  @override
+  String get days => 'أيام';
+
+  @override
+  String get cost => 'التكلفة';
+
+  @override
+  String get server_error_message => 'حدث خطأ في السيرفر. يرجى المحاولة لاحقاً.';
+
+  @override
+  String get failed_fetch_data => 'فشل جلب البيانات. كود الخطأ: ';
+
+  @override
+  String get no_internet_connection => 'لا يوجد اتصال بالإنترنت، يرجى التحقق من الشبكة.';
+
+  @override
+  String get session_expired => 'انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً.';
+
+  @override
+  String get unexpected_error => 'حدث خطأ غير متوقع.';
+
+  @override
+  String get add_request => 'إضافة طلب';
+
+  @override
+  String get request_type => 'نوع الطلب';
+
+  @override
+  String get choose_request_type => 'اختر نوع الطلب';
+
+  @override
+  String get add_request_button => 'إضافة طلب';
+
+  @override
+  String get confirm_request_title => 'تأكيد الطلب';
+
+  @override
+  String confirm_request_message(Object name) {
+    return 'هل تريد تأكيد طلب: $name ؟';
+  }
+
+  @override
+  String get loading_sending => 'جاري الإرسال...';
 }

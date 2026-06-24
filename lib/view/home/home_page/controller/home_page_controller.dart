@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:omniya/const/url.dart';
+import 'package:omniya/l10n/app_localizations.dart';
 import 'package:omniya/model/user_model.dart';
 import 'package:omniya/view/auth/services/api_client.dart';
 
@@ -29,7 +30,9 @@ class HomePageController with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getUserDetails() async {
+  Future<void> getUserDetails(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+
     try {
       _updateState(HomeState.loading);
 
@@ -44,19 +47,19 @@ class HomePageController with ChangeNotifier {
       } else if (response.statusCode >= 500) {
         _updateState(
           HomeState.serverError,
-          error: 'حدث خطأ في السيرفر. يرجى المحاولة لاحقاً.',
+          error: l10n.server_error_message,
         );
       } else {
         _updateState(
           HomeState.unexpectedError,
-          error: 'فشل جلب البيانات. كود الخطأ: ${response.statusCode}',
+          error: "${l10n.failed_fetch_data}${response.statusCode}",
         );
       }
     } on SocketException catch (e) {
       debugPrint(' [Network Error]: $e');
       _updateState(
         HomeState.noInternet,
-        error: 'لا يوجد اتصال بالإنترنت، يرجى التحقق من الشبكة.',
+        error: l10n.no_internet_connection,
       );
     } catch (e) {
       debugPrint(' [Unknown Error]: $e');
@@ -64,10 +67,13 @@ class HomePageController with ChangeNotifier {
       if (e.toString().contains("SESSION_EXPIRED")) {
         _updateState(
           HomeState.unauthorized,
-          error: 'انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً.',
+          error: l10n.session_expired,
         );
       } else {
-        _updateState(HomeState.unexpectedError, error: 'حدث خطأ غير متوقع.');
+        _updateState(
+          HomeState.unexpectedError,
+          error: l10n.unexpected_error,
+        );
       }
     }
   }
@@ -75,16 +81,14 @@ class HomePageController with ChangeNotifier {
   ///////////////////////
   //////////////////////
   //////////////////////
-  Future<void> extendSubscription({
+  Future<String?> extendSubscription({
     required int days,
+    required BuildContext context,
   }) async {
-    try {
-      debugPrint("========== EXTEND SUBSCRIPTION START ==========");
-      debugPrint("Days received: $days");
-      debugPrint("API URL: $apiorderstempextend");
+    final l10n = AppLocalizations.of(context)!;
 
+    try {
       _updateState(HomeState.loading);
-      debugPrint("STATE => loading");
 
       final url = Uri.parse(apiorderstempextend);
 
@@ -93,40 +97,20 @@ class HomePageController with ChangeNotifier {
         "is_mobile": 1,
       };
 
-      debugPrint("REQUEST BODY => $body");
-
       final response = await apiClient.post(url, body);
 
-      debugPrint("RESPONSE RECEIVED");
-      debugPrint("STATUS CODE => ${response.statusCode}");
-      debugPrint("BODY => ${utf8.decode(response.bodyBytes)}");
+      final data = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        debugPrint("SUCCESS => calling getUserDetails()");
-        await getUserDetails();
-        debugPrint("getUserDetails FINISHED");
+        await getUserDetails(context);
+        return "success";
       } else {
-        debugPrint("ERROR RESPONSE FLOW");
-
-        final data = jsonDecode(utf8.decode(response.bodyBytes));
-
-        debugPrint("ERROR MESSAGE FROM SERVER => ${data["error"]}");
-
-        _updateState(
-          HomeState.unexpectedError,
-          error: data["error"] ?? "لا يمكن التمديد في الوقت الحالي",
-        );
+        return data["error"]?.toString() ??
+            data["message"]?.toString() ??
+            l10n.unexpected_error;
       }
-
-      debugPrint("========== EXTEND SUBSCRIPTION END ==========");
     } catch (e) {
-      debugPrint("========== EXTEND SUBSCRIPTION EXCEPTION ==========");
-      debugPrint("ERROR => $e");
-
-      _updateState(
-        HomeState.unexpectedError,
-        error: e.toString(),
-      );
+      return l10n.unexpected_error;
     }
   }
 }

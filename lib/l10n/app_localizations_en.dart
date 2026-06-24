@@ -87,9 +87,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get basic_Package => 'Basic Package';
 
   @override
-  String get recharge_Package => 'Recharge Package';
-
-  @override
   String get valid_Until => 'Valid Until';
 
   @override
@@ -360,28 +357,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get usage => 'Usage';
 
   @override
-  String get renew_Subscription => 'Renew Subscription ';
-
-  @override
-  String get subscriptionextensionoptions => 'Subscription extension options';
-
-  @override
-  String get extensionfor1day => 'Extension for 1 day';
-
-  @override
-  String get free => 'Free';
-
-  @override
-  String get freeofcharge => 'Free of charge';
-
-  @override
-  String get day => 'day';
+  String get renew_subscription => 'Renew Subscription';
 
   @override
   String get subscription_extension_options => 'Subscription extension options';
-
-  @override
-  String get renew_subscription => 'Renew Subscription';
 
   @override
   String get extension_for_1_day => 'Extension for 1 day';
@@ -393,10 +372,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get extension_for_3_days => 'Extension for 3 days';
 
   @override
-  String get free_of_charge => 'Free of charge';
+  String get free => 'Free';
 
   @override
-  String get days => 'days';
+  String get free_of_charge => 'Free of charge';
 
   @override
   String get confirm_extension => 'Confirm Extension';
@@ -405,11 +384,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirm_extension_message => 'Are you sure you want to extend the subscription for';
 
   @override
-  String get cost => 'cost';
-
-  @override
   String get extension_success => 'Subscription extended successfully';
 
   @override
   String get extension_failed => 'Failed to extend subscription, please try again later';
+
+  @override
+  String get day => 'day';
+
+  @override
+  String get two_days => '2 days';
+
+  @override
+  String get days => 'days';
+
+  @override
+  String get cost => 'Cost';
+
+  @override
+  String get server_error_message => 'Server error. Please try again later.';
+
+  @override
+  String get failed_fetch_data => 'Failed to fetch data. Error code: ';
+
+  @override
+  String get no_internet_connection => 'No internet connection, please check your network.';
+
+  @override
+  String get session_expired => 'Session expired, please login again.';
+
+  @override
+  String get unexpected_error => 'Unexpected error occurred.';
+
+  @override
+  String get add_request => 'Add Request';
+
+  @override
+  String get request_type => 'Request Type';
+
+  @override
+  String get choose_request_type => 'Choose request type';
+
+  @override
+  String get add_request_button => 'Add Request';
+
+  @override
+  String get confirm_request_title => 'Confirm Request';
+
+  @override
+  String confirm_request_message(Object name) {
+    return 'Do you want to confirm request: $name ?';
+  }
+
+  @override
+  String get loading_sending => 'Sending...';
 }

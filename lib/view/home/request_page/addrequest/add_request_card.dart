@@ -1,22 +1,22 @@
+import 'dart:convert';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/model/service_package.dart';
 import 'package:provider/provider.dart';
-import 'package:omniya/model/services_response.dart';
-import 'package:omniya/view/home/request_page/addrequest/controller/add_request_controller.dart';
 import 'package:omniya/const/app_color.dart';
 import 'package:omniya/view/home/payment_screen/const/custom_glass_dropdown.dart';
+import 'package:omniya/view/home/request_page/addrequest/controller/add_request_controller.dart';
 
 class AddRequestCard extends StatefulWidget {
-  final AddonServiceModel? selectedRequestType;
-  final ValueChanged<AddonServiceModel?> onRequestTypeChanged;
-  final VoidCallback onSubmit;
-  final bool isFormValid;
+  final ServicePackage? selectedPackage;
+  final ValueChanged<ServicePackage?> onPackageChanged;
 
   const AddRequestCard({
     super.key,
-    required this.selectedRequestType,
-    required this.onRequestTypeChanged,
-    required this.onSubmit,
-    required this.isFormValid,
+    required this.selectedPackage,
+    required this.onPackageChanged,
   });
 
   @override
@@ -24,14 +24,7 @@ class AddRequestCard extends StatefulWidget {
 }
 
 class _AddRequestCardState extends State<AddRequestCard> {
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<AddonServiceController>().getAddonServices();
-    });
-  }
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +32,11 @@ class _AddRequestCardState extends State<AddRequestCard> {
 
     return Consumer<AddonServiceController>(
       builder: (context, controller, _) {
+        final package = widget.selectedPackage;
+
+        final bool isEnabled = package != null;
+        final l10 = AppLocalizations.of(context)!;
+
         return Container(
           width: double.infinity,
           padding: EdgeInsets.all(w * 0.05 < 24 ? w * 0.05 : 24),
@@ -46,19 +44,18 @@ class _AddRequestCardState extends State<AddRequestCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("إضافة طلب", style: AppTextStyles.text19Bold(context)),
+              Text(l10.add_request, style: AppTextStyles.text19Bold(context)),
               SizedBox(height: w * 0.04),
-              Text("نوع الطلب", style: AppTextStyles.text15(context)),
+              Text(l10.request_type, style: AppTextStyles.text15(context)),
               const SizedBox(height: 6),
-              controller.isLoading
+              controller.isPackagesLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : CustomGlassDropdown<AddonServiceModel>(
-                      isLoading: false,
-                      items: controller.addons,
-                      selectedItem: widget.selectedRequestType,
-                      hint: "اختر نوع الطلب",
+                  : CustomGlassDropdown<ServicePackage>(
+                      items: controller.servicePackages,
+                      selectedItem: widget.selectedPackage,
+                      hint: l10.choose_request_type,
                       itemAsString: (item) => item.name,
-                      onChanged: widget.onRequestTypeChanged,
+                      onChanged: widget.onPackageChanged,
                     ),
               SizedBox(height: w * 0.06),
               SizedBox(
@@ -66,20 +63,165 @@ class _AddRequestCardState extends State<AddRequestCard> {
                 height: 50,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: widget.isFormValid
+                    backgroundColor: isEnabled
                         ? Colors.green.withValues(alpha: 0.6)
-                        : Colors.grey.withOpacity(0.15),
+                        : Colors.grey.withValues(alpha: 0.15),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
                   ),
-                  onPressed: widget.isFormValid ? widget.onSubmit : null,
-                  child: const Text("إضافة طلب"),
+                  onPressed: isEnabled
+                      ? () {
+                          _showConfirmDialog(context, package);
+                        }
+                      : null,
+                  child: Text(l10.add_request_button),
                 ),
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showConfirmDialog(
+    BuildContext pageContext,
+    ServicePackage package,
+  ) {
+    bool loading = false;
+    bool showResult = false;
+    String message = "";
+
+    final l10 = AppLocalizations.of(context)!;
+    return showDialog(
+      context: pageContext,
+      barrierDismissible: false,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              child: Dialog(
+                backgroundColor: Colors.white.withValues(alpha: 0.1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (showResult) ...[
+                        // Icon(
+                        //   // success : Icons.check_circle ,
+                        //   size: 60,
+                        //   color: success ? Colors.green : Colors.red,
+                        // ),
+                        // const SizedBox(height: 15),
+                        Text(message,
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.text15(context)),
+                      ] else if (loading) ...[
+                        const CircularProgressIndicator(),
+                        const SizedBox(height: 15),
+                        Text(l10.loading_sending),
+                      ] else ...[
+                        Text(
+                          l10.confirm_request_title,
+                          style: AppTextStyles.text19Bold(context),
+                        ),
+                        const SizedBox(height: 15),
+                        Text(
+                          l10.confirm_request_message(package.name),
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.text15(context),
+                        ),
+                        const SizedBox(height: 25),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor:
+                                      Colors.green.withValues(alpha: 0.6),
+                                ),
+                                onPressed: () async {
+                                  setState(() => loading = true);
+
+                                  String serverMessage = "";
+
+                                  try {
+                                    final itemAction = package.actions.first;
+
+                                    final action =
+                                        itemAction.add ?? itemAction.remove;
+
+                                    if (action == null || action.url.isEmpty) {
+                                      throw Exception("Action URL is empty");
+                                    }
+
+                                    final res = await context
+                                        .read<AddonServiceController>()
+                                        .apiClient
+                                        .post(
+                                      Uri.parse(action.url),
+                                      {
+                                        ...action.body,
+                                        "new_service_id": package.id,
+                                      },
+                                    );
+
+                                    final body = json.decode(res.body);
+
+                                    serverMessage = body["message"] ??
+                                        body["error"] ??
+                                        "لا توجد رسالة";
+                                  } catch (e) {
+                                    serverMessage = e.toString();
+                                  }
+
+                                  setState(() {
+                                    loading = false;
+                                    showResult = true;
+                                    message = serverMessage;
+                                  });
+
+                                  final controller =
+                                      context.read<AddonServiceController>();
+
+                                  await Future.delayed(
+                                      const Duration(seconds: 1));
+
+                                  if (context.mounted) {
+                                    Navigator.pop(context);
+                                    await controller.refreshServicePackages();
+                                    widget.onPackageChanged(null);
+                                  }
+                                },
+                                child: Text(l10.confirm),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white24,
+                                ),
+                                onPressed: () => Navigator.pop(context),
+                                child: Text(l10.cancel),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -96,18 +238,6 @@ BoxDecoration _glassDecoration(BuildContext context) {
       width: 1,
       color: AppColors.text(context).withValues(alpha: 0.1),
     ),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withValues(alpha: 0.08),
-        blurRadius: 20,
-        offset: const Offset(0, 8),
-      ),
-      BoxShadow(
-        color: Colors.white.withValues(alpha: 0.03),
-        blurRadius: 6,
-        offset: const Offset(0, 2),
-      ),
-    ],
     color: isDark
         ? AppColors.text(context).withValues(alpha: 0.08)
         : Colors.black.withValues(alpha: 0.04),

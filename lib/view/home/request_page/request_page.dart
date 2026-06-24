@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:omniya/const/app_color.dart';
-import 'package:omniya/model/services_response.dart';
+import 'package:omniya/model/service_package.dart';
 import 'package:omniya/view/home/request_page/addrequest/add_request_card.dart';
 import 'package:omniya/view/home/request_page/controller/request_page_controller.dart';
 import 'package:omniya/view/home/request_page/addrequest/controller/add_request_controller.dart';
@@ -20,15 +20,19 @@ class _RequestPageState extends State<RequestPage> {
   final TextEditingController searchController = TextEditingController();
   Timer? _debounce;
 
-  AddonServiceModel? selectedAddon;
+  ServicePackage? selectedPackage;
 
   @override
   void initState() {
     super.initState();
 
+    debugPrint("🚀 [PAGE] initState");
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      debugPrint("📡 [PAGE] Loading orders + packages");
+
       context.read<RequestPageController>().getOrders();
-      context.read<AddonServiceController>().getAddonServices();
+      context.read<AddonServiceController>().getServicePackages();
     });
   }
 
@@ -61,17 +65,14 @@ class _RequestPageState extends State<RequestPage> {
               child: Column(
                 children: [
                   AddRequestCard(
-                    selectedRequestType: selectedAddon,
-                    onRequestTypeChanged: (value) {
+                    selectedPackage: selectedPackage,
+                    onPackageChanged: (value) {
+                      debugPrint(
+                          "🟡 [PAGE] Package selected => ${value?.name}");
+
                       setState(() {
-                        selectedAddon = value;
+                        selectedPackage = value;
                       });
-                    },
-                    isFormValid: selectedAddon != null,
-                    onSubmit: () {
-                      debugPrint("ID: ${selectedAddon?.id}");
-                      debugPrint("NAME: ${selectedAddon?.name}");
-                      debugPrint("PRICE: ${selectedAddon?.regPrice}");
                     },
                   ),
                   const SizedBox(height: 16),

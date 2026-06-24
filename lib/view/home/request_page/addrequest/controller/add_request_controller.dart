@@ -10,101 +10,98 @@ class AddonServiceController with ChangeNotifier {
 
   bool isLoading = false;
   String? error;
-
+  List<ServicePackage> servicePackages = [];
+  bool isPackagesLoading = false;
+  String? packagesError;
   AddonServiceResponse? response;
   List<AddonServiceModel> addons = [];
 
-  final String url = "${AppApi.url}${AppApi.servicesaddon}";
   final String apiservicesupdate = "${AppApi.url}${AppApi.servicesupdate}";
-  // =========================================================
-  // GET ADDON SERVICES
-  // =========================================================
-  Future<void> getAddonServices() async {
-    if (isLoading) return;
 
-    isLoading = true;
-    error = null;
+  Future<void> refreshServicePackages() async {
+    servicePackages.clear();
+    await getServicePackages();
+  }
+
+///////////////////////////////
+  Future<void> getServicePackages() async {
+    debugPrint(" [PACKAGES] START");
+
+    if (isPackagesLoading) {
+      debugPrint(" [PACKAGES] Already loading");
+      return;
+    }
+
+    isPackagesLoading = true;
     notifyListeners();
 
-    try {
-      final res = await apiClient.get(Uri.parse(url));
+    debugPrint(" [PACKAGES] URL => $apiservicesupdate");
 
-      debugPrint("STATUS => ${res.statusCode}");
-      debugPrint("BODY => ${res.body}");
+    try {
+      final res = await apiClient.get(Uri.parse(apiservicesupdate));
+
+      debugPrint(" [PACKAGES] STATUS => ${res.statusCode}");
+      debugPrint(" [PACKAGES] BODY => ${res.body}");
 
       if (res.statusCode == 200) {
         final jsonData = json.decode(res.body);
-        if (jsonData == null || jsonData["data"] == null) {
-          addons = [];
-        } else {
-          response = AddonServiceResponse.fromJson(jsonData);
-          addons = response?.data ?? [];
-        }
 
-        debugPrint("ADDONS COUNT => ${addons.length}");
+        debugPrint(" [PACKAGES] JSON parsed");
+
+        final List dataList = jsonData["data"] ?? [];
+
+        servicePackages =
+            dataList.map((e) => ServicePackage.fromJson(e)).toList();
+
+        debugPrint(" [PACKAGES] COUNT => ${servicePackages.length}");
       } else {
-        error = "فشل في جلب البيانات";
-        addons = [];
+        packagesError = "فشل في جلب الباقات";
+        debugPrint(" [PACKAGES] STATUS NOT 200");
       }
     } catch (e) {
-      error = e.toString();
-      addons = [];
-      debugPrint("EXCEPTION => $e");
+      packagesError = e.toString();
+      debugPrint(" [PACKAGES] ERROR => $e");
     }
 
-    isLoading = false;
+    isPackagesLoading = false;
     notifyListeners();
-  }
-///////////////////////////
-  Future<void> refresh() async {
-    addons.clear();
-    await getAddonServices();
-  }
-///////////////////////////////
-  Future<void> getServicesPackageUpdate() async {
-    if (isLoading) return;
 
-    isLoading = true;
-    error = null;
-    notifyListeners();
+    debugPrint(" [PACKAGES] END");
+  }
+
+  //////////////////////////
+  /////////////////////////
+  Future<bool> submitServiceRequest(int serviceId) async {
+    debugPrint(" [SUBMIT] START submitServiceRequest");
+    debugPrint(" [SUBMIT] serviceId => $serviceId");
+    debugPrint(" [SUBMIT] URL => $apiservicesupdate");
 
     try {
-      final res = await apiClient.get(
+      final body = {
+        "new_service_id": serviceId,
+      };
+
+      debugPrint(" [SUBMIT] BODY => $body");
+
+      final response = await apiClient.post(
         Uri.parse(apiservicesupdate),
+        body,
       );
 
-      debugPrint("STATUS => ${res.statusCode}");
-      debugPrint("BODY => ${res.body}");
+      debugPrint(" [SUBMIT] RESPONSE RECEIVED");
+      debugPrint(" [SUBMIT] STATUS => ${response.statusCode}");
+      debugPrint(" [SUBMIT] BODY => ${response.body}");
 
-      if (res.statusCode == 200) {
-        final jsonData = json.decode(res.body);
+      final success = response.statusCode == 200 || response.statusCode == 201;
 
-        if (jsonData == null || jsonData["data"] == null) {
-          addons = [];
-          response = null;
-        } else {
-          final parsed = ServicesPackageResponse.fromJson(jsonData);
-          addons = parsed.data
-              .map((e) => AddonServiceModel(
-                    id: e.id,
-                    name: e.name,
-                    regPrice: e.regPrice,
-                  ))
-              .toList();
+      debugPrint(success ? " [SUBMIT] SUCCESS" : " [SUBMIT] FAILED");
 
-          debugPrint("SERVICES PACKAGE COUNT => ${addons.length}");
-        }
-      } else {
-        error = "فشل في جلب البيانات (services package update)";
-        addons = [];
-      }
+      return success;
     } catch (e) {
-      error = e.toString();
-      addons = [];
-      debugPrint("EXCEPTION (services package update) => $e");
+      debugPrint(" [SUBMIT] ERROR => $e");
+      return false;
+    } finally {
+      debugPrint(" [SUBMIT] END submitServiceRequest");
     }
-
-    isLoading = false;
-    notifyListeners();
   }
 }

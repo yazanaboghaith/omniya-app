@@ -29,19 +29,19 @@ class RenewSubscriptionDialogs {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        l10n.subscriptionextensionoptions,
+                        l10n.subscription_extension_options,
                         style: AppTextStyles.text19Bold(context),
                       ),
                       const SizedBox(height: 24),
                       _buildOptionTile(
                         context: context,
-                        title: l10n.extensionfor1day,
+                        title: l10n.extension_for_1_day,
                         price: l10n.free,
                         onTap: () => _showConfirmationDialog(
                           context,
                           controller,
                           "1",
-                          l10n.freeofcharge,
+                          l10n.free_of_charge,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -81,7 +81,9 @@ class RenewSubscriptionDialogs {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 10),
+                            horizontal: 30,
+                            vertical: 10,
+                          ),
                         ),
                         child: Text(
                           l10n.cancel,
@@ -112,120 +114,162 @@ class RenewSubscriptionDialogs {
 
     Navigator.pop(context);
 
+    bool isLoading = false;
+    bool showResult = false;
+    bool isSuccess = false;
+    String message = "";
+
+    final daysText = int.tryParse(
+          duration.replaceAll(RegExp(r'[^0-9]'), ''),
+        ) ??
+        1;
+
+    String durationText;
+    switch (daysText) {
+      case 1:
+        durationText = l10n.day;
+        break;
+      case 2:
+        durationText = l10n.two_days;
+        break;
+      default:
+        durationText = "$daysText ${l10n.days}";
+    }
+
     showDialog(
       context: context,
       barrierColor: Colors.black.withValues(alpha: 0.3),
       builder: (BuildContext context) {
-        return Dialog(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(28),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                decoration: _dialogGlassDecoration(context),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.info_outline_rounded,
-                        color: AppColors.primary,
-                        size: 48,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        l10n.confirm_extension,
-                        style: AppTextStyles.text19Bold(context),
-                      ),
-                      const SizedBox(height: 12),
-                      Text.rich(
-                        TextSpan(
-                          text: "${l10n.confirm_extension_message} $duration ",
-                          children: [
-                            TextSpan(
-                              text: cost,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                // color: AppColors.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                        textAlign: TextAlign.center,
-                        style:
-                            AppTextStyles.text15(context).copyWith(height: 1.5),
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: Text(l10n.cancel,
-                                  style: AppTextStyles.text15(context)),
-                            ),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(28),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: _dialogGlassDecoration(context),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (isLoading) ...[
+                          const CircularProgressIndicator(),
+                          const SizedBox(height: 16),
+                          Text(l10n.processing_Payment),
+                        ] else if (showResult) ...[
+                          Icon(
+                            isSuccess
+                                ? Icons.check_circle_outline
+                                : Icons.error_outline,
+                            size: 60,
+                            color: isSuccess ? Colors.green : Colors.red,
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                debugPrint(
-                                    "========== USER CLICKED CONFIRM ==========");
-                                debugPrint("Duration raw string => $duration");
-
-                                final days = int.tryParse(
-                                      duration.replaceAll(
-                                          RegExp(r'[^0-9]'), ''),
-                                    ) ??
-                                    1;
-
-                                debugPrint("Parsed days => $days");
-
-                                Navigator.pop(context);
-
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder: (_) => const Center(
-                                    child: CircularProgressIndicator(),
+                          const SizedBox(height: 16),
+                          Text(
+                            message,
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.text15(context),
+                          ),
+                        ] else ...[
+                          const Icon(
+                            Icons.info_outline_rounded,
+                            color: AppColors.primary,
+                            size: 48,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            l10n.confirm_extension,
+                            style: AppTextStyles.text19Bold(context),
+                          ),
+                          const SizedBox(height: 12),
+                          Text.rich(
+                            TextSpan(
+                              text:
+                                  "${l10n.confirm_extension_message} $durationText ",
+                              children: [
+                                TextSpan(
+                                  text: cost,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                );
-
-                                debugPrint("Calling extendSubscription...");
-
-                                await controller.extendSubscription(days: days);
-
-                                debugPrint("Returned from extendSubscription");
-
-                                if (context.mounted) {
-                                  Navigator.pop(context);
-                                  debugPrint("Loading dialog closed");
-                                }
-
-                                debugPrint(
-                                    "========== FLOW COMPLETE ==========");
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    Colors.green.withValues(alpha: 0.6),
-                              ),
-                              child: Text(
-                                l10n.confirm,
-                                style: AppTextStyles.text15(context),
-                              ),
+                                ),
+                              ],
                             ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 24),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text(l10n.cancel,
+                                      style: AppTextStyles.text15(context)),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                        Colors.green.withValues(alpha: 0.6),
+                                    foregroundColor: Colors.white,
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+
+                                    final days = int.tryParse(
+                                          duration.replaceAll(
+                                              RegExp(r'[^0-9]'), ''),
+                                        ) ??
+                                        1;
+
+                                    final result =
+                                        await controller.extendSubscription(
+                                      context: context,
+                                      days: days,
+                                    );
+
+                                    setState(() {
+                                      isLoading = false;
+                                      showResult = true;
+                                      isSuccess = result == "success";
+                                      message = result == "success"
+                                          ? l10n.extension_success
+                                          : l10n.extension_failed;
+                                    });
+
+                                    await Future.delayed(
+                                      const Duration(seconds: 2),
+                                    );
+
+                                    if (context.mounted) {
+                                      Navigator.pop(context);
+                                    }
+                                  },
+                                  child: Text(l10n.confirm,
+                                      style: AppTextStyles.text15(context)),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );
@@ -251,8 +295,8 @@ class RenewSubscriptionDialogs {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: AppTextStyles.text15(context)),
-            Text(price, style: AppTextStyles.text13(context)),
+            Text(title),
+            Text(price),
           ],
         ),
       ),
@@ -268,18 +312,6 @@ class RenewSubscriptionDialogs {
         width: 1,
         color: AppColors.text(context).withValues(alpha: 0.1),
       ),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withValues(alpha: 0.08),
-          blurRadius: 20,
-          offset: const Offset(0, 8),
-        ),
-        BoxShadow(
-          color: Colors.white.withValues(alpha: 0.03),
-          blurRadius: 6,
-          offset: const Offset(0, 2),
-        ),
-      ],
       color: isDark
           ? AppColors.text(context).withValues(alpha: 0.1)
           : Colors.white.withValues(alpha: 0.3),

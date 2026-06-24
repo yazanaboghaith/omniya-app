@@ -30,7 +30,6 @@ class AppApi {
   ///////////////////////////////
   //////////////////////////////
   //////////////////////////////
-  static const servicesaddon = "/v1/services/addon";
   static const servicesupdate = "/v1/services/update";
   static const orderstempextend = "/v1/orders/temp-extend";
 }

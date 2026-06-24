@@ -251,12 +251,6 @@ abstract class AppLocalizations {
   /// **'Basic Package'**
   String get basic_Package;
 
-  /// No description provided for @recharge_Package.
-  ///
-  /// In en, this message translates to:
-  /// **'Recharge Package'**
-  String get recharge_Package;
-
   /// No description provided for @valid_Until.
   ///
   /// In en, this message translates to:
@@ -797,53 +791,17 @@ abstract class AppLocalizations {
   /// **'Usage'**
   String get usage;
 
-  /// No description provided for @renew_Subscription.
+  /// No description provided for @renew_subscription.
   ///
   /// In en, this message translates to:
-  /// **'Renew Subscription '**
-  String get renew_Subscription;
-
-  /// No description provided for @subscriptionextensionoptions.
-  ///
-  /// In en, this message translates to:
-  /// **'Subscription extension options'**
-  String get subscriptionextensionoptions;
-
-  /// No description provided for @extensionfor1day.
-  ///
-  /// In en, this message translates to:
-  /// **'Extension for 1 day'**
-  String get extensionfor1day;
-
-  /// No description provided for @free.
-  ///
-  /// In en, this message translates to:
-  /// **'Free'**
-  String get free;
-
-  /// No description provided for @freeofcharge.
-  ///
-  /// In en, this message translates to:
-  /// **'Free of charge'**
-  String get freeofcharge;
-
-  /// No description provided for @day.
-  ///
-  /// In en, this message translates to:
-  /// **'day'**
-  String get day;
+  /// **'Renew Subscription'**
+  String get renew_subscription;
 
   /// No description provided for @subscription_extension_options.
   ///
   /// In en, this message translates to:
   /// **'Subscription extension options'**
   String get subscription_extension_options;
-
-  /// No description provided for @renew_subscription.
-  ///
-  /// In en, this message translates to:
-  /// **'Renew Subscription'**
-  String get renew_subscription;
 
   /// No description provided for @extension_for_1_day.
   ///
@@ -863,17 +821,17 @@ abstract class AppLocalizations {
   /// **'Extension for 3 days'**
   String get extension_for_3_days;
 
+  /// No description provided for @free.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get free;
+
   /// No description provided for @free_of_charge.
   ///
   /// In en, this message translates to:
   /// **'Free of charge'**
   String get free_of_charge;
-
-  /// No description provided for @days.
-  ///
-  /// In en, this message translates to:
-  /// **'days'**
-  String get days;
 
   /// No description provided for @confirm_extension.
   ///
@@ -887,12 +845,6 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to extend the subscription for'**
   String get confirm_extension_message;
 
-  /// No description provided for @cost.
-  ///
-  /// In en, this message translates to:
-  /// **'cost'**
-  String get cost;
-
   /// No description provided for @extension_success.
   ///
   /// In en, this message translates to:
@@ -904,6 +856,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to extend subscription, please try again later'**
   String get extension_failed;
+
+  /// No description provided for @day.
+  ///
+  /// In en, this message translates to:
+  /// **'day'**
+  String get day;
+
+  /// No description provided for @two_days.
+  ///
+  /// In en, this message translates to:
+  /// **'2 days'**
+  String get two_days;
+
+  /// No description provided for @days.
+  ///
+  /// In en, this message translates to:
+  /// **'days'**
+  String get days;
+
+  /// No description provided for @cost.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost'**
+  String get cost;
+
+  /// No description provided for @server_error_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error. Please try again later.'**
+  String get server_error_message;
+
+  /// No description provided for @failed_fetch_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to fetch data. Error code: '**
+  String get failed_fetch_data;
+
+  /// No description provided for @no_internet_connection.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection, please check your network.'**
+  String get no_internet_connection;
+
+  /// No description provided for @session_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired, please login again.'**
+  String get session_expired;
+
+  /// No description provided for @unexpected_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error occurred.'**
+  String get unexpected_error;
+
+  /// No description provided for @add_request.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Request'**
+  String get add_request;
+
+  /// No description provided for @request_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Type'**
+  String get request_type;
+
+  /// No description provided for @choose_request_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose request type'**
+  String get choose_request_type;
+
+  /// No description provided for @add_request_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Request'**
+  String get add_request_button;
+
+  /// No description provided for @confirm_request_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Request'**
+  String get confirm_request_title;
+
+  /// No description provided for @confirm_request_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to confirm request: {name} ?'**
+  String confirm_request_message(Object name);
+
+  /// No description provided for @loading_sending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get loading_sending;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

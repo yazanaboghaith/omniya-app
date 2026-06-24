@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
 
-      context.read<HomePageController>().getUserDetails();
+      context.read<HomePageController>().getUserDetails(context);
     });
   }
 
@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
       child: RefreshIndicator(
         onRefresh: () async {
           if (!mounted) return;
-          await context.read<HomePageController>().getUserDetails();
+          await context.read<HomePageController>().getUserDetails(context);
         },
         child: _buildHomeContent(controller, user, w, h),
       ),
@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
         icon: Icons.wifi_off_rounded,
         title: AppLocalizations.of(context)!.no_Internet,
         message: controller.errorMessage,
-        onRetry: () => controller.getUserDetails(),
+        onRetry: () => controller.getUserDetails(context),
         w: w,
       );
     }
@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
         icon: Icons.dns_rounded,
         title: AppLocalizations.of(context)!.server_Error,
         message: controller.errorMessage,
-        onRetry: () => controller.getUserDetails(),
+        onRetry: () => controller.getUserDetails(context),
         w: w,
       );
     }
@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> {
         onRetry: () async {
           setState(() => isRefreshing = true);
 
-          await context.read<HomePageController>().getUserDetails();
+          await context.read<HomePageController>().getUserDetails(context);
 
           if (!mounted) return;
           setState(() => isRefreshing = false);
@@ -349,8 +349,8 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: Text(
                         isExpired
-                            ? AppLocalizations.of(context)!.renew_Subscription
-                            : AppLocalizations.of(context)!.recharge_Package,
+                            ? AppLocalizations.of(context)!.renew_subscription
+                            : AppLocalizations.of(context)!.recharge_package,
                         style: AppTextStyles.text13(context),
                       ),
                     ),

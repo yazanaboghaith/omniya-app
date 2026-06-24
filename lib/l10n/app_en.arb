@@ -27,7 +27,6 @@
   "unlimited_Subscription": "Unlimited Subscription",
   "current_Speed": "Current Speed",
   "basic_Package": "Basic Package",
-  "recharge_Package": "Recharge Package",
   "valid_Until": "Valid Until",
   "remaining": "Remaining",
   "from": "from",
@@ -58,9 +57,11 @@
   "next": "Next",
   "accepted": "Accepted",
   "number": "Number",
-"search":"search",
-"success":"success",
- "prepaid": "Prepaid",
+
+  "search": "search",
+  "success": "success",
+
+  "prepaid": "Prepaid",
   "postpaid": "Postpaid",
   "check_balance_before_purchase": "Please check your balance before purchase",
   "no_packages": "No packages available",
@@ -68,18 +69,22 @@
   "buy_package": "Buy Package",
   "confirm_buy_package": "Are you sure you want to buy this package?",
   "package_activated_success": "Package activated successfully!",
-    "activating_package": "Activating package...",
-    "orders_report": "Orders Report",
+  "activating_package": "Activating package...",
+
+  "orders_report": "Orders Report",
   "order": "Order",
   "rejected": "Rejected",
   "date": "Date: ",
-   "invalid_code": "The code you entered is incorrect",
+  "invalid_code": "The code you entered is incorrect",
+
   "enter_pin": "Enter PIN code",
   "login": "Login",
-   "error_loading_data": "Error loading data",
+
+  "error_loading_data": "Error loading data",
   "call_not_available": "Call is not available at the moment",
   "contact_support_reset_password": "Please contact customer support to reset your password via:",
   "call": "Call",
+
   "welcome": "Welcome",
   "login_to_account": "Login to your account",
   "username_or_phone": "Username / Phone number",
@@ -94,10 +99,10 @@
   "enter_password": "Please enter password",
   "login_success": "Login successful",
   "login_error": "Login error occurred",
-  "login": "Login",
   "no_account": "Don't have an account? ",
   "contact_us": "Contact us",
-   "quick_access_security": "Quick Access Security",
+
+  "quick_access_security": "Quick Access Security",
   "choose_security_method": "To make login easier next time, choose a security method:",
   "fingerprint": "Fingerprint",
   "pin_code": "PIN Code",
@@ -110,25 +115,21 @@
   "pin_must_be_4_digits": "PIN must be 4 digits",
   "save": "Save",
   "enter_pin": "Enter your PIN",
-  "login": "Login",
   "verified_successfully": "Verified successfully",
   "confirm_identity_fingerprint": "Please confirm your identity using fingerprint",
   "fingerprint_verified_success": "Fingerprint verified successfully",
-"unreaded":"Un read",
-"all":"All",
-"financial":"Financial",
-"system":"System",
-"home":"Home",
-"payments":"My payments",
-"requests":"My requests",
-"usage":"Usage",
-"renew_Subscription":"Renew Subscription ",
-"subscriptionextensionoptions":"Subscription extension options",
-"extensionfor1day":"Extension for 1 day",
-"freeofcharge":"Free of charge",
-"day":"1 day",
- "subscription_extension_options": "Subscription extension options",
+
+  "unreaded": "Un read",
+  "all": "All",
+  "financial": "Financial",
+  "system": "System",
+  "home": "Home",
+  "payments": "My payments",
+  "requests": "My requests",
+  "usage": "Usage",
+
   "renew_subscription": "Renew Subscription",
+  "subscription_extension_options": "Subscription extension options",
 
   "extension_for_1_day": "Extension for 1 day",
   "extension_for_2_days": "Extension for 2 days",
@@ -137,17 +138,29 @@
   "free": "Free",
   "free_of_charge": "Free of charge",
 
-  "day": "day",
-  "days": "days",
-
   "confirm_extension": "Confirm Extension",
   "confirm_extension_message": "Are you sure you want to extend the subscription for",
-  "cost": "cost",
-
-  "cancel": "Cancel",
-  "confirm": "Confirm",
 
   "extension_success": "Subscription extended successfully",
-  "extension_failed": "Failed to extend subscription, please try again later"
+  "extension_failed": "Failed to extend subscription, please try again later",
 
+  "day": "day",
+  "two_days": "2 days",
+  "days": "days",
+
+  "cost": "Cost",
+  "server_error_message": "Server error. Please try again later.",
+"failed_fetch_data": "Failed to fetch data. Error code: ",
+"no_internet_connection": "No internet connection, please check your network.",
+"session_expired": "Session expired, please login again.",
+"unexpected_error": "Unexpected error occurred.",
+  "add_request": "Add Request",
+  "request_type": "Request Type",
+  "choose_request_type": "Choose request type",
+  "add_request_button": "Add Request",
+
+  "confirm_request_title": "Confirm Request",
+  "confirm_request_message": "Do you want to confirm request: {name} ?",
+
+  "loading_sending": "Sending..."
 }
