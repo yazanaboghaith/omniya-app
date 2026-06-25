@@ -72,9 +72,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get current_Balance => 'Current Balance';
 
   @override
-  String get currency => 'SYP';
-
-  @override
   String get total_Usage => 'Total Usage';
 
   @override
@@ -108,7 +105,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get processing_Payment => 'Processing payment...';
 
   @override
-  String get confirm_Add_Bank_Payment => 'Are you sure you want to add a bank payment?';
+  String get confirm_Add_Bank_Payment =>
+      'Are you sure you want to add a bank payment?';
 
   @override
   String get bank_Name => 'Bank Name:';
@@ -123,7 +121,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get payment_Added_Success => 'Payment added successfully!';
 
   @override
-  String get payment_Added_Failed => 'Failed to add payment, please try again later.';
+  String get payment_Added_Failed =>
+      'Failed to add payment, please try again later.';
 
   @override
   String get add_Bank_Payment => 'Add Bank Payment';
@@ -186,7 +185,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get postpaid => 'Postpaid';
 
   @override
-  String get check_balance_before_purchase => 'Please check your balance before purchase';
+  String get check_balance_before_purchase =>
+      'Please check your balance before purchase';
 
   @override
   String get no_packages => 'No packages available';
@@ -198,13 +198,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get buy_package => 'Buy Package';
 
   @override
-  String get confirm_buy_package => 'Are you sure you want to buy this package?';
+  String get confirm_buy_package =>
+      'Are you sure you want to buy this package?';
 
   @override
   String get package_activated_success => 'Package activated successfully!';
 
   @override
   String get activating_package => 'Activating package...';
+
+  @override
+  String get notifications => 'notifications';
+
+  @override
+  String get no_notifications => 'No notifications';
 
   @override
   String get orders_report => 'Orders Report';
@@ -222,10 +229,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalid_code => 'The code you entered is incorrect';
 
   @override
-  String get enter_pin => 'Enter your PIN';
+  String get completed => 'completed';
+
+  @override
+  String get enter_pin => 'Enter PIN code';
 
   @override
   String get login => 'Login';
+
+  @override
+  String get canceled => 'canceled';
 
   @override
   String get error_loading_data => 'Error loading data';
@@ -234,10 +247,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get call_not_available => 'Call is not available at the moment';
 
   @override
-  String get contact_support_reset_password => 'Please contact customer support to reset your password via:';
+  String get contact_support_reset_password =>
+      'Please contact customer support to reset your password via:';
 
   @override
   String get call => 'Call';
+
+  @override
+  String get no_payment_gateways => 'No payment gateways';
 
   @override
   String get welcome => 'Welcome';
@@ -249,7 +266,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get username_or_phone => 'Username / Phone number';
 
   @override
-  String get quick_login_disabled => 'Quick login has been disabled to change username';
+  String get quick_login_disabled =>
+      'Quick login has been disabled to change username';
 
   @override
   String get password => 'Password';
@@ -291,7 +309,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quick_access_security => 'Quick Access Security';
 
   @override
-  String get choose_security_method => 'To make login easier next time, choose a security method:';
+  String get choose_security_method =>
+      'To make login easier next time, choose a security method:';
 
   @override
   String get fingerprint => 'Fingerprint';
@@ -303,13 +322,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get skip => 'Skip';
 
   @override
-  String get confirm_fingerprint_enable => 'Confirm fingerprint to enable quick access';
+  String get confirm_fingerprint_enable =>
+      'Confirm fingerprint to enable quick access';
 
   @override
-  String get fingerprint_enabled_success => 'Fingerprint login enabled successfully';
+  String get fingerprint_enabled_success =>
+      'Fingerprint login enabled successfully';
 
   @override
-  String get fingerprint_failed_or_unavailable => 'Fingerprint verification failed or is not available';
+  String get fingerprint_failed_or_unavailable =>
+      'Fingerprint verification failed or is not available';
 
   @override
   String get setup_pin => 'Set up PIN code';
@@ -327,10 +349,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get verified_successfully => 'Verified successfully';
 
   @override
-  String get confirm_identity_fingerprint => 'Please confirm your identity using fingerprint';
+  String get confirm_identity_fingerprint =>
+      'Please confirm your identity using fingerprint';
 
   @override
-  String get fingerprint_verified_success => 'Fingerprint verified successfully';
+  String get fingerprint_verified_success =>
+      'Fingerprint verified successfully';
 
   @override
   String get unreaded => 'Un read';
@@ -381,13 +405,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirm_extension => 'Confirm Extension';
 
   @override
-  String get confirm_extension_message => 'Are you sure you want to extend the subscription for';
+  String get confirm_extension_message =>
+      'Are you sure you want to extend the subscription for';
 
   @override
   String get extension_success => 'Subscription extended successfully';
 
   @override
-  String get extension_failed => 'Failed to extend subscription, please try again later';
+  String get extension_failed =>
+      'Failed to extend subscription, please try again later';
 
   @override
   String get day => 'day';
@@ -408,7 +434,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failed_fetch_data => 'Failed to fetch data. Error code: ';
 
   @override
-  String get no_internet_connection => 'No internet connection, please check your network.';
+  String get no_internet_connection =>
+      'No internet connection, please check your network.';
 
   @override
   String get session_expired => 'Session expired, please login again.';
@@ -437,5 +464,129 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get syp => 'SYP';
+
+  @override
   String get loading_sending => 'Sending...';
+
+  @override
+  String get bank_payment => 'Bank Payment';
+
+  @override
+  String get online_payment => 'Online Payment';
+
+  @override
+  String get payment_success => 'Payment Success';
+
+  @override
+  String get payment_pending => 'Payment Pending';
+
+  @override
+  String get payment_error => 'Payment Error';
+
+  @override
+  String get payment_confirmed_successfully => 'Payment Confirmed Successfully';
+
+  @override
+  String get payment_not_confirmed_yet => 'Payment Not Confirmed Yet';
+
+  @override
+  String get payment_status_check_error =>
+      'An error occurred while checking payment status';
+
+  @override
+  String get enter_payment_amount => 'Enter Payment Amount';
+
+  @override
+  String get payment_gateway => 'Payment Gateway';
+
+  @override
+  String get confirm_payment => 'Confirm Payment';
+
+  @override
+  String get payment_creation_failed => 'Payment Creation Failed';
+
+  @override
+  String get missing_data => 'Missing Data';
+
+  @override
+  String get please_fill_all_fields => 'Please fill in all fields';
+
+  @override
+  String get payment_completed => 'Operation Completed';
+
+  @override
+  String get payment_sent_successfully => 'Payment Sent Successfully';
+
+  @override
+  String get payment_send_failed => 'Failed to Send Payment';
+
+  @override
+  String get sending_error => 'An error occurred while sending';
+
+  @override
+  String get payment_reference_number => 'Reference Number';
+
+  @override
+  String get payment_amount => 'Payment Amount';
+
+  @override
+  String get gateway => 'Gateway';
+
+  @override
+  String get transaction_id => 'Transaction ID';
+
+  @override
+  String get payment_url => 'Payment URL';
+
+  @override
+  String get browser_opened => 'Browser Opened';
+
+  @override
+  String get checking_payment => 'Checking Payment';
+
+  @override
+  String get payment_processing => 'Processing Payment';
+
+  @override
+  String get loading_payment_methods => 'Loading Payment Methods';
+
+  @override
+  String get select_payment_method => 'Select Payment Method';
+
+  @override
+  String get bank_transfer => 'Bank Transfer';
+
+  @override
+  String get online_gateway => 'Online Gateway';
+
+  @override
+  String get missing_data_title => 'Missing Data';
+
+  @override
+  String get missing_data_message => 'Please fill all fields';
+
+  @override
+  String get fill_all_fields_message => 'Please fill all fields';
+
+  @override
+  String get loading_data => 'Loading data...';
+
+  @override
+  String get data_loaded => 'Data loaded';
+
+  @override
+  String get creating_payment => 'Creating payment...';
+
+  @override
+  String get reset_session => 'Reset session';
+
+  @override
+  String get payment_method_online => 'Online Payment';
+
+  @override
+  String get payment_method_bank => 'Bank Transfer';
+
+  @override
+  String get identity_verification => 'Identity Verification';
 }

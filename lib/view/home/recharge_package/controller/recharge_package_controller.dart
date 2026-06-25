@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_notifier.dart';
-import 'package:omniya/const/url.dart';
+import 'package:omniya/core/const/app_notifier.dart';
+import 'package:omniya/core/const/url.dart';
 import 'package:omniya/model/data_model.dart';
-import 'package:omniya/view/auth/services/api_client.dart';
+import 'package:omniya/core/services/api_client.dart';
 
 enum PackageState { idle, loading, success, serverError, error, unauthorized }
 
@@ -25,10 +25,7 @@ class RechargePackageController with ChangeNotifier {
     bool refresh = false,
   }) async {
     debugPrint(" [Packages] START request");
-    if (!refresh) {
-      isLoading = true;
-      notifyListeners();
-    }
+
     isLoading = true;
     state = PackageState.loading;
     error = null;
@@ -50,7 +47,6 @@ class RechargePackageController with ChangeNotifier {
       } else {
         error = "Server error: ${response.statusCode}";
         state = PackageState.serverError;
-        debugPrint(" SERVER ERROR: ${response.statusCode}");
       }
     } catch (e) {
       if (e.toString().contains("SESSION_EXPIRED")) {
@@ -64,11 +60,11 @@ class RechargePackageController with ChangeNotifier {
         error = e.toString();
         state = PackageState.error;
       }
-      debugPrint(" EXCEPTION OCCURRED: $error");
     }
 
     isLoading = false;
     notifyListeners();
+
     debugPrint(" [Packages] END request");
   }
 

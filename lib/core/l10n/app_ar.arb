@@ -15,12 +15,13 @@
   "cancel": "إلغاء",
   "logout_success": "تم تسجيل الخروج بنجاح",
   "logout_failed": "حدث خطأ أثناء تسجيل الخروج",
-
+"canceled":"ملغي",
   "no_Internet": "لا يوجد اتصال بالإنترنت",
   "server_Error": "مشكلة في الاتصال بالخادم",
   "error": "تنبيه خطأ",
   "retry": "إعادة المحاولة",
-
+  "example_Amount": "مثال: 50000",
+  "no_payment_gateways": "لا توجد بوابات دفع",
   "current_Balance": "الرصيد الحالي",
   "total_Usage": "الاستهلاك الكلي",
   "unlimited_Subscription": "اشتراك غير محدود",
@@ -57,7 +58,7 @@
   "next": "التالي",
   "accepted": "مقبول",
   "number": "رقم",
-
+"syp":"ل.س.ج",
   "success": "نجاح",
 
   "prepaid": "مسبقة الدفع",
@@ -113,7 +114,6 @@
   "pin_4_digits_only": "أدخل 4 أرقام فقط",
   "pin_must_be_4_digits": "يجب أن يتكون الرمز من 4 أرقام",
   "save": "حفظ",
-  "enter_pin": "أدخل رمز PIN الخاص بك",
   "verified_successfully": "تم التحقق بنجاح",
   "confirm_identity_fingerprint": "يرجى تأكيد هويتك للدخول بالبصمة",
   "fingerprint_verified_success": "تم التحقق من البصمة بنجاح",
@@ -129,14 +129,14 @@
 
   "renew_subscription": "تمديد الاشتراك",
   "subscription_extension_options": "خيارات تمديد الاشتراك",
-
+"completed":"مكتمل",
   "extension_for_1_day": "تمديد لمدة يوم واحد",
   "extension_for_2_days": "تمديد لمدة يومين",
   "extension_for_3_days": "تمديد لمدة 3 أيام",
-
+"notifications":"الإشعارات",
   "free": "مجاني",
   "free_of_charge": "بشكل مجاني",
-
+"no_notifications":"لاتوجد اشعارات",
   "confirm_extension": "تأكيد التمديد",
   "confirm_extension_message": "هل أنت متأكد من رغبتك في تمديد الاشتراك لمدة",
 
@@ -161,5 +161,58 @@
   "confirm_request_title": "تأكيد الطلب",
   "confirm_request_message": "هل تريد تأكيد طلب: {name} ؟",
 
-  "loading_sending": "جاري الإرسال..."
+  "loading_sending": "جاري الإرسال...",
+    "bank_payment": "دفع بنكي",
+  "online_payment": "دفع إلكتروني",
+
+  "payment_success": "نجاح الدفع",
+  "payment_pending": "الدفعة قيد المراجعة",
+  "payment_error": "خطأ في الدفع",
+
+  "payment_confirmed_successfully": "تم تأكيد الدفع بنجاح",
+  "payment_not_confirmed_yet": "لم يتم تأكيد الدفع بعد",
+
+  "payment_status_check_error": "حدث خطأ أثناء التحقق من حالة الدفع",
+
+  "enter_payment_amount": "إدخال مبلغ الدفع",
+  "payment_gateway": "بوابة الدفع",
+  "confirm_payment": "تأكيد الدفع",
+
+  "payment_creation_failed": "فشل إنشاء عملية الدفع",
+
+  "missing_data": "بيانات ناقصة",
+  "please_fill_all_fields": "يرجى تعبئة جميع الحقول",
+
+  "payment_completed": "تمت العملية",
+  "payment_sent_successfully": "تم إرسال الدفعة بنجاح",
+  "payment_send_failed": "تعذر إرسال الدفعة",
+
+  "sending_error": "حدث خطأ أثناء الإرسال",
+
+  "payment_reference_number": "رقم الإشعار",
+  "payment_amount": "المبلغ",
+  "gateway": "البوابة",
+  "missing_data_title": "بيانات ناقصة",
+"missing_data_message": "يرجى تعبئة جميع الحقول",
+
+"fill_all_fields_message": "يرجى تعبئة جميع الحقول",
+
+"loading_data": "جاري تحميل البيانات...",
+"data_loaded": "تم تحميل البيانات",
+
+"creating_payment": "جاري إنشاء عملية الدفع...",
+
+"browser_opened": "تم فتح المتصفح",
+"transaction_id": "رقم العملية",
+"payment_url": "رابط الدفع",
+"checking_payment": "التحقق من حالة الدفع",
+"payment_processing": "معالجة الدفع",
+"loading_payment_methods": "جاري تحميل وسائل الدفع",
+"select_payment_method": "اختر وسيلة الدفع",
+"bank_transfer": "تحويل بنكي",
+"online_gateway": "بوابة دفع إلكترونية",
+"reset_session": "إعادة ضبط الجلسة",
+"payment_method_online": "الدفع الإلكتروني",
+"payment_method_bank": "تحويل بنكي",
+"identity_verification":"تأكيد الدفعة"
 }

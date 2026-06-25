@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_color.dart';
-import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 
 class CustomBottomBar extends StatelessWidget {
   final int currentIndex;

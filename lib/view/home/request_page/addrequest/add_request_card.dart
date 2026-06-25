@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/model/service_package.dart';
 import 'package:provider/provider.dart';
-import 'package:omniya/const/app_color.dart';
+import 'package:omniya/core/const/app_color.dart';
 import 'package:omniya/view/home/payment_screen/const/custom_glass_dropdown.dart';
 import 'package:omniya/view/home/request_page/addrequest/controller/add_request_controller.dart';
 

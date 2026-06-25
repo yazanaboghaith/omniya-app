@@ -1,4 +1,4 @@
-import 'package:omniya/view/auth/services/auth_storage.dart';
+import 'package:omniya/core/services/auth_storage.dart';
 
 class AppSecurityService {
   static final AuthStorage _storage = AuthStorage();

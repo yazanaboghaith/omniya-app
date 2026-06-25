@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_background.dart';
+import 'package:omniya/core/const/app_background.dart';
 import 'package:omniya/view/home/const/custom_bottom_bar.dart';
 
 import 'package:omniya/view/home/home_page/home_page.dart';

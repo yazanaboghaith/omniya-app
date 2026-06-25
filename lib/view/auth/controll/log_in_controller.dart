@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:omniya/const/url.dart';
-import 'package:omniya/view/auth/services/auth_storage.dart';
+import 'package:omniya/core/const/url.dart';
+import 'package:omniya/core/services/auth_storage.dart';
 
 class LoginController with ChangeNotifier {
   bool isLoading = false;

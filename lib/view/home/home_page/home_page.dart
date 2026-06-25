@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_color.dart';
-import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/view/home/const/consumption_gauge.dart';
 import 'package:omniya/view/home/const/renew_subscription_dialogs.dart';
 import 'package:omniya/view/home/const/speedometer.dart';
@@ -215,7 +215,7 @@ class _HomePageState extends State<HomePage> {
                     style: AppTextStyles.text50(context),
                   ),
                   SizedBox(width: w * 0.01),
-                  Text(AppLocalizations.of(context)!.currency,
+                  Text(AppLocalizations.of(context)!.syp,
                       style: AppTextStyles.text17Bold(context)),
                 ],
               ),
@@ -393,46 +393,68 @@ class _HomePageState extends State<HomePage> {
           ),
           SizedBox(height: w * 0.03),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: Text(
-                  "${AppLocalizations.of(context)!.valid_Until} ${user?.expiryDate ?? '--'}",
-                  textDirection: TextDirection.rtl,
-                  textAlign: TextAlign.right,
-                  style: AppTextStyles.text10Grey(context),
-                  overflow: TextOverflow.ellipsis,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    "${AppLocalizations.of(context)!.valid_Until} ${user?.expiryDate ?? '--'}",
+                    textDirection: TextDirection.rtl,
+                    textAlign: TextAlign.right,
+                    style: AppTextStyles.text10Grey(context),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.08),
               Expanded(
-                child: isUnlimited
-                    ? Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.all_inclusive,
-                            size: 16,
-                            color: AppColors.grey(context),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            AppLocalizations.of(context)!
-                                .unlimited_Subscription,
-                            style: AppTextStyles.text10Grey(context),
-                          ),
-                        ],
-                      )
-                    : Text(
-                        "${AppLocalizations.of(context)!.remaining} ${user?.quota?.remainingDefault ?? 0} ${AppLocalizations.of(context)!.from} ${user?.baseService?.quota ?? 0} AppLocalizations.of(context)!.gigabyte",
-                        textDirection: TextDirection.rtl,
-                        textAlign: TextAlign.left,
-                        style: AppTextStyles.text10Grey(context),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  alignment: Alignment.centerLeft,
+                  child: isUnlimited
+                      ? Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.all_inclusive,
+                              size: 16,
+                              color: AppColors.grey(context),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              AppLocalizations.of(context)!
+                                  .unlimited_Subscription,
+                              style: AppTextStyles.text10Grey(context),
+                            ),
+                          ],
+                        )
+                      : Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(AppLocalizations.of(context)!.remaining,
+                                style: AppTextStyles.text10Grey(context)),
+                            const SizedBox(width: 4),
+                            Text("${user?.quota?.remainingDefault ?? 0}",
+                                style: AppTextStyles.text10Grey(context)),
+                            const SizedBox(width: 4),
+                            Text(AppLocalizations.of(context)!.from,
+                                style: AppTextStyles.text10Grey(context)),
+                            const SizedBox(width: 4),
+                            Text("${user?.baseService?.quota ?? 0}",
+                                style: AppTextStyles.text10Grey(context)),
+                            const SizedBox(width: 4),
+                            Text(AppLocalizations.of(context)!.gigabyte,
+                                style: AppTextStyles.text10Grey(context)),
+                          ],
+                        ),
+                ),
               ),
             ],
-          ),
+          )
         ],
       ),
     );

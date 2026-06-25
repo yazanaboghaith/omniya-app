@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'auth_storage.dart';
-import 'package:omniya/const/url.dart';
+import 'package:omniya/core/const/url.dart';
 
 class AuthService {
   final AuthStorage storage = AuthStorage();

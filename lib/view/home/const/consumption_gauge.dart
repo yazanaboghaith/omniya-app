@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_color.dart';
-import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class ConsumptionGauge extends StatelessWidget {

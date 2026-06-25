@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_color.dart';
-import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/view/home/request_page/controller/request_page_controller.dart';
 import 'package:provider/provider.dart';
 
@@ -199,8 +199,27 @@ Widget buildRequestCard(
   String status,
 ) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
-  double height = MediaQuery.of(context).size.height;
-  double width = MediaQuery.of(context).size.width;
+
+  final normalizedStatus = status.trim();
+
+  Color statusColor;
+
+  switch (normalizedStatus) {
+    case "مكتمل":
+      statusColor = Colors.green.withValues(alpha: 0.6);
+      break;
+
+    case "ملغي":
+      statusColor = Colors.red.withValues(alpha: 0.6);
+      break;
+
+    case "قيد الانتظار":
+      statusColor = Colors.orange.withValues(alpha: 0.6);
+      break;
+
+    default:
+      statusColor = Colors.grey.withValues(alpha: 0.6);
+  }
 
   return Container(
     margin: const EdgeInsets.only(bottom: 12),
@@ -217,6 +236,7 @@ Widget buildRequestCard(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        /// HEADER
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -231,7 +251,7 @@ Widget buildRequestCard(
                         : AppLocalizations.of(context)!.order,
                     style: AppTextStyles.text17Bold(context),
                   ),
-                  SizedBox(height: height * 0.01),
+                  const SizedBox(height: 6),
                   Text(
                     subtitle,
                     style: AppTextStyles.text15(context),
@@ -239,30 +259,27 @@ Widget buildRequestCard(
                 ],
               ),
             ),
-            SizedBox(width: width * 0.01),
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: status == AppLocalizations.of(context)!.accepted
-                      ? Colors.green.withValues(alpha: 0.6)
-                      : status == AppLocalizations.of(context)!.rejected
-                          ? Colors.red.withValues(alpha: 0.6)
-                          : Colors.orange.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  status,
-                  style: AppTextStyles.text13(context),
-                ),
+
+            const SizedBox(width: 8),
+
+            /// STATUS BADGE
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 6,
+              ),
+              decoration: BoxDecoration(
+                color: statusColor,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                status,
+                style: AppTextStyles.text13(context),
               ),
             ),
           ],
         ),
+
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 12),
           child: Divider(
@@ -272,14 +289,20 @@ Widget buildRequestCard(
             indent: 5,
           ),
         ),
+
+        /// DATE
         Row(
           children: [
-            Text(AppLocalizations.of(context)!.date,
-                style: AppTextStyles.text13Grey(context)),
+            Text(
+              AppLocalizations.of(context)!.date,
+              style: AppTextStyles.text13Grey(context),
+            ),
+            const SizedBox(width: 6),
             Expanded(
               child: Text(
                 date,
                 style: AppTextStyles.text13Grey(context),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

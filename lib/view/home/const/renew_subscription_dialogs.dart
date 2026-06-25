@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_color.dart';
-import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/view/home/home_page/controller/home_page_controller.dart';
 
 class RenewSubscriptionDialogs {
@@ -48,24 +48,24 @@ class RenewSubscriptionDialogs {
                       _buildOptionTile(
                         context: context,
                         title: l10n.extension_for_2_days,
-                        price: "10 ${l10n.currency}",
+                        price: "10 ${l10n.syp}",
                         onTap: () => _showConfirmationDialog(
                           context,
                           controller,
                           "2",
-                          "10 ${l10n.currency}",
+                          "10 ${l10n.syp}",
                         ),
                       ),
                       const SizedBox(height: 12),
                       _buildOptionTile(
                         context: context,
                         title: l10n.extension_for_3_days,
-                        price: "150 ${l10n.currency}",
+                        price: "150 ${l10n.syp}",
                         onTap: () => _showConfirmationDialog(
                           context,
                           controller,
                           "3",
-                          "150 ${l10n.currency}",
+                          "150 ${l10n.syp}",
                         ),
                       ),
                       const SizedBox(height: 16),

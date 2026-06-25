@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/url.dart';
+import 'package:omniya/core/const/url.dart';
 import 'package:omniya/model/payment_methods_response.dart';
 import 'package:omniya/model/payment_response.dart';
-import 'package:omniya/view/auth/services/api_client.dart';
+import 'package:omniya/core/services/api_client.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PaymentSession {

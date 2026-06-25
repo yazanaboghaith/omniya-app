@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:omniya/l10n/app_localizations.dart';
-import 'package:omniya/view/auth/services/auth_storage.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
+import 'package:omniya/core/services/auth_storage.dart';
 import 'package:omniya/view/home/home.dart';
 
 class PinScreen extends StatefulWidget {

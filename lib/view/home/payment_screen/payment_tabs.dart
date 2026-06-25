@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:omniya/const/app_color.dart';
+import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 
 class PaymentTabsWidget extends StatelessWidget {
   final String selectedMethod;
@@ -39,7 +39,7 @@ class PaymentTabsWidget extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  "الدفع الإلكتروني",
+                  AppLocalizations.of(context)!.payment_method_online,
                   style: TextStyle(
                     color: selectedMethod == "online"
                         ? AppColors.text(context)
@@ -62,7 +62,7 @@ class PaymentTabsWidget extends StatelessWidget {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  "تحويل بنكي",
+                  AppLocalizations.of(context)!.payment_method_bank,
                   style: TextStyle(
                     color: selectedMethod == "bank"
                         ? AppColors.text(context)

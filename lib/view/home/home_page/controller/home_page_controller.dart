@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/url.dart';
-import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/core/const/url.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/model/user_model.dart';
-import 'package:omniya/view/auth/services/api_client.dart';
+import 'package:omniya/core/services/api_client.dart';
 
 enum HomeState {
   loading,

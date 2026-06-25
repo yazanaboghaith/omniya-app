@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_color.dart';
-import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/model/bank_model.dart';
 import 'package:omniya/model/payment_methods_response.dart';
 import 'package:omniya/view/home/payment_screen/const/custom_glass_dropdown.dart';
-import 'package:omniya/view/home/payment_screen/controller/bankController.dart';
+import 'package:omniya/view/home/payment_screen/controller/bank_controller.dart';
 import 'package:omniya/view/home/payment_screen/controller/payment_screen_controller.dart';
 
 class AddBankPaymentCard extends StatelessWidget {
@@ -93,7 +93,7 @@ class AddBankPaymentCard extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: isFormValid
                       ? Colors.green.withValues(alpha: 0.6)
-                      : Colors.grey.withOpacity(0.15),
+                      : Colors.grey.withValues(alpha: 0.15),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
@@ -179,7 +179,8 @@ class OnlinePaymentGateways extends StatelessWidget {
     }
 
     if (gateways.isEmpty) {
-      return const Center(child: Text("لا توجد بوابات دفع"));
+      return Center(
+          child: Text(AppLocalizations.of(context)!.no_payment_gateways));
     }
 
     return GridView.builder(
@@ -199,7 +200,7 @@ class OnlinePaymentGateways extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: Colors.grey.withOpacity(0.3)),
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [

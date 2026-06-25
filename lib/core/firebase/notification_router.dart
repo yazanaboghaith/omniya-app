@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:omniya/main.dart';
 import 'package:omniya/view/auth/log_in.dart';
-import 'package:omniya/view/auth/services/auth_storage.dart';
+import 'package:omniya/core/services/auth_storage.dart';
 import 'package:omniya/view/home/notification/notifications.dart';
 
 class NotificationRouter {

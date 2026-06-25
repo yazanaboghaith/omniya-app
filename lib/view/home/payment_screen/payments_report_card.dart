@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_color.dart';
-import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/model/transactions_model.dart';
 import 'package:omniya/view/home/payment_screen/controller/payment_screen_controller.dart';
 
@@ -145,10 +145,14 @@ class _PaymentsReportCardState extends State<PaymentsReportCard> {
   Widget _buildPaymentItemFromApi(
       double w, BuildContext context, TransactionModel item, bool isLast) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isAccepted = item.status == AppLocalizations.of(context)!.accepted ||
-        item.status == "approved" ||
-        item.status == "1";
+    bool isAcceptedStatus(String status) {
+      final s = status.trim().toLowerCase();
 
+      return s == "مقبول" || s == "accepted" || s == "approved" || s == "1";
+    }
+
+    final isAccepted = isAcceptedStatus(item.status);
+    debugPrint("STATUS = ${item.status}");
     return Container(
       margin: EdgeInsets.only(bottom: isLast ? 0 : 12),
       padding: EdgeInsets.all(w * 0.04 < 16 ? w * 0.04 : 16),
@@ -186,7 +190,7 @@ class _PaymentsReportCardState extends State<PaymentsReportCard> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text("${item.amount} ${AppLocalizations.of(context)!.currency}",
+              Text("${item.amount} ${AppLocalizations.of(context)!.syp}",
                   style: AppTextStyles.text17Bold(context)),
               SizedBox(height: MediaQuery.of(context).size.height * 0.015),
               Container(
@@ -195,7 +199,7 @@ class _PaymentsReportCardState extends State<PaymentsReportCard> {
                 decoration: BoxDecoration(
                   color: isAccepted
                       ? Colors.green.withValues(alpha: 0.6)
-                      : Colors.red.withValues(alpha: 0.6),
+                      : Colors.orange.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(item.status, style: AppTextStyles.text13(context)),

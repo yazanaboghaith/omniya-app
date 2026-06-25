@@ -22,7 +22,7 @@
   "retry": "Retry",
 
   "current_Balance": "Current Balance",
-  "currency": "SYP",
+  
   "total_Usage": "Total Usage",
   "unlimited_Subscription": "Unlimited Subscription",
   "current_Speed": "Current Speed",
@@ -70,21 +70,22 @@
   "confirm_buy_package": "Are you sure you want to buy this package?",
   "package_activated_success": "Package activated successfully!",
   "activating_package": "Activating package...",
-
+"notifications":"notifications",
+"no_notifications":"No notifications",
   "orders_report": "Orders Report",
   "order": "Order",
   "rejected": "Rejected",
   "date": "Date: ",
   "invalid_code": "The code you entered is incorrect",
-
+"completed":"completed",
   "enter_pin": "Enter PIN code",
   "login": "Login",
-
+"canceled":"canceled",
   "error_loading_data": "Error loading data",
   "call_not_available": "Call is not available at the moment",
   "contact_support_reset_password": "Please contact customer support to reset your password via:",
   "call": "Call",
-
+ "no_payment_gateways": "No payment gateways",
   "welcome": "Welcome",
   "login_to_account": "Login to your account",
   "username_or_phone": "Username / Phone number",
@@ -114,7 +115,6 @@
   "pin_4_digits_only": "Enter 4 digits only",
   "pin_must_be_4_digits": "PIN must be 4 digits",
   "save": "Save",
-  "enter_pin": "Enter your PIN",
   "verified_successfully": "Verified successfully",
   "confirm_identity_fingerprint": "Please confirm your identity using fingerprint",
   "fingerprint_verified_success": "Fingerprint verified successfully",
@@ -161,6 +161,65 @@
 
   "confirm_request_title": "Confirm Request",
   "confirm_request_message": "Do you want to confirm request: {name} ?",
+"syp":"SYP",
+  "loading_sending": "Sending...",
+   "bank_payment": "Bank Payment",
+  "online_payment": "Online Payment",
 
-  "loading_sending": "Sending..."
+  "payment_success": "Payment Success",
+  "payment_pending": "Payment Pending",
+  "payment_error": "Payment Error",
+
+  "payment_confirmed_successfully": "Payment Confirmed Successfully",
+  "payment_not_confirmed_yet": "Payment Not Confirmed Yet",
+
+  "payment_status_check_error": "An error occurred while checking payment status",
+
+  "enter_payment_amount": "Enter Payment Amount",
+  "payment_gateway": "Payment Gateway",
+
+  "confirm_payment": "Confirm Payment",
+
+  "payment_creation_failed": "Payment Creation Failed",
+
+  "missing_data": "Missing Data",
+  "please_fill_all_fields": "Please fill in all fields",
+
+  "payment_completed": "Operation Completed",
+  "payment_sent_successfully": "Payment Sent Successfully",
+  "payment_send_failed": "Failed to Send Payment",
+
+  "sending_error": "An error occurred while sending",
+
+  "payment_reference_number": "Reference Number",
+  "payment_amount": "Payment Amount",
+  "gateway": "Gateway",
+
+  "transaction_id": "Transaction ID",
+  "payment_url": "Payment URL",
+
+  "browser_opened": "Browser Opened",
+
+  "checking_payment": "Checking Payment",
+  "payment_processing": "Processing Payment",
+
+  "loading_payment_methods": "Loading Payment Methods",
+
+  "select_payment_method": "Select Payment Method",
+
+  "bank_transfer": "Bank Transfer",
+  "online_gateway": "Online Gateway",
+  "missing_data_title": "Missing Data",
+"missing_data_message": "Please fill all fields",
+
+"fill_all_fields_message": "Please fill all fields",
+
+"loading_data": "Loading data...",
+"data_loaded": "Data loaded",
+
+"creating_payment": "Creating payment...",
+"reset_session": "Reset session",
+"payment_method_online": "Online Payment",
+"payment_method_bank": "Bank Transfer"  ,
+"identity_verification":"Identity Verification"
 }

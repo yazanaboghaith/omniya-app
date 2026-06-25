@@ -62,7 +62,8 @@ import 'app_localizations_en.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale)
+      : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -70,7 +71,8 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -82,7 +84,8 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
     delegate,
     GlobalMaterialLocalizations.delegate,
     GlobalCupertinoLocalizations.delegate,
@@ -220,12 +223,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Current Balance'**
   String get current_Balance;
-
-  /// No description provided for @currency.
-  ///
-  /// In en, this message translates to:
-  /// **'SYP'**
-  String get currency;
 
   /// No description provided for @total_Usage.
   ///
@@ -491,6 +488,18 @@ abstract class AppLocalizations {
   /// **'Activating package...'**
   String get activating_package;
 
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'notifications'**
+  String get notifications;
+
+  /// No description provided for @no_notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
+  String get no_notifications;
+
   /// No description provided for @orders_report.
   ///
   /// In en, this message translates to:
@@ -521,10 +530,16 @@ abstract class AppLocalizations {
   /// **'The code you entered is incorrect'**
   String get invalid_code;
 
+  /// No description provided for @completed.
+  ///
+  /// In en, this message translates to:
+  /// **'completed'**
+  String get completed;
+
   /// No description provided for @enter_pin.
   ///
   /// In en, this message translates to:
-  /// **'Enter your PIN'**
+  /// **'Enter PIN code'**
   String get enter_pin;
 
   /// No description provided for @login.
@@ -532,6 +547,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Login'**
   String get login;
+
+  /// No description provided for @canceled.
+  ///
+  /// In en, this message translates to:
+  /// **'canceled'**
+  String get canceled;
 
   /// No description provided for @error_loading_data.
   ///
@@ -556,6 +577,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Call'**
   String get call;
+
+  /// No description provided for @no_payment_gateways.
+  ///
+  /// In en, this message translates to:
+  /// **'No payment gateways'**
+  String get no_payment_gateways;
 
   /// No description provided for @welcome.
   ///
@@ -947,14 +974,261 @@ abstract class AppLocalizations {
   /// **'Do you want to confirm request: {name} ?'**
   String confirm_request_message(Object name);
 
+  /// No description provided for @syp.
+  ///
+  /// In en, this message translates to:
+  /// **'SYP'**
+  String get syp;
+
   /// No description provided for @loading_sending.
   ///
   /// In en, this message translates to:
   /// **'Sending...'**
   String get loading_sending;
+
+  /// No description provided for @bank_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Payment'**
+  String get bank_payment;
+
+  /// No description provided for @online_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Online Payment'**
+  String get online_payment;
+
+  /// No description provided for @payment_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Success'**
+  String get payment_success;
+
+  /// No description provided for @payment_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Pending'**
+  String get payment_pending;
+
+  /// No description provided for @payment_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Error'**
+  String get payment_error;
+
+  /// No description provided for @payment_confirmed_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Confirmed Successfully'**
+  String get payment_confirmed_successfully;
+
+  /// No description provided for @payment_not_confirmed_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Not Confirmed Yet'**
+  String get payment_not_confirmed_yet;
+
+  /// No description provided for @payment_status_check_error.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while checking payment status'**
+  String get payment_status_check_error;
+
+  /// No description provided for @enter_payment_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Payment Amount'**
+  String get enter_payment_amount;
+
+  /// No description provided for @payment_gateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Gateway'**
+  String get payment_gateway;
+
+  /// No description provided for @confirm_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Payment'**
+  String get confirm_payment;
+
+  /// No description provided for @payment_creation_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Creation Failed'**
+  String get payment_creation_failed;
+
+  /// No description provided for @missing_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing Data'**
+  String get missing_data;
+
+  /// No description provided for @please_fill_all_fields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all fields'**
+  String get please_fill_all_fields;
+
+  /// No description provided for @payment_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation Completed'**
+  String get payment_completed;
+
+  /// No description provided for @payment_sent_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Sent Successfully'**
+  String get payment_sent_successfully;
+
+  /// No description provided for @payment_send_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to Send Payment'**
+  String get payment_send_failed;
+
+  /// No description provided for @sending_error.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while sending'**
+  String get sending_error;
+
+  /// No description provided for @payment_reference_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference Number'**
+  String get payment_reference_number;
+
+  /// No description provided for @payment_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Amount'**
+  String get payment_amount;
+
+  /// No description provided for @gateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway'**
+  String get gateway;
+
+  /// No description provided for @transaction_id.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction ID'**
+  String get transaction_id;
+
+  /// No description provided for @payment_url.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment URL'**
+  String get payment_url;
+
+  /// No description provided for @browser_opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Browser Opened'**
+  String get browser_opened;
+
+  /// No description provided for @checking_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking Payment'**
+  String get checking_payment;
+
+  /// No description provided for @payment_processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing Payment'**
+  String get payment_processing;
+
+  /// No description provided for @loading_payment_methods.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading Payment Methods'**
+  String get loading_payment_methods;
+
+  /// No description provided for @select_payment_method.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Payment Method'**
+  String get select_payment_method;
+
+  /// No description provided for @bank_transfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer'**
+  String get bank_transfer;
+
+  /// No description provided for @online_gateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Online Gateway'**
+  String get online_gateway;
+
+  /// No description provided for @missing_data_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing Data'**
+  String get missing_data_title;
+
+  /// No description provided for @missing_data_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all fields'**
+  String get missing_data_message;
+
+  /// No description provided for @fill_all_fields_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all fields'**
+  String get fill_all_fields_message;
+
+  /// No description provided for @loading_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading data...'**
+  String get loading_data;
+
+  /// No description provided for @data_loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Data loaded'**
+  String get data_loaded;
+
+  /// No description provided for @creating_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating payment...'**
+  String get creating_payment;
+
+  /// No description provided for @reset_session.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset session'**
+  String get reset_session;
+
+  /// No description provided for @payment_method_online.
+  ///
+  /// In en, this message translates to:
+  /// **'Online Payment'**
+  String get payment_method_online;
+
+  /// No description provided for @payment_method_bank.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer'**
+  String get payment_method_bank;
+
+  /// No description provided for @identity_verification.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity Verification'**
+  String get identity_verification;
 }
 
-class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -963,25 +1237,25 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   }
 
   @override
-  bool isSupported(Locale locale) => <String>['ar', 'en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) =>
+      <String>['ar', 'en'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
-
-
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'ar': return AppLocalizationsAr();
-    case 'en': return AppLocalizationsEn();
+    case 'ar':
+      return AppLocalizationsAr();
+    case 'en':
+      return AppLocalizationsEn();
   }
 
   throw FlutterError(
-    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
-    'an issue with the localizations generation tool. Please file an issue '
-    'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.'
-  );
+      'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+      'an issue with the localizations generation tool. Please file an issue '
+      'on GitHub with a reproducible sample app and the gen-l10n configuration '
+      'that was used.');
 }

@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_notifier.dart';
+import 'package:omniya/core/const/app_notifier.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/model/bank_model.dart';
 import 'package:omniya/model/payment_methods_response.dart';
 import 'package:omniya/view/home/payment_screen/addbank_payment_card.dart';
-import 'package:omniya/view/home/payment_screen/controller/bankController.dart';
+import 'package:omniya/view/home/payment_screen/controller/bank_controller.dart';
 import 'package:omniya/view/home/payment_screen/controller/payment_screen_controller.dart';
 import 'package:omniya/view/home/payment_screen/payment_tabs.dart';
 import 'package:omniya/view/home/payment_screen/payments_report_card.dart';
@@ -112,11 +113,14 @@ class _PaymentScreenState extends State<PaymentScreen>
 
       AppNotifier.instance.show(
         context: context,
-        title: result ? "Payment Success" : "Payment Pending",
-        message: result ? "تم تأكيد الدفع بنجاح" : "لم يتم تأكيد الدفع بعد",
+        title: result
+            ? AppLocalizations.of(context)!.payment_success
+            : AppLocalizations.of(context)!.payment_pending,
+        message: result
+            ? AppLocalizations.of(context)!.payment_confirmed_successfully
+            : AppLocalizations.of(context)!.payment_not_confirmed_yet,
         isSuccess: result,
       );
-
       _resetSession();
     } catch (e) {
       _log("Check payment error: $e");
@@ -124,8 +128,8 @@ class _PaymentScreenState extends State<PaymentScreen>
       if (mounted) {
         AppNotifier.instance.show(
           context: context,
-          title: "Payment Error",
-          message: "حدث خطأ أثناء التحقق من حالة الدفع",
+          title: AppLocalizations.of(context)!.payment_error,
+          message: AppLocalizations.of(context)!.payment_status_check_error,
           isSuccess: false,
         );
       }
@@ -150,18 +154,19 @@ class _PaymentScreenState extends State<PaymentScreen>
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              title: const Text("إدخال مبلغ الدفع"),
+              title: Text(AppLocalizations.of(context)!.enter_payment_amount),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text("بوابة: ${method.name}"),
+                  Text(
+                      "${AppLocalizations.of(context)!.gateway}: ${method.name}"),
                   const SizedBox(height: 10),
                   TextField(
                     controller: amountCtrl,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: "المبلغ",
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.amount,
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                   if (loading)
@@ -174,7 +179,7 @@ class _PaymentScreenState extends State<PaymentScreen>
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(dialogContext),
-                  child: const Text("إلغاء"),
+                  child: Text(AppLocalizations.of(context)!.cancel),
                 ),
                 ElevatedButton(
                   onPressed: loading
@@ -215,7 +220,7 @@ class _PaymentScreenState extends State<PaymentScreen>
 
                           _log("Browser opened");
                         },
-                  child: const Text("تأكيد"),
+                  child: Text(AppLocalizations.of(context)!.confirm_payment),
                 ),
               ],
             );
@@ -279,8 +284,10 @@ class _PaymentScreenState extends State<PaymentScreen>
                               amountController.text.trim().isEmpty) {
                             AppNotifier.instance.show(
                               context: context,
-                              title: "بيانات ناقصة",
-                              message: "يرجى تعبئة جميع الحقول.",
+                              title: AppLocalizations.of(context)!
+                                  .missing_data_title,
+                              message: AppLocalizations.of(context)!
+                                  .missing_data_message,
                               isSuccess: false,
                             );
                             return;
@@ -347,23 +354,26 @@ class _PaymentScreenState extends State<PaymentScreen>
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "تأكيد الدفع",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  AppLocalizations.of(context)!.confirm_payment,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 15),
-                Text("اسم البنك: ${bank?.nameAr ?? ''}"),
+                Text(
+                    "${AppLocalizations.of(context)!.bank_Name} ${bank?.nameAr ?? ''}"),
                 const SizedBox(height: 8),
-                Text("القيمة: $amount"),
+                Text("${AppLocalizations.of(context)!.total_Amount} $amount"),
                 const SizedBox(height: 8),
-                Text("رقم الاشعار: $refNo"),
+                Text(
+                    "${AppLocalizations.of(context)!.notification_Number} $refNo"),
                 const SizedBox(height: 20),
                 Row(
                   children: [
                     Expanded(
                       child: TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text("إلغاء"),
+                        child: Text(AppLocalizations.of(context)!.cancel),
                       ),
                     ),
                     Expanded(
@@ -372,7 +382,7 @@ class _PaymentScreenState extends State<PaymentScreen>
                           Navigator.pop(context);
                           await _submitBankPayment();
                         },
-                        child: const Text("تأكيد"),
+                        child: Text(AppLocalizations.of(context)!.confirm),
                       ),
                     ),
                   ],
@@ -419,7 +429,7 @@ class _PaymentScreenState extends State<PaymentScreen>
 
   Future<void> _submitBankPayment() async {
     setState(() {
-      _checkingPaymentUI = true; 
+      _checkingPaymentUI = true;
     });
 
     try {
@@ -435,8 +445,8 @@ class _PaymentScreenState extends State<PaymentScreen>
       if (success) {
         AppNotifier.instance.show(
           context: context,
-          title: "تمت العملية",
-          message: "تم إرسال الدفعة بنجاح.",
+          title: AppLocalizations.of(context)!.payment_completed,
+          message: AppLocalizations.of(context)!.payment_sent_successfully,
           isSuccess: true,
         );
 
@@ -453,16 +463,16 @@ class _PaymentScreenState extends State<PaymentScreen>
       } else {
         AppNotifier.instance.show(
           context: context,
-          title: "فشل العملية",
-          message: "تعذر إرسال الدفعة.",
+          title: AppLocalizations.of(context)!.error,
+          message: AppLocalizations.of(context)!.payment_send_failed,
           isSuccess: false,
         );
       }
     } catch (e) {
       AppNotifier.instance.show(
         context: context,
-        title: "خطأ",
-        message: "حدث خطأ أثناء الإرسال",
+        title: AppLocalizations.of(context)!.error,
+        message: AppLocalizations.of(context)!.sending_error,
         isSuccess: false,
       );
     } finally {

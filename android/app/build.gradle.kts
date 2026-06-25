@@ -24,7 +24,6 @@ android {
     defaultConfig {
         applicationId = "com.example.omniya"
         
-        // 1. استهداف أندرويد 9 (API 28) فما فوق لحذف ملفات التوافقية القديمة وتصغير الحجم
         minSdk = 28
         
         targetSdk = flutter.targetSdkVersion
@@ -34,16 +33,12 @@ android {
 
     buildTypes {
         release {
-            // إعداد التوقيع الحالي الخاص بك
             signingConfig = signingConfigs.getByName("debug")
             
-            // 2. تفعيل تقنيات الضغط المتقدمة (R8 Optimizer) لحذف الأكواد غير المستخدمة وتشفيرها
             isMinifyEnabled = true
             
-            // 3. تفعيل ضغط وحذف ملفات الـ Assets والموارد غير المستخدمة داخل التطبيق
             isShrinkResources = true
             
-            // 4. استدعاء ملفات قواعد الضغط القياسية للأندرويد
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

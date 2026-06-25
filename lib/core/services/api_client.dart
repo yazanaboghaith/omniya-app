@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'auth_storage.dart';
 import 'auth_service.dart';
 
@@ -11,26 +13,22 @@ class ApiClient {
 
   Future<Map<String, String>> _headers() async {
     final token = await storage.getToken();
-    final languageCode = await storage.storage.read(key: "language") ?? "ar";
 
-    final headers = {
+    final prefs = await SharedPreferences.getInstance();
+    final languageCode = prefs.getString('language') ?? 'ar';
+
+    return {
       "Accept": "application/json",
       "Content-Type": "application/json",
       "Authorization": "Bearer $token",
       "Accept-Language": languageCode,
     };
-
-    print("========== HEADERS ==========");
-    print(headers);
-    print("=============================");
-
-    return headers;
   }
 
   Future<http.Response> get(Uri url) async {
-    print("========== API REQUEST ==========");
-    print("GET URL: $url");
-    print("=================================");
+    debugPrint("========== API REQUEST ==========");
+    debugPrint("GET URL: $url");
+    debugPrint("=================================");
 
     return await _request(
       () async => http.get(url, headers: await _headers()),
@@ -38,10 +36,10 @@ class ApiClient {
   }
 
   Future<http.Response> post(Uri url, Map body) async {
-    print("========== API REQUEST ==========");
-    print("POST URL: $url");
-    print("BODY: $body");
-    print("=================================");
+    debugPrint("========== API REQUEST ==========");
+    debugPrint("POST URL: $url");
+    debugPrint("BODY: $body");
+    debugPrint("=================================");
 
     return await _request(
       () async => http.post(
@@ -57,10 +55,10 @@ class ApiClient {
   ) async {
     final response = await request();
 
-    print("========== API RESPONSE ==========");
-    print("STATUS: ${response.statusCode}");
-    print("BODY: ${response.body}");
-    print("==================================");
+    debugPrint("========== API RESPONSE ==========");
+    debugPrint("STATUS: ${response.statusCode}");
+    debugPrint("BODY: ${response.body}");
+    debugPrint("==================================");
 
     if (response.statusCode == 401) {
       if (_isRefreshing) {

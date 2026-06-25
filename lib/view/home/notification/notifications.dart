@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/model/notification_model.dart';
 import 'package:omniya/view/home/notification/controller/notifications_controller.dart';
 import 'package:provider/provider.dart';
 
-import 'package:omniya/const/app_background.dart';
-import 'package:omniya/const/app_color.dart';
+import 'package:omniya/core/const/app_background.dart';
+import 'package:omniya/core/const/app_color.dart';
 
 class Notifications extends StatefulWidget {
   const Notifications({super.key});
@@ -77,7 +77,10 @@ class _NotificationsState extends State<Notifications> {
                                   ? ListView(
                                       children: [
                                         SizedBox(height: w * 0.5),
-                                        Center(child: Text("لا توجد إشعارات")),
+                                        Center(
+                                            child: Text(
+                                                AppLocalizations.of(context)!
+                                                    .no_notifications)),
                                       ],
                                     )
                                   : ListView.builder(
@@ -156,7 +159,7 @@ class _NotificationsState extends State<Notifications> {
               ),
               SizedBox(width: w * 0.03),
               Text(
-                "الإشعارات",
+                AppLocalizations.of(context)!.notifications,
                 style: AppTextStyles.text24(
                   context,
                 ).copyWith(fontSize: w * 0.06),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_color.dart';
+import 'package:omniya/core/const/app_color.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class SpeedometerWidget extends StatelessWidget {

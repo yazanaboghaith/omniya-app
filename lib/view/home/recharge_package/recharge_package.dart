@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_background.dart';
-import 'package:omniya/const/app_color.dart';
-import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/core/const/app_background.dart';
+import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/view/home/recharge_package/controller/recharge_package_controller.dart';
 
 class RechargePackage extends StatefulWidget {
@@ -383,16 +383,19 @@ class _RechargePackageState extends State<RechargePackage> {
                         SizedBox(
                           height: MediaQuery.of(context).size.height * 0.02,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                        Wrap(
+                          alignment: WrapAlignment.spaceBetween,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Text(
                               AppLocalizations.of(context)!.confirm_buy_package,
                               style: AppTextStyles.text15(context),
                             ),
-                            Text(
-                              quota,
-                              style: AppTextStyles.text19Bold(context),
+                            Center(
+                              child: Text(
+                                quota,
+                                style: AppTextStyles.text19Bold(context),
+                              ),
                             ),
                           ],
                         ),
@@ -404,7 +407,8 @@ class _RechargePackageState extends State<RechargePackage> {
                             Expanded(
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.secondaryText,
+                                  backgroundColor:
+                                      Colors.green.withValues(alpha: 0.6),
                                 ),
                                 onPressed: () async {
                                   setDialogState(() {

@@ -1,8 +1,8 @@
-import 'package:omniya/const/controller/language_provider.dart';
+import 'package:omniya/core/const/controller/language_provider.dart';
 import 'package:omniya/view/auth/controll/log_in_controller.dart';
 import 'package:omniya/view/home/home_page/controller/home_page_controller.dart';
 import 'package:omniya/view/home/notification/controller/notifications_controller.dart';
-import 'package:omniya/view/home/payment_screen/controller/bankController.dart';
+import 'package:omniya/view/home/payment_screen/controller/bank_controller.dart';
 import 'package:omniya/view/home/recharge_package/controller/recharge_package_controller.dart';
 import 'package:omniya/view/home/request_page/addrequest/controller/add_request_controller.dart';
 import 'package:omniya/view/home/request_page/controller/request_page_controller.dart';

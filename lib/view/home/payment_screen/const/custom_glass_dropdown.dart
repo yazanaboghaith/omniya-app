@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_color.dart';
+import 'package:omniya/core/const/app_color.dart';
 
 class CustomGlassDropdown<T> extends StatefulWidget {
   final List<T> items;

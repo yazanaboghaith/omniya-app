@@ -193,8 +193,8 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:omniya/const/app_color.dart';
-import 'package:omniya/const/controller/theme_controller.dart';
+import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/const/controller/theme_controller.dart';
 import 'package:omniya/view/home/home_page/controller/home_page_controller.dart';
 import 'package:omniya/view/home/notification/notifications.dart';
 import 'package:omniya/view/home/profile/profile_bottom_sheet.dart';

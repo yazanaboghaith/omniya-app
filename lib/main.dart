@@ -5,20 +5,20 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:omniya/const/controller/language_provider.dart';
-import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/core/const/controller/language_provider.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/view/auth/log_in.dart';
 import 'package:provider/provider.dart';
 import 'package:omniya/firebase_options.dart';
-import 'package:omniya/view/auth/services/token_refresh_worker.dart';
-import 'package:omniya/view/auth/services/auth_storage.dart';
-import 'package:omniya/view/home/firebase/firebase_services.dart';
-import 'package:omniya/view/home/firebase/notification_service.dart';
+import 'package:omniya/core/services/token_refresh_worker.dart';
+import 'package:omniya/core/services/auth_storage.dart';
+import 'package:omniya/core/firebase/firebase_services.dart';
+import 'package:omniya/core/firebase/notification_service.dart';
 import 'package:omniya/view/home/splash/splash.dart';
 import 'package:omniya/view/home/notification/controller/notifications_controller.dart';
 import 'package:omniya/view/home/notification/notifications.dart';
-import 'package:omniya/const/controller/theme_controller.dart';
-import 'package:omniya/const/multi_provider.dart';
+import 'package:omniya/core/const/controller/theme_controller.dart';
+import 'package:omniya/core/const/multi_provider.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 final LocalAuthentication auth = LocalAuthentication();
@@ -49,7 +49,7 @@ Future<bool> checkUserSecurity() async {
     final result = await showDialog<bool>(
       context: navigatorKey.currentContext!,
       builder: (context) => AlertDialog(
-        title: const Text("أدخل PIN"),
+        title: Text(AppLocalizations.of(context)!.enter_pin),
         content: TextField(
           controller: controller,
           obscureText: true,
@@ -58,13 +58,13 @@ Future<bool> checkUserSecurity() async {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text("إلغاء"),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context, controller.text == "1234");
             },
-            child: const Text("دخول"),
+            child: Text(AppLocalizations.of(context)!.login),
           ),
         ],
       ),
@@ -75,8 +75,12 @@ Future<bool> checkUserSecurity() async {
 
   if (type == "bio") {
     try {
+      final context = navigatorKey.currentContext;
+
       return await auth.authenticate(
-        localizedReason: "تأكيد الهوية",
+        localizedReason: context != null
+            ? AppLocalizations.of(context)!.identity_verification
+            : "Identity verification",
         options: const AuthenticationOptions(biometricOnly: true),
       );
     } catch (e) {
@@ -145,7 +149,7 @@ void main() async {
 
   await ThemeController.init();
   await FirebaseServices.init();
-
+  await LanguageProvider.init();
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
   PlatformDispatcher.instance.onError = (error, stack) {

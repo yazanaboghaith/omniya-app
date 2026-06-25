@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/url.dart';
+import 'package:omniya/core/const/url.dart';
 import 'package:omniya/model/bank_model.dart';
 import 'package:omniya/model/transactions_model.dart';
-import 'package:omniya/view/auth/services/api_client.dart';
+import 'package:omniya/core/services/api_client.dart';
 
 class PaymentBankController with ChangeNotifier {
   final ApiClient apiClient = ApiClient();

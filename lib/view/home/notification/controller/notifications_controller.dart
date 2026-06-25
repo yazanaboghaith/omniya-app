@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_notifier.dart';
-import 'package:omniya/const/url.dart';
+import 'package:omniya/core/const/app_notifier.dart';
+import 'package:omniya/core/const/url.dart';
 import 'package:omniya/model/notification_model.dart';
-import 'package:omniya/view/auth/services/api_client.dart';
+import 'package:omniya/core/services/api_client.dart';
 
 enum NotificationState {
   idle,
@@ -114,8 +114,7 @@ class NotificationsController with ChangeNotifier {
         return false;
       }
       debugPrint("FINAL URL => $apitrackopen");
-      final url =
-          Uri.parse("https://www.omniya.sy/mobile/v1/notifications/track-open");
+      final url = Uri.parse(apitrackopen);
 
       debugPrint("Request URL: $url");
 

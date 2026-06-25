@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/url.dart';
+import 'package:omniya/core/const/url.dart';
 import 'package:omniya/model/orders_response.dart';
-import 'package:omniya/view/auth/services/api_client.dart';
+import 'package:omniya/core/services/api_client.dart';
 
 enum RequestState {
   idle,

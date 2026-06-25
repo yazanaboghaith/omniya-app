@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_color.dart';
+import 'package:omniya/core/const/app_color.dart';
 import 'package:omniya/model/service_package.dart';
 import 'package:omniya/view/home/request_page/addrequest/add_request_card.dart';
 import 'package:omniya/view/home/request_page/controller/request_page_controller.dart';
@@ -26,10 +26,10 @@ class _RequestPageState extends State<RequestPage> {
   void initState() {
     super.initState();
 
-    debugPrint("🚀 [PAGE] initState");
+    debugPrint(" [PAGE] initState");
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      debugPrint("📡 [PAGE] Loading orders + packages");
+      debugPrint(" [PAGE] Loading orders + packages");
 
       context.read<RequestPageController>().getOrders();
       context.read<AddonServiceController>().getServicePackages();
@@ -68,7 +68,7 @@ class _RequestPageState extends State<RequestPage> {
                     selectedPackage: selectedPackage,
                     onPackageChanged: (value) {
                       debugPrint(
-                          "🟡 [PAGE] Package selected => ${value?.name}");
+                          " [PAGE] Package selected => ${value?.name}");
 
                       setState(() {
                         selectedPackage = value;

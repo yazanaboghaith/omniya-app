@@ -1,12 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:omniya/const/app_color.dart';
-import 'package:omniya/const/color.dart';
-import 'package:omniya/const/controller/language_provider.dart';
-import 'package:omniya/l10n/app_localizations.dart';
+import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/const/color.dart';
+import 'package:omniya/core/const/controller/language_provider.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/model/user_model.dart';
-import 'package:omniya/view/auth/services/auth_storage.dart';
+import 'package:omniya/core/services/auth_storage.dart';
 import 'package:omniya/view/home/splash/splash.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
@@ -20,214 +21,214 @@ class ProfileBottomSheet extends StatefulWidget {
 }
 
 class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
-  bool isLoading = false;
+  bool _isLoading = false;
+  String _appVersion = "";
+  @override
+  void initState() {
+    super.initState();
+    _loadVersion();
+  }
+
+  Future<void> _loadVersion() async {
+    final info = await PackageInfo.fromPlatform();
+
+    setState(() {
+      _appVersion = info.version;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final languageProvider = context.watch<LanguageProvider>();
-    final size = MediaQuery.of(context).size;
-    double height = MediaQuery.of(context).size.height;
-    return Directionality(
-      textDirection:
-          languageProvider.isArabic ? TextDirection.rtl : TextDirection.ltr,
-      child: SafeArea(
-        child: SingleChildScrollView(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 600,
-              ),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 15, sigmaY: 5),
-                    child: Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: isDark
-                            ? AppColors.text(context).withValues(alpha: 0.2)
-                            : Colors.grey.withValues(alpha: 0.8),
-                        border: Border.all(
-                          color: AppColors.text(context).withValues(alpha: 0.2),
-                        ),
+    final size = MediaQuery.sizeOf(context);
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 600),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 5),
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: isDark
+                          ? AppColors.text(context).withValues(alpha: 0.2)
+                          : Colors.grey.withValues(alpha: 0.8),
+                      border: Border.all(
+                        color: AppColors.text(context).withValues(alpha: 0.2),
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 50,
-                            height: 5,
-                            decoration: BoxDecoration(
-                              color: AppColors.text(context)
-                                  .withValues(alpha: 0.5),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                          SizedBox(height: height * 0.02),
-                          Text(
-                            AppLocalizations.of(context)!.account_Info,
-                            style: AppTextStyles.text24(context),
-                          ),
-                          SizedBox(height: height * 0.02),
-                          _buildItem(
-                            context,
-                            title: AppLocalizations.of(context)!.user_name,
-                            value: widget.user?.arabicName ??
-                                widget.user?.username ??
-                                "--",
-                          ),
-                          Divider(
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // مقبض السحب السفلي (BottomSheet Drag Handle)
+                        Container(
+                          width: 50,
+                          height: 5,
+                          decoration: BoxDecoration(
                             color:
-                                AppColors.text(context).withValues(alpha: 0.2),
+                                AppColors.text(context).withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          _buildItem(
-                            context,
-                            title: AppLocalizations.of(context)!.phone,
-                            value: widget.user?.phone ??
-                                widget.user?.mobile ??
-                                "--",
-                          ),
-                          Divider(
-                            color:
-                                AppColors.text(context).withValues(alpha: 0.2),
-                          ),
-                          _buildItem(
-                            context,
-                            title: AppLocalizations.of(context)!.service_name,
-                            value: widget.user?.baseService.name ?? "--",
-                          ),
-                          Divider(
-                            color:
-                                AppColors.text(context).withValues(alpha: 0.2),
-                          ),
-                          _buildItem(
-                            context,
-                            title: AppLocalizations.of(context)!
-                                .monthly_subscription,
-                            value:
-                                "${widget.user?.baseService.regPrice ?? 0} ل.س.ج",
-                          ),
-                          Divider(
-                            color:
-                                AppColors.text(context).withValues(alpha: 0.2),
-                          ),
-                          _buildItem(
-                            context,
-                            title: AppLocalizations.of(context)!.expiry_date,
-                            value: widget.user?.expiryDate ?? "--",
-                          ),
-                          Divider(
-                            color:
-                                AppColors.text(context).withValues(alpha: 0.2),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 1),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  AppLocalizations.of(context)!.language,
-                                  style: AppTextStyles.text17Bold(context),
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      languageProvider.isArabic
-                                          ? AppLocalizations.of(context)!.arabic
-                                          : "English",
-                                      style: AppTextStyles.text15(context),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Switch(
-                                      value: languageProvider.isArabic,
-                                      onChanged: (value) async {
-                                        await languageProvider
-                                            .changeLanguage(value);
-                                      },
-                                      activeColor: Colors.white,
-                                      activeTrackColor:
-                                          Colors.green.withValues(alpha: 0.6),
-                                      inactiveThumbColor:
-                                          AppColors.text(context),
-                                      inactiveTrackColor:
-                                          Colors.grey.withValues(alpha: 0.6),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          Divider(
-                            color:
-                                AppColors.text(context).withValues(alpha: 0.2),
-                          ),
-                          SizedBox(height: height * 0.01),
-                          Row(
+                        ),
+                        SizedBox(height: size.height * 0.02),
+
+                        Text(
+                          AppLocalizations.of(context)!.account_Info,
+                          style: AppTextStyles.text24(context),
+                        ),
+                        SizedBox(height: size.height * 0.02),
+
+                        // معلومات المستخدم
+                        _buildItem(
+                          context,
+                          title: AppLocalizations.of(context)!.user_name,
+                          value: widget.user?.arabicName ??
+                              widget.user?.username ??
+                              "--",
+                        ),
+                        _buildDivider(context),
+
+                        _buildItem(
+                          context,
+                          title: AppLocalizations.of(context)!.phone,
+                          value:
+                              widget.user?.phone ?? widget.user?.mobile ?? "--",
+                        ),
+                        _buildDivider(context),
+
+                        _buildItem(
+                          context,
+                          title: AppLocalizations.of(context)!.service_name,
+                          value: widget.user?.baseService.name ?? "--",
+                        ),
+                        _buildDivider(context),
+
+                        _buildItem(
+                          context,
+                          title: AppLocalizations.of(context)!
+                              .monthly_subscription,
+                          value:
+                              "${widget.user?.baseService.regPrice ?? 0} ${AppLocalizations.of(context)!.syp}",
+                        ),
+                        _buildDivider(context),
+
+                        _buildItem(
+                          context,
+                          title: AppLocalizations.of(context)!.expiry_date,
+                          value: widget.user?.expiryDate ?? "--",
+                        ),
+                        _buildDivider(context),
+
+                        // قسم تغيير اللغة
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                AppLocalizations.of(context)!.user_Status,
+                                AppLocalizations.of(context)!.language,
                                 style: AppTextStyles.text17Bold(context),
                               ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: widget.user?.status == "Active"
-                                      ? Colors.green.withValues(alpha: 0.6)
-                                      : Colors.red.withValues(alpha: 0.8),
-                                ),
-                                child: Text(
-                                  widget.user?.arabicStatus ?? "--",
-                                  style: AppTextStyles.text15(context),
-                                ),
+                              Row(
+                                children: [
+                                  Text(
+                                    languageProvider.isArabic
+                                        ? AppLocalizations.of(context)!.arabic
+                                        : "English",
+                                    style: AppTextStyles.text15(context),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Switch(
+                                    value: languageProvider.isArabic,
+                                    onChanged: (value) async {
+                                      await languageProvider
+                                          .changeLanguage(value);
+                                    },
+                                    activeColor: Colors.white,
+                                    activeTrackColor:
+                                        Colors.green.withValues(alpha: 0.6),
+                                    inactiveThumbColor: AppColors.text(context),
+                                    inactiveTrackColor:
+                                        Colors.grey.withValues(alpha: 0.6),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                          SizedBox(height: height * 0.025),
-                          SizedBox(
-                            width: size.width > 400 ? 200 : double.infinity,
-                            child: ElevatedButton(
-                              onPressed: isLoading
-                                  ? null
-                                  : () => _handleLogout(context),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: isDark
-                                    ? AppColors.text(context)
-                                        .withValues(alpha: 0.2)
-                                    : AppColors.text(context)
-                                        .withValues(alpha: 0),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 17),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(26),
-                                ),
-                              ),
-                              child: isLoading
-                                  ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2),
-                                    )
-                                  : Text(
-                                      AppLocalizations.of(context)!.logout,
-                                      style: AppTextStyles.text15BlackBold(),
-                                    ),
+                        ),
+                        _buildDivider(context),
+                        SizedBox(height: size.height * 0.01),
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)!.user_Status,
+                              style: AppTextStyles.text17Bold(context),
                             ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: widget.user?.status == "Active"
+                                    ? Colors.green.withValues(alpha: 0.6)
+                                    : Colors.red.withValues(alpha: 0.8),
+                              ),
+                              child: Text(
+                                widget.user?.arabicStatus ?? "--",
+                                style: AppTextStyles.text15(context),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: size.height * 0.025),
+
+                        SizedBox(
+                          width: size.width > 400 ? 200 : double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _isLoading
+                                ? null
+                                : () => _handleLogout(context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isDark
+                                  ? AppColors.text(context)
+                                      .withValues(alpha: 0.2)
+                                  : AppColors.text(context)
+                                      .withValues(alpha: 0),
+                              padding: const EdgeInsets.symmetric(vertical: 17),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(26),
+                              ),
+                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2),
+                                  )
+                                : Text(
+                                    AppLocalizations.of(context)!.logout,
+                                    style: AppTextStyles.text15BlackBold(),
+                                  ),
                           ),
-                          SizedBox(height: height * 0.02),
-                          Text("v1.0.0", style: AppTextStyles.text13(context)),
-                          SizedBox(height: height * 0.02),
-                        ],
-                      ),
+                        ),
+                        SizedBox(height: size.height * 0.02),
+                        Text(
+                          _appVersion.isEmpty ? "..." : "v$_appVersion",
+                          style: AppTextStyles.text13(context),
+                        ),
+                        SizedBox(height: size.height * 0.02),
+                      ],
                     ),
                   ),
                 ),
@@ -239,10 +240,48 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
     );
   }
 
+  Widget _buildDivider(BuildContext context) {
+    return Divider(
+      color: AppColors.text(context).withValues(alpha: 0.2),
+    );
+  }
+
+  Widget _buildItem(
+    BuildContext context, {
+    required String title,
+    required String value,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              title,
+              style: AppTextStyles.text15(context)
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: AppTextStyles.text15(context),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _handleLogout(BuildContext context) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (_) => Dialog(
+      builder: (dialogContext) => Dialog(
         backgroundColor: Colors.transparent,
         elevation: 0,
         child: ConstrainedBox(
@@ -256,7 +295,7 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(28),
                   border: Border.all(
-                    color: AppColors.text(context).withValues(alpha: 0.1),
+                    color: AppColors.text(dialogContext).withValues(alpha: 0.1),
                     width: 1,
                   ),
                   color: Colors.white30,
@@ -266,15 +305,14 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      AppLocalizations.of(context)!.logout,
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.text17Bold(context),
+                      AppLocalizations.of(dialogContext)!.logout,
+                      style: AppTextStyles.text17Bold(dialogContext),
                     ),
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                    SizedBox(
+                        height: MediaQuery.sizeOf(dialogContext).height * 0.02),
                     Text(
-                      AppLocalizations.of(context)!.confirm_logout,
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.text15(context),
+                      AppLocalizations.of(dialogContext)!.confirm_logout,
+                      style: AppTextStyles.text15(dialogContext),
                     ),
                     const SizedBox(height: 30),
                     Row(
@@ -285,10 +323,10 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                               backgroundColor: AppColors.secondaryText,
                               padding: const EdgeInsets.symmetric(vertical: 10),
                             ),
-                            onPressed: () => Navigator.pop(context, true),
+                            onPressed: () => Navigator.pop(dialogContext, true),
                             child: Text(
-                              AppLocalizations.of(context)!.confirm,
-                              style: AppTextStyles.text15white(context),
+                              AppLocalizations.of(dialogContext)!.confirm,
+                              style: AppTextStyles.text15white(dialogContext),
                             ),
                           ),
                         ),
@@ -300,10 +338,11 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                               elevation: 0,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
-                            onPressed: () => Navigator.pop(context, false),
+                            onPressed: () =>
+                                Navigator.pop(dialogContext, false),
                             child: Text(
-                              AppLocalizations.of(context)!.cancel,
-                              style: AppTextStyles.text15(context),
+                              AppLocalizations.of(dialogContext)!.cancel,
+                              style: AppTextStyles.text15(dialogContext),
                             ),
                           ),
                         ),
@@ -320,14 +359,14 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
 
     if (confirm != true) return;
 
-    setState(() => isLoading = true);
+    setState(() => _isLoading = true);
 
     try {
       final storage = AuthStorage();
       await storage.logout();
 
       if (!mounted) return;
-      if (!context.mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: ksecondarycolor,
@@ -349,7 +388,7 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
         (route) => false,
       );
     } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: ksecondarycolor,
@@ -363,36 +402,8 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
       );
     } finally {
       if (mounted) {
-        setState(() => isLoading = false);
+        setState(() => _isLoading = false);
       }
     }
-  }
-
-  Widget _buildItem(
-    BuildContext context, {
-    required String title,
-    required String value,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Text(title,
-                style: AppTextStyles.text15(context)
-                    .copyWith(fontWeight: FontWeight.bold)),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            flex: 3,
-            child: Text(value,
-                textAlign: TextAlign.left,
-                style: AppTextStyles.text15(context)),
-          ),
-        ],
-      ),
-    );
   }
 }

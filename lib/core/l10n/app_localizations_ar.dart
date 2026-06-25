@@ -72,9 +72,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get current_Balance => 'الرصيد الحالي';
 
   @override
-  String get currency => 'SYP';
-
-  @override
   String get total_Usage => 'الاستهلاك الكلي';
 
   @override
@@ -123,7 +120,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get payment_Added_Success => 'تم إضافة الدفعة بنجاح!';
 
   @override
-  String get payment_Added_Failed => 'فشلت عملية إضافة الدفعة، يرجى المحاولة لاحقاً.';
+  String get payment_Added_Failed =>
+      'فشلت عملية إضافة الدفعة، يرجى المحاولة لاحقاً.';
 
   @override
   String get add_Bank_Payment => 'إضافة دفعة بنك';
@@ -138,7 +136,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get amount => 'القيمة (ل.س.ج)';
 
   @override
-  String get example_Amount => 'Example: 5000';
+  String get example_Amount => 'مثال: 50000';
 
   @override
   String get select_Bank_Warning => 'يرجى اختيار اسم البنك للمتابعة';
@@ -186,7 +184,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get postpaid => 'لاحقة الدفع';
 
   @override
-  String get check_balance_before_purchase => 'يرجى التأكد من الرصيد قبل الشراء';
+  String get check_balance_before_purchase =>
+      'يرجى التأكد من الرصيد قبل الشراء';
 
   @override
   String get no_packages => 'لا توجد باقات';
@@ -207,6 +206,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get activating_package => 'جاري تفعيل الباقة...';
 
   @override
+  String get notifications => 'الإشعارات';
+
+  @override
+  String get no_notifications => 'لاتوجد اشعارات';
+
+  @override
   String get orders_report => 'تقرير الطلبات';
 
   @override
@@ -222,10 +227,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get invalid_code => 'الرمز الذي أدخلته غير صحيح';
 
   @override
-  String get enter_pin => 'أدخل رمز PIN الخاص بك';
+  String get completed => 'مكتمل';
+
+  @override
+  String get enter_pin => 'أدخل رمز المرور (PIN)';
 
   @override
   String get login => 'دخول';
+
+  @override
+  String get canceled => 'ملغي';
 
   @override
   String get error_loading_data => 'حدث خطأ أثناء تحميل البيانات';
@@ -234,10 +245,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get call_not_available => 'تعذر إجراء المكالمة في الوقت الحالي';
 
   @override
-  String get contact_support_reset_password => 'يرجى التواصل مع خدمة العملاء لإعادة تعيين كلمة السر عبر:';
+  String get contact_support_reset_password =>
+      'يرجى التواصل مع خدمة العملاء لإعادة تعيين كلمة السر عبر:';
 
   @override
   String get call => 'اتصال';
+
+  @override
+  String get no_payment_gateways => 'لا توجد بوابات دفع';
 
   @override
   String get welcome => 'أهلاً بك';
@@ -249,7 +264,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get username_or_phone => 'اسم المستخدم / رقم الهاتف';
 
   @override
-  String get quick_login_disabled => 'تم إلغاء قفل الدخول السريع لتغيير اسم المستخدم';
+  String get quick_login_disabled =>
+      'تم إلغاء قفل الدخول السريع لتغيير اسم المستخدم';
 
   @override
   String get password => 'كلمة المرور';
@@ -291,7 +307,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get quick_access_security => 'حماية الدخول السريع';
 
   @override
-  String get choose_security_method => 'لتسهيل الدخول في المرات القادمة، اختر طريقة الحماية:';
+  String get choose_security_method =>
+      'لتسهيل الدخول في المرات القادمة، اختر طريقة الحماية:';
 
   @override
   String get fingerprint => 'بصمة';
@@ -303,13 +320,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get skip => 'تخطي';
 
   @override
-  String get confirm_fingerprint_enable => 'قم بتأكيد البصمة لتفعيل الدخول السريع';
+  String get confirm_fingerprint_enable =>
+      'قم بتأكيد البصمة لتفعيل الدخول السريع';
 
   @override
   String get fingerprint_enabled_success => 'تم تفعيل الدخول بالبصمة';
 
   @override
-  String get fingerprint_failed_or_unavailable => 'فشل التحقق من البصمة أو ميزة البصمة غير متاحة';
+  String get fingerprint_failed_or_unavailable =>
+      'فشل التحقق من البصمة أو ميزة البصمة غير متاحة';
 
   @override
   String get setup_pin => 'إعداد رمز PIN';
@@ -381,7 +400,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get confirm_extension => 'تأكيد التمديد';
 
   @override
-  String get confirm_extension_message => 'هل أنت متأكد من رغبتك في تمديد الاشتراك لمدة';
+  String get confirm_extension_message =>
+      'هل أنت متأكد من رغبتك في تمديد الاشتراك لمدة';
 
   @override
   String get extension_success => 'تم تمديد الاشتراك بنجاح';
@@ -402,16 +422,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cost => 'التكلفة';
 
   @override
-  String get server_error_message => 'حدث خطأ في السيرفر. يرجى المحاولة لاحقاً.';
+  String get server_error_message =>
+      'حدث خطأ في السيرفر. يرجى المحاولة لاحقاً.';
 
   @override
   String get failed_fetch_data => 'فشل جلب البيانات. كود الخطأ: ';
 
   @override
-  String get no_internet_connection => 'لا يوجد اتصال بالإنترنت، يرجى التحقق من الشبكة.';
+  String get no_internet_connection =>
+      'لا يوجد اتصال بالإنترنت، يرجى التحقق من الشبكة.';
 
   @override
-  String get session_expired => 'انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً.';
+  String get session_expired =>
+      'انتهت صلاحية الجلسة، يرجى تسجيل الدخول مجدداً.';
 
   @override
   String get unexpected_error => 'حدث خطأ غير متوقع.';
@@ -437,5 +460,128 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get syp => 'ل.س.ج';
+
+  @override
   String get loading_sending => 'جاري الإرسال...';
+
+  @override
+  String get bank_payment => 'دفع بنكي';
+
+  @override
+  String get online_payment => 'دفع إلكتروني';
+
+  @override
+  String get payment_success => 'نجاح الدفع';
+
+  @override
+  String get payment_pending => 'الدفعة قيد المراجعة';
+
+  @override
+  String get payment_error => 'خطأ في الدفع';
+
+  @override
+  String get payment_confirmed_successfully => 'تم تأكيد الدفع بنجاح';
+
+  @override
+  String get payment_not_confirmed_yet => 'لم يتم تأكيد الدفع بعد';
+
+  @override
+  String get payment_status_check_error => 'حدث خطأ أثناء التحقق من حالة الدفع';
+
+  @override
+  String get enter_payment_amount => 'إدخال مبلغ الدفع';
+
+  @override
+  String get payment_gateway => 'بوابة الدفع';
+
+  @override
+  String get confirm_payment => 'تأكيد الدفع';
+
+  @override
+  String get payment_creation_failed => 'فشل إنشاء عملية الدفع';
+
+  @override
+  String get missing_data => 'بيانات ناقصة';
+
+  @override
+  String get please_fill_all_fields => 'يرجى تعبئة جميع الحقول';
+
+  @override
+  String get payment_completed => 'تمت العملية';
+
+  @override
+  String get payment_sent_successfully => 'تم إرسال الدفعة بنجاح';
+
+  @override
+  String get payment_send_failed => 'تعذر إرسال الدفعة';
+
+  @override
+  String get sending_error => 'حدث خطأ أثناء الإرسال';
+
+  @override
+  String get payment_reference_number => 'رقم الإشعار';
+
+  @override
+  String get payment_amount => 'المبلغ';
+
+  @override
+  String get gateway => 'البوابة';
+
+  @override
+  String get transaction_id => 'رقم العملية';
+
+  @override
+  String get payment_url => 'رابط الدفع';
+
+  @override
+  String get browser_opened => 'تم فتح المتصفح';
+
+  @override
+  String get checking_payment => 'التحقق من حالة الدفع';
+
+  @override
+  String get payment_processing => 'معالجة الدفع';
+
+  @override
+  String get loading_payment_methods => 'جاري تحميل وسائل الدفع';
+
+  @override
+  String get select_payment_method => 'اختر وسيلة الدفع';
+
+  @override
+  String get bank_transfer => 'تحويل بنكي';
+
+  @override
+  String get online_gateway => 'بوابة دفع إلكترونية';
+
+  @override
+  String get missing_data_title => 'بيانات ناقصة';
+
+  @override
+  String get missing_data_message => 'يرجى تعبئة جميع الحقول';
+
+  @override
+  String get fill_all_fields_message => 'يرجى تعبئة جميع الحقول';
+
+  @override
+  String get loading_data => 'جاري تحميل البيانات...';
+
+  @override
+  String get data_loaded => 'تم تحميل البيانات';
+
+  @override
+  String get creating_payment => 'جاري إنشاء عملية الدفع...';
+
+  @override
+  String get reset_session => 'إعادة ضبط الجلسة';
+
+  @override
+  String get payment_method_online => 'الدفع الإلكتروني';
+
+  @override
+  String get payment_method_bank => 'تحويل بنكي';
+
+  @override
+  String get identity_verification => 'تأكيد الدفعة';
 }
