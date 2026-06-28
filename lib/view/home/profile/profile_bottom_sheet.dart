@@ -6,6 +6,7 @@ import 'package:omniya/core/const/controller/language_provider.dart';
 import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/model/user_model.dart';
 import 'package:omniya/core/services/auth_storage.dart';
+import 'package:omniya/view/home/home.dart';
 import 'package:omniya/view/home/splash/splash.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:page_transition/page_transition.dart';
@@ -68,7 +69,6 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // مقبض السحب السفلي (BottomSheet Drag Handle)
                         Container(
                           width: 50,
                           height: 5,
@@ -79,14 +79,11 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                           ),
                         ),
                         SizedBox(height: size.height * 0.02),
-
                         Text(
                           AppLocalizations.of(context)!.account_Info,
                           style: AppTextStyles.text24(context),
                         ),
                         SizedBox(height: size.height * 0.02),
-
-                        // معلومات المستخدم
                         _buildItem(
                           context,
                           title: AppLocalizations.of(context)!.user_name,
@@ -95,7 +92,6 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                               "--",
                         ),
                         _buildDivider(context),
-
                         _buildItem(
                           context,
                           title: AppLocalizations.of(context)!.phone,
@@ -103,14 +99,12 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                               widget.user?.phone ?? widget.user?.mobile ?? "--",
                         ),
                         _buildDivider(context),
-
                         _buildItem(
                           context,
                           title: AppLocalizations.of(context)!.service_name,
                           value: widget.user?.baseService.name ?? "--",
                         ),
                         _buildDivider(context),
-
                         _buildItem(
                           context,
                           title: AppLocalizations.of(context)!
@@ -119,15 +113,12 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                               "${widget.user?.baseService.regPrice ?? 0} ${AppLocalizations.of(context)!.syp}",
                         ),
                         _buildDivider(context),
-
                         _buildItem(
                           context,
                           title: AppLocalizations.of(context)!.expiry_date,
                           value: widget.user?.expiryDate ?? "--",
                         ),
                         _buildDivider(context),
-
-                        // قسم تغيير اللغة
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: Row(
@@ -151,7 +142,16 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                                     onChanged: (value) async {
                                       await languageProvider
                                           .changeLanguage(value);
+
+                                      if (context.mounted) {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            PageTransition(
+                                                type: PageTransitionType.fade,
+                                                child: Home()));
+                                      }
                                     },
+                                    // ignore: deprecated_member_use
                                     activeColor: Colors.white,
                                     activeTrackColor:
                                         Colors.green.withValues(alpha: 0.6),
@@ -166,7 +166,6 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                         ),
                         _buildDivider(context),
                         SizedBox(height: size.height * 0.01),
-
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -191,7 +190,6 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                           ],
                         ),
                         SizedBox(height: size.height * 0.025),
-
                         SizedBox(
                           width: size.width > 400 ? 200 : double.infinity,
                           child: ElevatedButton(

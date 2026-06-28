@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:omniya/core/const/url.dart';
 import 'package:omniya/core/l10n/app_localizations.dart';
@@ -17,7 +16,7 @@ enum HomeState {
 
 class HomePageController with ChangeNotifier {
   final ApiClient apiClient = ApiClient();
-
+  bool _isFetching = false;
   UserModel? user;
   final String apiUserDetails = "${AppApi.url}${AppApi.userdetails}";
   final String apiorderstempextend = "${AppApi.url}${AppApi.orderstempextend}";
@@ -31,6 +30,9 @@ class HomePageController with ChangeNotifier {
   }
 
   Future<void> getUserDetails(BuildContext context) async {
+    if (_isFetching) return; // 🚫 يمنع التكرار
+    _isFetching = true;
+
     final l10n = AppLocalizations.of(context)!;
 
     try {
@@ -45,36 +47,17 @@ class HomePageController with ChangeNotifier {
         user = UserModel.fromJson(data);
         _updateState(HomeState.success);
       } else if (response.statusCode >= 500) {
-        _updateState(
-          HomeState.serverError,
-          error: l10n.server_error_message,
-        );
+        _updateState(HomeState.serverError, error: l10n.server_error_message);
       } else {
         _updateState(
           HomeState.unexpectedError,
           error: "${l10n.failed_fetch_data}${response.statusCode}",
         );
       }
-    } on SocketException catch (e) {
-      debugPrint(' [Network Error]: $e');
-      _updateState(
-        HomeState.noInternet,
-        error: l10n.no_internet_connection,
-      );
     } catch (e) {
-      debugPrint(' [Unknown Error]: $e');
-
-      if (e.toString().contains("SESSION_EXPIRED")) {
-        _updateState(
-          HomeState.unauthorized,
-          error: l10n.session_expired,
-        );
-      } else {
-        _updateState(
-          HomeState.unexpectedError,
-          error: l10n.unexpected_error,
-        );
-      }
+      _updateState(HomeState.unexpectedError, error: l10n.unexpected_error);
+    } finally {
+      _isFetching = false; // مهم جدًا
     }
   }
 

@@ -99,7 +99,7 @@
   "enter_password": "يرجى إدخال كلمة المرور",
   "login_success": "تم تسجيل الدخول بنجاح",
   "login_error": "حدث خطأ أثناء تسجيل الدخول",
-  "no_account": "ليس لديك حساب؟",
+  "no_account": "ليس لديك حساب؟ ",
   "contact_us": "تواصل معنا",
 
   "quick_access_security": "حماية الدخول السريع",

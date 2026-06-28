@@ -298,7 +298,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get login_error => 'حدث خطأ أثناء تسجيل الدخول';
 
   @override
-  String get no_account => 'ليس لديك حساب؟';
+  String get no_account => 'ليس لديك حساب؟ ';
 
   @override
   String get contact_us => 'تواصل معنا';

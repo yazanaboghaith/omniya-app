@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/const/controller/language_provider.dart';
 import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/model/bank_model.dart';
 import 'package:omniya/model/payment_methods_response.dart';
 import 'package:omniya/view/home/payment_screen/const/custom_glass_dropdown.dart';
 import 'package:omniya/view/home/payment_screen/controller/bank_controller.dart';
 import 'package:omniya/view/home/payment_screen/controller/payment_screen_controller.dart';
+import 'package:provider/provider.dart';
 
 class AddBankPaymentCard extends StatelessWidget {
   final PaymentBankController bankController;
@@ -30,81 +32,84 @@ class AddBankPaymentCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
 
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(w * 0.05 < 24 ? w * 0.05 : 24),
-      decoration: _glassDecoration(context),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(AppLocalizations.of(context)!.add_Bank_Payment,
-              style: AppTextStyles.text19Bold(context)),
-          SizedBox(height: w * 0.04),
-          Text(AppLocalizations.of(context)!.bank_Name,
-              style: AppTextStyles.text15(context)),
-          const SizedBox(height: 6),
-          AnimatedBuilder(
-            animation: bankController,
-            builder: (context, _) {
-              return Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 4),
-                child: bankController.isLoading
-                    ? const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Center(child: CircularProgressIndicator()),
-                      )
-                    : CustomGlassDropdown<BankModel>(
-                        isLoading: bankController.isLoading,
-                        items: bankController.banks,
-                        selectedItem: selectedBank,
-                        hint: AppLocalizations.of(context)!.select_Bank,
-                        itemAsString: (bank) => bank.nameAr,
-                        onChanged: onBankChanged,
-                      ),
-              );
-            },
-          ),
-          SizedBox(height: w * 0.04),
-          Row(
-            children: [
-              Expanded(
-                child: _CustomInputField(
-                  label: AppLocalizations.of(context)!.notification_Number,
-                  hint: AppLocalizations.of(context)!.example_Number,
-                  controller: refNoController,
-                ),
-              ),
-              SizedBox(width: w * 0.03),
-              Expanded(
-                child: _CustomInputField(
-                  label: AppLocalizations.of(context)!.amount,
-                  hint: AppLocalizations.of(context)!.example_Amount,
-                  controller: amountController,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: w * 0.06),
-          SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isFormValid
-                      ? Colors.green.withValues(alpha: 0.6)
-                      : Colors.grey.withValues(alpha: 0.15),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
+    return Consumer<LanguageProvider>(
+      builder: (context, lang, _) => Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(w * 0.05 < 24 ? w * 0.05 : 24),
+        decoration: _glassDecoration(context),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(AppLocalizations.of(context)!.add_Bank_Payment,
+                style: AppTextStyles.text19Bold(context)),
+            SizedBox(height: w * 0.04),
+            Text(AppLocalizations.of(context)!.bank_Name,
+                style: AppTextStyles.text15(context)),
+            const SizedBox(height: 6),
+            AnimatedBuilder(
+              animation: bankController,
+              builder: (context, _) {
+                return Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 1, vertical: 4),
+                  child: bankController.isLoading
+                      ? const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      : CustomGlassDropdown<BankModel>(
+                          isLoading: bankController.isLoading,
+                          items: bankController.banks,
+                          selectedItem: selectedBank,
+                          hint: AppLocalizations.of(context)!.select_Bank,
+                          itemAsString: (bank) => bank.nameAr,
+                          onChanged: onBankChanged,
+                        ),
+                );
+              },
+            ),
+            SizedBox(height: w * 0.04),
+            Row(
+              children: [
+                Expanded(
+                  child: _CustomInputField(
+                    label: AppLocalizations.of(context)!.notification_Number,
+                    hint: AppLocalizations.of(context)!.example_Number,
+                    controller: refNoController,
                   ),
                 ),
-                onPressed: isFormValid ? onSubmit : null,
-                child: Text(
-                  AppLocalizations.of(context)!.submit_Payment,
+                SizedBox(width: w * 0.03),
+                Expanded(
+                  child: _CustomInputField(
+                    label: AppLocalizations.of(context)!.amount,
+                    hint: AppLocalizations.of(context)!.example_Amount,
+                    controller: amountController,
+                  ),
                 ),
-              )),
-        ],
+              ],
+            ),
+            SizedBox(height: w * 0.06),
+            SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isFormValid
+                        ? Colors.green.withValues(alpha: 0.6)
+                        : Colors.grey.withValues(alpha: 0.15),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                  ),
+                  onPressed: isFormValid ? onSubmit : null,
+                  child: Text(
+                    AppLocalizations.of(context)!.submit_Payment,
+                  ),
+                )),
+          ],
+        ),
       ),
     );
   }

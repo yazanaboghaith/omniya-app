@@ -19,8 +19,10 @@ class LanguageProvider extends ChangeNotifier {
     if (_savedLanguageCode != null) {
       return Locale(_savedLanguageCode!);
     }
-    final deviceLanguage = PlatformDispatcher.instance.locale.languageCode;
-    return deviceLanguage == 'en' ? const Locale('en') : const Locale('ar');
+
+    final lang = PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+
+    return lang == 'ar' ? const Locale('ar') : const Locale('en');
   }
 
   Future<void> changeLanguage(bool arabic) async {

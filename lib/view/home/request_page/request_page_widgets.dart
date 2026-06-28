@@ -5,13 +5,69 @@ import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/view/home/request_page/controller/request_page_controller.dart';
 import 'package:provider/provider.dart';
 
+/// =====================
+/// STATUS MODEL (FIX)
+/// =====================
+
+enum OrderStatus {
+  completed,
+  canceled,
+  rejected,
+  pending,
+  unknown,
+}
+
+OrderStatus parseStatus(String status) {
+  final s = status.trim().toLowerCase();
+
+  if (s.contains("completed") || s.contains("مكتمل")) {
+    return OrderStatus.completed;
+  }
+  if (s.contains("canceled") || s.contains("cancelled") || s.contains("ملغي")) {
+    return OrderStatus.canceled;
+  }
+  if (s.contains("rejected") || s.contains("مرفوض")) {
+    return OrderStatus.rejected;
+  }
+  if (s.contains("pending") || s.contains("waiting") || s.contains("قيد")) {
+    return OrderStatus.pending;
+  }
+
+  return OrderStatus.unknown;
+}
+
+Color getStatusColor(OrderStatus status) {
+  switch (status) {
+    case OrderStatus.completed:
+      return Colors.green.withValues(alpha: 0.6);
+    case OrderStatus.canceled:
+      return Colors.red.withValues(alpha: 0.6);
+    case OrderStatus.rejected:
+      return Colors.red.withValues(alpha: 0.6);
+    case OrderStatus.pending:
+      return Colors.orange.withValues(alpha: 0.6);
+    case OrderStatus.unknown:
+      return Colors.grey.withValues(alpha: 0.6);
+  }
+}
+
+/// =====================
+/// HEADER
+/// =====================
+
 Widget buildHeaderTitle(BuildContext context, double h) {
   return Padding(
     padding: const EdgeInsets.only(right: 4, bottom: 4),
-    child: Text(AppLocalizations.of(context)!.orders_report,
-        style: AppTextStyles.text19Bold(context)),
+    child: Text(
+      AppLocalizations.of(context)!.orders_report,
+      style: AppTextStyles.text19Bold(context),
+    ),
   );
 }
+
+/// =====================
+/// SEARCH
+/// =====================
 
 Widget buildSearchField(
   BuildContext context,
@@ -24,9 +80,7 @@ Widget buildSearchField(
   return TextField(
     controller: controller,
     onChanged: (value) {
-      if (debounce?.isActive ?? false) {
-        debounce!.cancel();
-      }
+      if (debounce?.isActive ?? false) debounce!.cancel();
 
       setDebounce(
         Timer(const Duration(milliseconds: 250), () {
@@ -62,6 +116,10 @@ Widget buildSearchField(
   );
 }
 
+/// =====================
+/// BODY
+/// =====================
+
 Widget buildBody(
   BuildContext context,
   RequestPageController controller,
@@ -95,7 +153,7 @@ Widget buildBody(
 
   if (orders.isEmpty) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 40),
+      padding: const EdgeInsets.symmetric(vertical: 40),
       child: Center(child: Text(AppLocalizations.of(context)!.no_Data)),
     );
   }
@@ -106,18 +164,16 @@ Widget buildBody(
       ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        padding: EdgeInsets.zero,
         itemCount: orders.length,
         itemBuilder: (context, index) {
           final item = orders[index];
-          final status = item.status.toString().trim();
 
           return buildRequestCard(
             context,
             item.orderType,
             item.service,
             item.timestamp,
-            status,
+            item.status.toString(),
           );
         },
       ),
@@ -130,6 +186,10 @@ Widget buildBody(
   );
 }
 
+/// =====================
+/// PAGINATION
+/// =====================
+
 Widget buildPagination(
   BuildContext context,
   RequestPageController controller,
@@ -140,56 +200,30 @@ Widget buildPagination(
       children: [
         Expanded(
           child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: controller.currentPage > 1
-                  ? Colors.blueGrey
-                  : Colors.grey.shade400,
-              foregroundColor: AppColors.text(context),
-            ),
-            onPressed: controller.currentPage > 1
-                ? () {
-                    debugPrint(
-                        "الضغط على السابق | الصفحة الحالية: ${controller.currentPage}");
-                    controller.loadPreviousPage();
-                  }
-                : null,
-            child: Text(
-              AppLocalizations.of(context)!.previous,
-              style: AppTextStyles.text15(context),
-            ),
+            onPressed:
+                controller.currentPage > 1 ? controller.loadPreviousPage : null,
+            child: Text(AppLocalizations.of(context)!.previous),
           ),
         ),
         const SizedBox(width: 10),
         Text(
           "${AppLocalizations.of(context)!.page} ${controller.currentPage}",
-          style: TextStyle(color: AppColors.text(context)),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: controller.hasNextPage
-                  ? Colors.green.withValues(alpha: 0.6)
-                  : Colors.grey.shade400,
-              foregroundColor: Colors.white,
-            ),
-            onPressed: controller.hasNextPage
-                ? () {
-                    debugPrint(
-                        "الضغط على التالي | الصفحة الحالية: ${controller.currentPage}");
-                    controller.loadNextPage();
-                  }
-                : null,
-            child: Text(
-              AppLocalizations.of(context)!.next,
-              style: AppTextStyles.text15(context),
-            ),
+            onPressed: controller.hasNextPage ? controller.loadNextPage : null,
+            child: Text(AppLocalizations.of(context)!.next),
           ),
         ),
       ],
     ),
   );
 }
+
+/// =====================
+/// CARD (FIXED)
+/// =====================
 
 Widget buildRequestCard(
   BuildContext context,
@@ -200,26 +234,8 @@ Widget buildRequestCard(
 ) {
   final isDark = Theme.of(context).brightness == Brightness.dark;
 
-  final normalizedStatus = status.trim();
-
-  Color statusColor;
-
-  switch (normalizedStatus) {
-    case "مكتمل":
-      statusColor = Colors.green.withValues(alpha: 0.6);
-      break;
-
-    case "ملغي":
-      statusColor = Colors.red.withValues(alpha: 0.6);
-      break;
-
-    case "قيد الانتظار":
-      statusColor = Colors.orange.withValues(alpha: 0.6);
-      break;
-
-    default:
-      statusColor = Colors.grey.withValues(alpha: 0.6);
-  }
+  final parsedStatus = parseStatus(status);
+  final statusColor = getStatusColor(parsedStatus);
 
   return Container(
     margin: const EdgeInsets.only(bottom: 12),
@@ -236,7 +252,6 @@ Widget buildRequestCard(
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /// HEADER
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -249,59 +264,35 @@ Widget buildRequestCard(
                     title.isNotEmpty
                         ? title
                         : AppLocalizations.of(context)!.order,
-                    style: AppTextStyles.text17Bold(context),
                   ),
                   const SizedBox(height: 6),
-                  Text(
-                    subtitle,
-                    style: AppTextStyles.text15(context),
-                  ),
+                  Text(subtitle),
                 ],
               ),
             ),
 
-            const SizedBox(width: 8),
-
-            /// STATUS BADGE
+            /// STATUS
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 6,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
                 color: statusColor,
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Text(
-                status,
-                style: AppTextStyles.text13(context),
-              ),
+              child: Text(status),
             ),
           ],
         ),
-
         const Padding(
-          padding: EdgeInsets.symmetric(vertical: 12),
-          child: Divider(
-            height: 1,
-            thickness: 1,
-            endIndent: 5,
-            indent: 5,
-          ),
+          padding: EdgeInsets.symmetric(vertical: 8),
+          child: Divider(),
         ),
-
-        /// DATE
         Row(
           children: [
-            Text(
-              AppLocalizations.of(context)!.date,
-              style: AppTextStyles.text13Grey(context),
-            ),
+            Text(AppLocalizations.of(context)!.date),
             const SizedBox(width: 6),
             Expanded(
               child: Text(
                 date,
-                style: AppTextStyles.text13Grey(context),
                 overflow: TextOverflow.ellipsis,
               ),
             ),

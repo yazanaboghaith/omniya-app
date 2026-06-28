@@ -28,10 +28,17 @@ class ApiClient {
   Future<http.Response> get(Uri url) async {
     debugPrint("========== API REQUEST ==========");
     debugPrint("GET URL: $url");
+
+    final headers = await _headers();
+
+    headers.forEach((key, value) {
+      debugPrint("$key : $value");
+    });
+
     debugPrint("=================================");
 
     return await _request(
-      () async => http.get(url, headers: await _headers()),
+      () async => http.get(url, headers: headers),
     );
   }
 

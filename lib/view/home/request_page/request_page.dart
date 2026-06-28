@@ -67,8 +67,7 @@ class _RequestPageState extends State<RequestPage> {
                   AddRequestCard(
                     selectedPackage: selectedPackage,
                     onPackageChanged: (value) {
-                      debugPrint(
-                          " [PAGE] Package selected => ${value?.name}");
+                      debugPrint(" [PAGE] Package selected => ${value?.name}");
 
                       setState(() {
                         selectedPackage = value;

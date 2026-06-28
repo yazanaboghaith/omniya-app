@@ -29,13 +29,13 @@ class _AddRequestCardState extends State<AddRequestCard> {
   @override
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
+    final l10 = AppLocalizations.of(context)!;
 
     return Consumer<AddonServiceController>(
       builder: (context, controller, _) {
         final package = widget.selectedPackage;
 
         final bool isEnabled = package != null;
-        final l10 = AppLocalizations.of(context)!;
 
         return Container(
           width: double.infinity,
@@ -48,15 +48,33 @@ class _AddRequestCardState extends State<AddRequestCard> {
               SizedBox(height: w * 0.04),
               Text(l10.request_type, style: AppTextStyles.text15(context)),
               const SizedBox(height: 6),
-              controller.isPackagesLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : CustomGlassDropdown<ServicePackage>(
-                      items: controller.servicePackages,
-                      selectedItem: widget.selectedPackage,
-                      hint: l10.choose_request_type,
-                      itemAsString: (item) => item.name,
-                      onChanged: widget.onPackageChanged,
-                    ),
+              if (controller.isPackagesLoading)
+                const Center(child: CircularProgressIndicator())
+              else if (controller.servicePackages.isEmpty)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(15),
+                    border:
+                        Border.all(color: Colors.red.withValues(alpha: 0.3)),
+                  ),
+                  child: Text(
+                    controller.packagesError ?? l10.no_packages,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.text15(context)
+                        .copyWith(color: Colors.redAccent),
+                  ),
+                )
+              else
+                CustomGlassDropdown<ServicePackage>(
+                  items: controller.servicePackages,
+                  selectedItem: widget.selectedPackage,
+                  hint: l10.choose_request_type,
+                  itemAsString: (item) => item.name,
+                  onChanged: widget.onPackageChanged,
+                ),
               SizedBox(height: w * 0.06),
               SizedBox(
                 width: double.infinity,
@@ -94,7 +112,7 @@ class _AddRequestCardState extends State<AddRequestCard> {
     bool showResult = false;
     String message = "";
 
-    final l10 = AppLocalizations.of(context)!;
+    final l10 = AppLocalizations.of(pageContext)!;
     return showDialog(
       context: pageContext,
       barrierDismissible: false,
@@ -114,12 +132,6 @@ class _AddRequestCardState extends State<AddRequestCard> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (showResult) ...[
-                        // Icon(
-                        //   // success : Icons.check_circle ,
-                        //   size: 60,
-                        //   color: success ? Colors.green : Colors.red,
-                        // ),
-                        // const SizedBox(height: 15),
                         Text(message,
                             textAlign: TextAlign.center,
                             style: AppTextStyles.text15(context)),
@@ -153,31 +165,36 @@ class _AddRequestCardState extends State<AddRequestCard> {
                                   String serverMessage = "";
 
                                   try {
-                                    final itemAction = package.actions.first;
+                                    if (package.actions.isEmpty) {
+                                      throw Exception(l10.error);
+                                    }
 
+                                    final itemAction = package.actions.first;
                                     final action =
-                                        itemAction.add ?? itemAction.remove;
+                                        itemAction.create ?? itemAction.remove;
 
                                     if (action == null || action.url.isEmpty) {
-                                      throw Exception("Action URL is empty");
+                                      throw Exception(l10.error);
                                     }
+
+                                    String secureUrl = action.url
+                                        .replaceAll("http://", "https://");
 
                                     final res = await context
                                         .read<AddonServiceController>()
                                         .apiClient
                                         .post(
-                                      Uri.parse(action.url),
+                                      Uri.parse(secureUrl),
                                       {
                                         ...action.body,
                                         "new_service_id": package.id,
                                       },
                                     );
-
                                     final body = json.decode(res.body);
 
                                     serverMessage = body["message"] ??
                                         body["error"] ??
-                                        "لا توجد رسالة";
+                                        l10.error;
                                   } catch (e) {
                                     serverMessage = e.toString();
                                   }

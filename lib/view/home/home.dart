@@ -41,13 +41,11 @@ class _HomeState extends State<Home> {
           onPageChanged: (i) => setState(() => currentIndex = i),
           children: pages,
         ),
-      
         bottomNavigationBar: SafeArea(
           top: false,
           left: false,
           right: false,
-          bottom:
-              true, 
+          bottom: true,
           child: CustomBottomBar(
             currentIndex: currentIndex,
             onTap: (i) {
