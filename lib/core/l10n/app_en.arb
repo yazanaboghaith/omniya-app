@@ -221,5 +221,14 @@
 "reset_session": "Reset session",
 "payment_method_online": "Online Payment",
 "payment_method_bank": "Bank Transfer"  ,
-"identity_verification":"Identity Verification"
+"identity_verification":"Identity Verification",
+
+  "login_success": "Login successful",
+  "login_failed": "Login failed",
+  "connection_error": "Connection error occurred",
+  "logout_failed": "Logout failed",
+  "logout_success": "Logged out successfully",
+  "no_token_found": "No authentication token found",
+  "storage_cleared": "Session data cleared successfully"
+
 }

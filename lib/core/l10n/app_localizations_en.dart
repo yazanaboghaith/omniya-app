@@ -51,10 +51,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancel => 'Cancel';
 
   @override
-  String get logout_success => 'Logout Successful';
+  String get logout_success => 'Logged out successfully';
 
   @override
-  String get logout_failed => 'Logout Failed';
+  String get logout_failed => 'Logout failed';
 
   @override
   String get no_Internet => 'No Internet Connection';
@@ -589,4 +589,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get identity_verification => 'Identity Verification';
+
+  @override
+  String get login_failed => 'Login failed';
+
+  @override
+  String get connection_error => 'Connection error occurred';
+
+  @override
+  String get no_token_found => 'No authentication token found';
+
+  @override
+  String get storage_cleared => 'Session data cleared successfully';
 }

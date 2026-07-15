@@ -200,6 +200,12 @@ Widget buildPagination(
       children: [
         Expanded(
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: controller.currentPage > 1
+                  ? Colors.blueGrey
+                  : Colors.grey.shade400,
+              foregroundColor: AppColors.text(context),
+            ),
             onPressed:
                 controller.currentPage > 1 ? controller.loadPreviousPage : null,
             child: Text(AppLocalizations.of(context)!.previous),
@@ -212,6 +218,12 @@ Widget buildPagination(
         const SizedBox(width: 10),
         Expanded(
           child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: controller.hasNextPage
+                  ? Colors.green.withValues(alpha: 0.6)
+                  : Colors.grey.shade400,
+              foregroundColor: AppColors.text(context),
+            ),
             onPressed: controller.hasNextPage ? controller.loadNextPage : null,
             child: Text(AppLocalizations.of(context)!.next),
           ),

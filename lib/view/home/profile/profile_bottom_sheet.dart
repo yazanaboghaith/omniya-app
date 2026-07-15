@@ -6,6 +6,7 @@ import 'package:omniya/core/const/controller/language_provider.dart';
 import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/model/user_model.dart';
 import 'package:omniya/core/services/auth_storage.dart';
+import 'package:omniya/view/auth/controll/log_in_controller.dart';
 import 'package:omniya/view/home/home.dart';
 import 'package:omniya/view/home/splash/splash.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -318,7 +319,8 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.secondaryText,
+                              backgroundColor:
+                                  Colors.green.withValues(alpha: 0.6),
                               padding: const EdgeInsets.symmetric(vertical: 10),
                             ),
                             onPressed: () => Navigator.pop(dialogContext, true),
@@ -360,8 +362,11 @@ class _ProfileBottomSheetState extends State<ProfileBottomSheet> {
     setState(() => _isLoading = true);
 
     try {
-      final storage = AuthStorage();
-      await storage.logout();
+      final success = await context.read<LoginController>().logout();
+
+      if (!success) {
+        throw Exception("Logout failed");
+      }
 
       if (!mounted) return;
 

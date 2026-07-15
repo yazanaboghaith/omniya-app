@@ -185,13 +185,13 @@ abstract class AppLocalizations {
   /// No description provided for @logout_success.
   ///
   /// In en, this message translates to:
-  /// **'Logout Successful'**
+  /// **'Logged out successfully'**
   String get logout_success;
 
   /// No description provided for @logout_failed.
   ///
   /// In en, this message translates to:
-  /// **'Logout Failed'**
+  /// **'Logout failed'**
   String get logout_failed;
 
   /// No description provided for @no_Internet.
@@ -1225,6 +1225,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Identity Verification'**
   String get identity_verification;
+
+  /// No description provided for @login_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed'**
+  String get login_failed;
+
+  /// No description provided for @connection_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection error occurred'**
+  String get connection_error;
+
+  /// No description provided for @no_token_found.
+  ///
+  /// In en, this message translates to:
+  /// **'No authentication token found'**
+  String get no_token_found;
+
+  /// No description provided for @storage_cleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Session data cleared successfully'**
+  String get storage_cleared;
 }
 
 class _AppLocalizationsDelegate

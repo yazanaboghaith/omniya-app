@@ -199,7 +199,6 @@ class _LoginState extends State<Login> {
 
     return Scaffold(
       body: AppBackground(
-        
         child: Center(
           child: SingleChildScrollView(
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -430,6 +429,7 @@ class _LoginState extends State<Login> {
                         final deviceName = deviceData["device_name"];
 
                         final result = await loginController.login(
+                          context: context,
                           username: userController.text.trim(),
                           password: passwordController.text.trim(),
                           remember: rememberMe ? "1" : "0",

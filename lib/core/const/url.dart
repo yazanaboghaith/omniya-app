@@ -10,6 +10,7 @@ class AppApi {
   ///////////////////////////////////////
   ///////////////////////////////////////login
   static const login = "auth/login";
+  static const logout = "auth/logout";
   static const refresh = "auth/refresh";
   static const userdetails = "user-details/";
   static const apiorders = "orders/";

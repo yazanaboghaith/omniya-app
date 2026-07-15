@@ -54,7 +54,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get logout_success => 'تم تسجيل الخروج بنجاح';
 
   @override
-  String get logout_failed => 'حدث خطأ أثناء تسجيل الخروج';
+  String get logout_failed => 'فشل تسجيل الخروج';
 
   @override
   String get no_Internet => 'لا يوجد اتصال بالإنترنت';
@@ -197,7 +197,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get buy_package => 'شراء باقة';
 
   @override
-  String get confirm_buy_package => 'هل أنت متأكد من شراء الباقة؟';
+  String get confirm_buy_package => 'هل أنت متأكد من شراء باقة؟';
 
   @override
   String get package_activated_success => 'تم تفعيل الباقة بنجاح!';
@@ -584,4 +584,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get identity_verification => 'تأكيد الدفعة';
+
+  @override
+  String get login_failed => 'فشل تسجيل الدخول';
+
+  @override
+  String get connection_error => 'حدث خطأ في الاتصال';
+
+  @override
+  String get no_token_found => 'لم يتم العثور على رمز الدخول';
+
+  @override
+  String get storage_cleared => 'تم مسح بيانات الجلسة بنجاح';
 }

@@ -67,7 +67,7 @@
   "no_packages": "لا توجد باقات",
   "buy_now": "شراء الآن",
   "buy_package": "شراء باقة",
-  "confirm_buy_package": "هل أنت متأكد من شراء الباقة؟",
+  "confirm_buy_package": "هل أنت متأكد من شراء باقة؟",
   "package_activated_success": "تم تفعيل الباقة بنجاح!",
   "activating_package": "جاري تفعيل الباقة...",
 
@@ -214,5 +214,13 @@
 "reset_session": "إعادة ضبط الجلسة",
 "payment_method_online": "الدفع الإلكتروني",
 "payment_method_bank": "تحويل بنكي",
-"identity_verification":"تأكيد الدفعة"
+"identity_verification":"تأكيد الدفعة",
+ "login_success": "تم تسجيل الدخول بنجاح",
+  "login_failed": "فشل تسجيل الدخول",
+  "connection_error": "حدث خطأ في الاتصال",
+  "logout_failed": "فشل تسجيل الخروج",
+  "logout_success": "تم تسجيل الخروج بنجاح",
+  "no_token_found": "لم يتم العثور على رمز الدخول",
+  "storage_cleared": "تم مسح بيانات الجلسة بنجاح"
+
 }

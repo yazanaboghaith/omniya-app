@@ -2,12 +2,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:omniya/core/const/url.dart';
+import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/core/services/auth_storage.dart';
 
 class LoginController with ChangeNotifier {
   bool isLoading = false;
   final AuthStorage storage = AuthStorage();
-
+  final String apilogout = "${AppApi.url}${AppApi.logout}";
+  /////////////////////////////
+  ////////////////////////////
+  ////////////////////////////
+  ///////////////////////////
   Future<LoginResult> login({
     required String username,
     required String password,
@@ -15,6 +20,7 @@ class LoginController with ChangeNotifier {
     required String fcmToken,
     required String deviceType,
     required String deviceName,
+    required BuildContext context,
     // required String deviceUuid,
   }) async {
     try {
@@ -103,7 +109,7 @@ class LoginController with ChangeNotifier {
 
         return LoginResult(
           success: true,
-          message: "تم تسجيل الدخول بنجاح",
+          message: AppLocalizations.of(context)!.login_success,
           data: data,
         );
       }
@@ -111,7 +117,7 @@ class LoginController with ChangeNotifier {
       final errorMessage = data["message"] ??
           data["error"] ??
           data["errors"]?.toString() ??
-          "فشل تسجيل الدخول";
+          AppLocalizations.of(context)!.login_failed;
 
       // debugPrint("ERROR MESSAGE:${errorMessage}");
 
@@ -123,13 +129,93 @@ class LoginController with ChangeNotifier {
       isLoading = false;
       notifyListeners();
 
-      // قم بإلغاء التعليق عن هذا السطر لتعرف الخطأ الحقيقي في الكونسول
       debugPrint("Catch Error: $e");
 
       return LoginResult(
         success: false,
-        message: "حدث خطأ في الاتصال",
+        message: AppLocalizations.of(context)!.connection_error,
       );
+    }
+  }
+
+/////////////////////////////
+//////////////////////////////
+/////////////////////////////
+//////////////////////////////
+////////////////////////////
+  Future<bool> logout() async {
+    try {
+      debugPrint("\n========== LOGOUT START ==========");
+
+      final token = await storage.getToken();
+
+      debugPrint("Saved Token => $token");
+
+      if (token == null || token.isEmpty) {
+        debugPrint("No token found");
+        return false;
+      }
+
+      final uri = Uri.parse("${AppApi.url}${AppApi.logout}");
+      debugPrint("LOGOUT FULL URL => ${uri.toString()}");
+      final headers = {
+        // "Accept": "application/json",
+        // "Content-Type": "application/json",
+        // "Accept-Language": "ar",
+        "Authorization": "Bearer $token",
+      };
+
+      debugPrint("LOGOUT URL => $uri");
+
+      headers.forEach((key, value) {
+        debugPrint("$key => $value");
+      });
+
+      final response = await http.post(
+        uri,
+        headers: headers,
+      );
+
+      debugPrint("\n========== LOGOUT RESPONSE ==========");
+      debugPrint("STATUS => ${response.statusCode}");
+      debugPrint("BODY => ${response.body}");
+
+      try {
+        final data = jsonDecode(response.body);
+
+        debugPrint("\nPARSED RESPONSE =>");
+
+        data.forEach((key, value) {
+          debugPrint("$key => $value");
+        });
+      } catch (_) {
+        debugPrint("Response is not JSON");
+      }
+
+      if (response.statusCode == 200 ||
+          response.statusCode == 204 ||
+          response.statusCode == 401) {
+        debugPrint("\n====== CLEARING STORAGE ======");
+
+        await storage.clearAuthData();
+        await storage.storage.delete(key: "token_expiry");
+
+        debugPrint("Storage cleared successfully");
+        debugPrint("Logout Success");
+        debugPrint("================================\n");
+
+        return true;
+      }
+
+      debugPrint("Logout Failed");
+      return false;
+    } catch (e, stack) {
+      debugPrint("\n========== LOGOUT ERROR ==========");
+      debugPrint("ERROR => $e");
+      debugPrint("STACK => $stack");
+      debugPrint("==================================\n");
+
+      return false;
     }
   }
 }
