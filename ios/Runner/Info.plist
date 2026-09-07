@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSLocalNetworkUsageDescription</key>
+    <string>يحتاج التطبيق إلى الوصول إلى الراوتر المتصل بشبكتك المحلية لإدارة إعداداته.</string>
 	<key>CFBundleDisplayName</key>
 	<string>Omniya</string>
 	<key>CFBundleExecutable</key>

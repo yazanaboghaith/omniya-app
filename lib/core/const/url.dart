@@ -1,6 +1,6 @@
 class AppApi {
-  // static const url = "http://192.168.31.141:9000/mobile/v1.1/";
-  static const url = "https://www.omniya.sy/mobile/v1.1/";
+  // static const url = "http://192.168.31.141:9000/mobile/v1.2.1/";
+  static const url = "https://www.omniya.sy/mobile/v1.2.1/";
   ////////////////////////////
   /////////////////////////////
   /////////////////////////////
@@ -33,4 +33,12 @@ class AppApi {
   //////////////////////////////
   static const servicesupdate = "services/update";
   static const orderstempextend = "orders/temp-extend";
+  //////////////////////////////
+  //////////////////////////////
+  ///////////////////////////////
+  static const router = "router";
+  static const routerbrand = "router/brand";
+  static const routercommands = "commands";
+  static const routermodel = "router/model";
+  static const routercommandexecute = "/router/command/execute";
 }

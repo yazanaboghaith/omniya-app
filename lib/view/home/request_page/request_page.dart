@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/const/connection_error_view.dart';
 import 'package:omniya/model/service_package.dart';
 import 'package:omniya/view/home/request_page/addrequest/add_request_card.dart';
 import 'package:omniya/view/home/request_page/controller/request_page_controller.dart';
@@ -18,22 +20,94 @@ class RequestPage extends StatefulWidget {
 
 class _RequestPageState extends State<RequestPage> {
   final TextEditingController searchController = TextEditingController();
+
   Timer? _debounce;
 
   ServicePackage? selectedPackage;
+
+  bool _pageLoading = true;
+  bool _hasConnectionError = false;
 
   @override
   void initState() {
     super.initState();
 
-    debugPrint(" [PAGE] initState");
+    debugPrint('[REQUEST PAGE] initState');
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      debugPrint(" [PAGE] Loading orders + packages");
-
-      context.read<RequestPageController>().getOrders();
-      context.read<AddonServiceController>().getServicePackages();
+      _loadPage();
     });
+  }
+
+  Future<void> _loadPage() async {
+    if (!mounted) return;
+
+    setState(() {
+      _pageLoading = true;
+      _hasConnectionError = false;
+    });
+
+    try {
+      debugPrint('[REQUEST PAGE] Loading data...');
+
+      final requestController = context.read<RequestPageController>();
+
+      final packageController = context.read<AddonServiceController>();
+
+      await Future.wait([
+        requestController.getOrders(),
+        packageController.getServicePackages(),
+      ]);
+
+      if (!mounted) return;
+      final requestError = requestController.error;
+      final packageError = packageController.error;
+
+      debugPrint(
+        '[REQUEST PAGE] requestError = $requestError',
+      );
+
+      debugPrint(
+        '[REQUEST PAGE] packageError = $packageError',
+      );
+
+      if (requestError != null || packageError != null) {
+        setState(() {
+          _pageLoading = false;
+          _hasConnectionError = true;
+        });
+
+        return;
+      }
+
+      setState(() {
+        _pageLoading = false;
+        _hasConnectionError = false;
+      });
+
+      debugPrint(
+        '[REQUEST PAGE] Data loaded successfully',
+      );
+    } catch (e, stackTrace) {
+      debugPrint(
+        '[REQUEST PAGE] Load error: $e',
+      );
+
+      debugPrint(
+        '$stackTrace',
+      );
+
+      if (!mounted) return;
+
+      setState(() {
+        _pageLoading = false;
+        _hasConnectionError = true;
+      });
+    }
+  }
+
+  Future<void> _refresh() async {
+    await _loadPage();
   }
 
   @override
@@ -43,14 +117,22 @@ class _RequestPageState extends State<RequestPage> {
     super.dispose();
   }
 
-  Future<void> _refresh() async {
-    await context.read<RequestPageController>().refreshOrders();
-  }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final w = size.width;
+
+    if (_pageLoading) {
+      return const PageLoadingView();
+    }
+
+    if (_hasConnectionError) {
+      return ConnectionErrorView(
+        isLoading: _pageLoading,
+        onRetry: _loadPage,
+      );
+    }
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SafeArea(
@@ -58,16 +140,24 @@ class _RequestPageState extends State<RequestPage> {
         onRefresh: _refresh,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: EdgeInsets.symmetric(horizontal: w * 0.04, vertical: 12),
+          padding: EdgeInsets.symmetric(
+            horizontal: w * 0.04,
+            vertical: 12,
+          ),
           child: Center(
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 650),
+              constraints: const BoxConstraints(
+                maxWidth: 650,
+              ),
               child: Column(
                 children: [
                   AddRequestCard(
                     selectedPackage: selectedPackage,
                     onPackageChanged: (value) {
-                      debugPrint(" [PAGE] Package selected => ${value?.name}");
+                      debugPrint(
+                        '[REQUEST PAGE] Package selected => '
+                        '${value?.name}',
+                      );
 
                       setState(() {
                         selectedPackage = value;
@@ -77,7 +167,9 @@ class _RequestPageState extends State<RequestPage> {
                   const SizedBox(height: 16),
                   Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(w * 0.07),
+                      borderRadius: BorderRadius.circular(
+                        w * 0.07,
+                      ),
                       border: Border.all(
                         color: AppColors.text(context).withValues(alpha: 0.15),
                       ),
@@ -88,23 +180,58 @@ class _RequestPageState extends State<RequestPage> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(28),
                       child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                        filter: ImageFilter.blur(
+                          sigmaX: 16,
+                          sigmaY: 16,
+                        ),
                         child: Container(
-                          padding: EdgeInsets.all(w * 0.05),
+                          padding: EdgeInsets.all(
+                            w * 0.05,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              buildHeaderTitle(context, size.height),
-                              SizedBox(height: w * 0.04),
+                              buildHeaderTitle(
+                                context,
+                                size.height,
+                              ),
+                              SizedBox(
+                                height: w * 0.04,
+                              ),
                               buildSearchField(
                                 context,
                                 searchController,
                                 _debounce,
-                                (t) => _debounce = t,
+                                (timer) {
+                                  _debounce = timer;
+                                },
                               ),
-                              SizedBox(height: w * 0.04),
+                              SizedBox(
+                                height: w * 0.04,
+                              ),
                               Consumer<RequestPageController>(
-                                builder: (context, controller, child) {
+                                builder: (
+                                  context,
+                                  controller,
+                                  child,
+                                ) {
+                                  if (controller.error != null) {
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback(
+                                      (_) {
+                                        if (!mounted) return;
+
+                                        if (!_hasConnectionError) {
+                                          setState(() {
+                                            _hasConnectionError = true;
+                                          });
+                                        }
+                                      },
+                                    );
+
+                                    return const SizedBox.shrink();
+                                  }
+
                                   return buildBody(
                                     context,
                                     controller,
@@ -120,8 +247,19 @@ class _RequestPageState extends State<RequestPage> {
                   ),
                   const SizedBox(height: 16),
                   Consumer<RequestPageController>(
-                    builder: (context, controller, child) {
-                      return buildPagination(context, controller);
+                    builder: (
+                      context,
+                      controller,
+                      child,
+                    ) {
+                      if (controller.error != null) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return buildPagination(
+                        context,
+                        controller,
+                      );
                     },
                   ),
                 ],

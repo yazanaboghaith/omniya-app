@@ -1,6 +1,8 @@
 import 'dart:async';
-import 'dart:ui'; // مهم جداً لتفعيل الـ ImageFilter
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+
 import 'package:omniya/core/const/app_color.dart';
 import 'package:omniya/core/l10n/app_localizations.dart';
 
@@ -8,6 +10,7 @@ enum NotifyType { success, error }
 
 class AppNotifier {
   static final AppNotifier instance = AppNotifier._internal();
+
   AppNotifier._internal();
 
   OverlayEntry? _entry;
@@ -16,12 +19,14 @@ class AppNotifier {
     required BuildContext context,
     String? title,
     required String message,
-    required bool isSuccess, // لتحديد حالة الأيقونة والألوان بناءً على طلبك
-    String buttonText = "فهمت",
+    required bool isSuccess,
+    String? buttonText,
     VoidCallback? onButtonPressed,
     int seconds = 0,
   }) {
     _entry?.remove();
+
+    final l10n = AppLocalizations.of(context)!;
 
     _entry = OverlayEntry(
       builder: (context) {
@@ -29,7 +34,7 @@ class AppNotifier {
           title: title,
           message: message,
           isSuccess: isSuccess,
-          buttonText: buttonText,
+          buttonText: buttonText ?? l10n.confirm,
           onButtonPressed: onButtonPressed,
           onClose: () {
             _entry?.remove();
@@ -42,27 +47,56 @@ class AppNotifier {
     Overlay.of(context, rootOverlay: true).insert(_entry!);
 
     if (seconds > 0) {
-      Timer(Duration(seconds: seconds), () {
-        _entry?.remove();
-        _entry = null;
-      });
+      Timer(
+        Duration(seconds: seconds),
+        () {
+          _entry?.remove();
+          _entry = null;
+        },
+      );
     }
   }
 
-  void success(BuildContext context, String msg) {
+  void success(
+    BuildContext context,
+    String message,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+
     show(
-        context: context,
-        message: msg,
-        title: AppLocalizations.of(context)!.success,
-        isSuccess: true);
+      context: context,
+      message: message,
+      title: l10n.success,
+      isSuccess: true,
+    );
   }
 
-  void error(BuildContext context, String msg) {
+  void error(
+    BuildContext context,
+    String message,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+
     show(
-        context: context,
-        message: msg,
-        title: AppLocalizations.of(context)!.bank_Name,
-        isSuccess: false);
+      context: context,
+      message: message,
+      title: l10n.error,
+      isSuccess: false,
+    );
+  }
+
+  void msg(
+    BuildContext context,
+    String message,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+
+    show(
+      context: context,
+      message: message,
+      title: l10n.error,
+      isSuccess: false,
+    );
   }
 }
 
@@ -91,7 +125,10 @@ class _NotifyWidget extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(25),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+            filter: ImageFilter.blur(
+              sigmaX: 15,
+              sigmaY: 15,
+            ),
             child: Container(
               width: MediaQuery.of(context).size.width * 0.85,
               padding: const EdgeInsets.all(20),
@@ -131,7 +168,9 @@ class _NotifyWidget extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                        ),
                       ),
                       onPressed: () {
                         onButtonPressed?.call();
@@ -154,6 +193,3 @@ class _NotifyWidget extends StatelessWidget {
     );
   }
 }
-////AppNotifier.instance.error(context, result.message);
-///AppNotifier.instance.success(context, "تم تسجيل الدخول بنجاح");
-///AppNotifier.instance.error(context, "كلمة المرور غير صحيحة");

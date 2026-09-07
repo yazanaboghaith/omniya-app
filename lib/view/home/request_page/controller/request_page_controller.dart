@@ -1,8 +1,10 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:omniya/core/const/url.dart';
 import 'package:omniya/model/orders_response.dart';
 import 'package:omniya/core/services/api_client.dart';
+import 'package:omniya/core/services/api_error_handler.dart';
 
 enum RequestState {
   idle,
@@ -60,14 +62,32 @@ class RequestPageController with ChangeNotifier {
         url += "&search=${Uri.encodeComponent(search)}";
       }
 
-      final response = await apiClient.get(Uri.parse(url));
+      final response = await apiClient.get(
+        Uri.parse(url),
+      );
+      debugPrint(
+        "ORDERS STATUS CODE => ${response.statusCode}",
+      );
+      debugPrint(
+        "ORDERS RESPONSE BODY => ${response.body}",
+      );
+      Map<String, dynamic>? responseData;
+
+      try {
+        final decoded = json.decode(response.body);
+        if (decoded is Map<String, dynamic>) {
+          responseData = decoded;
+        }
+      } catch (e) {
+        debugPrint(
+          "Response is not valid JSON => $e",
+        );
+      }
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         data = OrdersResponseModel.fromJson(jsonData);
-
         final newItems = data?.results ?? [];
-
         if (!loadMore) {
           orders = newItems;
         } else {
@@ -85,17 +105,116 @@ class RequestPageController with ChangeNotifier {
         hasNextPage = data?.next != null;
 
         state = RequestState.success;
-      } else {
-        error = "فشل في جلب البيانات";
+      } else if (response.statusCode == 401) {
+        String? serverMessage;
+
+        if (responseData?["error"] != null) {
+          serverMessage = responseData!["error"].toString();
+        } else if (responseData?["message"] != null) {
+          serverMessage = responseData!["message"].toString();
+        }
+
+        if (serverMessage != null && serverMessage.trim().isNotEmpty) {
+          error = serverMessage;
+        } else if (context != null) {
+          error = ApiErrorHandler.getUnhandledErrorMessage(
+            context: context,
+          );
+        } else {
+          error = "Server Error";
+        }
+
+        state = RequestState.unauthorized;
+
+        debugPrint(
+          "401 SERVER ERROR MESSAGE => $error",
+        );
+      } else if (response.statusCode == 406) {
+        String? serverMessage;
+
+        if (responseData?["error"] != null) {
+          serverMessage = responseData!["error"].toString();
+        } else if (responseData?["message"] != null) {
+          serverMessage = responseData!["message"].toString();
+        }
+
+        if (serverMessage != null && serverMessage.trim().isNotEmpty) {
+          error = serverMessage;
+        } else if (context != null) {
+          error = ApiErrorHandler.getUnhandledErrorMessage(
+            context: context,
+          );
+        } else {
+          error = "Server Error";
+        }
+
         state = RequestState.serverError;
+
+        debugPrint(
+          "406 SERVER ERROR MESSAGE => $error",
+        );
+      } else if (response.statusCode == 429) {
+        String? serverMessage;
+
+        if (responseData?["error"] != null) {
+          serverMessage = responseData!["error"].toString();
+        } else if (responseData?["message"] != null) {
+          serverMessage = responseData!["message"].toString();
+        }
+
+        if (serverMessage != null && serverMessage.trim().isNotEmpty) {
+          error = serverMessage;
+        } else if (context != null) {
+          error = ApiErrorHandler.getUnhandledErrorMessage(
+            context: context,
+          );
+        } else {
+          error = "Server Error";
+        }
+
+        state = RequestState.serverError;
+
+        debugPrint(
+          "429 SERVER ERROR MESSAGE => $error",
+        );
+      }
+
+      // ============================================================
+      // Other Server Errors
+      // ============================================================
+
+      else {
+        if (context != null) {
+          error = ApiErrorHandler.getUnhandledErrorMessage(
+            context: context,
+          );
+        } else {
+          error = "Server Error";
+        }
+
+        state = RequestState.serverError;
+
+        debugPrint(
+          "UNHANDLED SERVER ERROR => ${response.statusCode}",
+        );
+
+        debugPrint(
+          "ERROR MESSAGE => $error",
+        );
       }
     } catch (e) {
+      debugPrint(
+        "GET ORDERS ERROR => $e",
+      );
+
       error = e.toString();
+
       state = RequestState.error;
     }
 
     isLoading = false;
     isLoadMore = false;
+
     notifyListeners();
   }
 
@@ -114,7 +233,11 @@ class RequestPageController with ChangeNotifier {
     if (!hasNextPage || isLoadMore) return;
 
     final nextPage = currentPage + 1;
-    await getOrders(page: nextPage, loadMore: true);
+
+    await getOrders(
+      page: nextPage,
+      loadMore: true,
+    );
   }
 
   Future<void> refreshOrders() async {
@@ -122,6 +245,8 @@ class RequestPageController with ChangeNotifier {
     hasNextPage = true;
     orders.clear();
 
-    await getOrders(page: 1);
+    await getOrders(
+      page: 1,
+    );
   }
 }

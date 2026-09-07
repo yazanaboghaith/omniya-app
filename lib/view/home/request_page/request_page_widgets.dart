@@ -5,10 +5,6 @@ import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/view/home/request_page/controller/request_page_controller.dart';
 import 'package:provider/provider.dart';
 
-/// =====================
-/// STATUS MODEL (FIX)
-/// =====================
-
 enum OrderStatus {
   completed,
   canceled,
@@ -51,10 +47,6 @@ Color getStatusColor(OrderStatus status) {
   }
 }
 
-/// =====================
-/// HEADER
-/// =====================
-
 Widget buildHeaderTitle(BuildContext context, double h) {
   return Padding(
     padding: const EdgeInsets.only(right: 4, bottom: 4),
@@ -64,10 +56,6 @@ Widget buildHeaderTitle(BuildContext context, double h) {
     ),
   );
 }
-
-/// =====================
-/// SEARCH
-/// =====================
 
 Widget buildSearchField(
   BuildContext context,
@@ -115,11 +103,6 @@ Widget buildSearchField(
     ),
   );
 }
-
-/// =====================
-/// BODY
-/// =====================
-
 Widget buildBody(
   BuildContext context,
   RequestPageController controller,
@@ -186,10 +169,6 @@ Widget buildBody(
   );
 }
 
-/// =====================
-/// PAGINATION
-/// =====================
-
 Widget buildPagination(
   BuildContext context,
   RequestPageController controller,
@@ -232,10 +211,6 @@ Widget buildPagination(
     ),
   );
 }
-
-/// =====================
-/// CARD (FIXED)
-/// =====================
 
 Widget buildRequestCard(
   BuildContext context,
@@ -282,8 +257,6 @@ Widget buildRequestCard(
                 ],
               ),
             ),
-
-            /// STATUS
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
               decoration: BoxDecoration(

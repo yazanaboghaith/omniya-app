@@ -45,6 +45,12 @@ class CustomBottomBar extends StatelessWidget {
                     AppLocalizations.of(context)!.payments, 1),
                 _item(context, Icons.assignment,
                     AppLocalizations.of(context)!.requests, 2),
+                _item(
+                  context,
+                  Icons.router,
+                  AppLocalizations.of(context)!.services,
+                  3,
+                ),
               ],
             ),
           ),

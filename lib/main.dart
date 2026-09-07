@@ -1,4 +1,5 @@
 import 'dart:ui';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -12,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:omniya/firebase_options.dart';
 import 'package:omniya/core/services/token_refresh_worker.dart';
 import 'package:omniya/core/services/auth_storage.dart';
+import 'package:omniya/core/services/session_manager.dart';
 import 'package:omniya/core/firebase/firebase_services.dart';
 import 'package:omniya/core/firebase/notification_service.dart';
 import 'package:omniya/view/home/splash/splash.dart';
@@ -20,12 +22,17 @@ import 'package:omniya/view/home/notification/notifications.dart';
 import 'package:omniya/core/const/controller/theme_controller.dart';
 import 'package:omniya/core/const/multi_provider.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> navigatorKey =
+    SessionManager.instance.navigatorKey;
+
 final LocalAuthentication auth = LocalAuthentication();
+
 final AuthStorage storage = AuthStorage();
 
 @pragma('vm:entry-point')
-Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
+Future<void> _firebaseBackgroundHandler(
+  RemoteMessage message,
+) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -46,10 +53,18 @@ Future<bool> checkUserSecurity() async {
   if (type == "pin") {
     final controller = TextEditingController();
 
+    final context = navigatorKey.currentContext;
+
+    if (context == null) {
+      return false;
+    }
+
     final result = await showDialog<bool>(
-      context: navigatorKey.currentContext!,
+      context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.enter_pin),
+        title: Text(
+          AppLocalizations.of(context)!.enter_pin,
+        ),
         content: TextField(
           controller: controller,
           obscureText: true,
@@ -57,14 +72,26 @@ Future<bool> checkUserSecurity() async {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(AppLocalizations.of(context)!.cancel),
+            onPressed: () {
+              Navigator.pop(
+                context,
+                false,
+              );
+            },
+            child: Text(
+              AppLocalizations.of(context)!.cancel,
+            ),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context, controller.text == "1234");
+              Navigator.pop(
+                context,
+                controller.text == "1234",
+              );
             },
-            child: Text(AppLocalizations.of(context)!.login),
+            child: Text(
+              AppLocalizations.of(context)!.login,
+            ),
           ),
         ],
       ),
@@ -81,7 +108,9 @@ Future<bool> checkUserSecurity() async {
         localizedReason: context != null
             ? AppLocalizations.of(context)!.identity_verification
             : "Identity verification",
-        options: const AuthenticationOptions(biometricOnly: true),
+        options: const AuthenticationOptions(
+          biometricOnly: true,
+        ),
       );
     } catch (e) {
       return false;
@@ -93,32 +122,47 @@ Future<bool> checkUserSecurity() async {
 
 class NotificationFlow {
   static RemoteMessage? pendingMessage;
+
   static bool _isProcessing = false;
 
-  static Future<void> setPending(RemoteMessage message) async {
+  static Future<void> setPending(
+    RemoteMessage message,
+  ) async {
     pendingMessage = message;
   }
 
   static Future<void> processPending() async {
-    if (_isProcessing) return;
-    if (pendingMessage == null) return;
+    if (_isProcessing) {
+      return;
+    }
+
+    if (pendingMessage == null) {
+      return;
+    }
 
     _isProcessing = true;
 
-    final message = pendingMessage!;
-    pendingMessage = null;
+    try {
+      final message = pendingMessage!;
 
-    await handleNotification(message);
+      pendingMessage = null;
 
-    _isProcessing = false;
+      await handleNotification(message);
+    } finally {
+      _isProcessing = false;
+    }
   }
 }
 
-Future<void> handleNotification(RemoteMessage message) async {
+Future<void> handleNotification(
+  RemoteMessage message,
+) async {
   final notificationId = message.data['notification_id']?.toString();
 
   if (notificationId != null && notificationId.isNotEmpty) {
-    await NotificationsController().trackOpen(notificationId);
+    await NotificationsController().trackOpen(
+      notificationId,
+    );
   }
 
   final token = await storage.getToken();
@@ -127,16 +171,24 @@ Future<void> handleNotification(RemoteMessage message) async {
     NotificationFlow.pendingMessage = message;
 
     navigatorKey.currentState?.push(
-      MaterialPageRoute(builder: (_) => Login()),
+      MaterialPageRoute(
+        builder: (_) => const Login(),
+      ),
     );
+
     return;
   }
 
   final allowed = await checkUserSecurity();
-  if (!allowed) return;
+
+  if (!allowed) {
+    return;
+  }
 
   navigatorKey.currentState?.push(
-    MaterialPageRoute(builder: (_) => const Notifications()),
+    MaterialPageRoute(
+      builder: (_) => const Notifications(),
+    ),
   );
 }
 
@@ -148,55 +200,100 @@ void main() async {
   );
 
   await ThemeController.init();
+
   await FirebaseServices.init();
+
   await LanguageProvider.init();
+
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack);
+  PlatformDispatcher.instance.onError = (
+    error,
+    stack,
+  ) {
+    FirebaseCrashlytics.instance.recordError(
+      error,
+      stack,
+    );
+
     return true;
   };
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
+  FirebaseMessaging.onBackgroundMessage(
+    _firebaseBackgroundHandler,
+  );
 
   await FirebaseMessaging.instance.requestPermission();
 
   final worker = TokenRefreshWorker();
+
   worker.start();
 
   await NotificationService.init();
 
-  FirebaseMessaging.onMessage.listen((message) {
-    NotificationService.showNotification(message);
-  });
+  FirebaseMessaging.onMessage.listen(
+    (message) {
+      NotificationService.showNotification(
+        message,
+      );
+    },
+  );
 
-  FirebaseMessaging.onMessageOpenedApp.listen((message) async {
-    await NotificationFlow.setPending(message);
-    await NotificationFlow.processPending();
-  });
+  FirebaseMessaging.onMessageOpenedApp.listen(
+    (message) async {
+      await NotificationFlow.setPending(
+        message,
+      );
+
+      await NotificationFlow.processPending();
+    },
+  );
 
   final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
 
   if (initialMessage != null) {
-    await NotificationFlow.setPending(initialMessage);
-    await NotificationFlow.processPending();
+    await NotificationFlow.setPending(
+      initialMessage,
+    );
   }
 
-  runApp(const MyApp());
+  runApp(
+    const MyApp(),
+  );
+
+  if (initialMessage != null) {
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) async {
+        await NotificationFlow.processPending();
+      },
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({
+    super.key,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
     return MultiProvider(
       providers: listproviders,
       child: ValueListenableBuilder<ThemeMode>(
         valueListenable: ThemeController.themeMode,
-        builder: (context, mode, _) {
+        builder: (
+          context,
+          mode,
+          _,
+        ) {
           return Consumer<LanguageProvider>(
-            builder: (context, languageProvider, _) {
+            builder: (
+              context,
+              languageProvider,
+              _,
+            ) {
               return MaterialApp(
                 navigatorKey: navigatorKey,
                 debugShowCheckedModeBanner: false,
@@ -220,7 +317,10 @@ class MyApp extends StatelessWidget {
                   fontFamily: 'Cairo',
                 ),
                 themeMode: mode,
-                builder: (context, child) {
+                builder: (
+                  context,
+                  child,
+                ) {
                   return Directionality(
                     textDirection: languageProvider.isArabic
                         ? TextDirection.rtl

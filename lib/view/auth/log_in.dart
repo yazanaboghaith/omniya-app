@@ -1,9 +1,12 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:omniya/core/const/app_403_notifier.dart';
 import 'package:omniya/core/const/app_background.dart';
 import 'package:omniya/core/const/app_color.dart';
+import 'package:omniya/core/const/app_notifier.dart';
 import 'package:omniya/core/const/color.dart';
 import 'package:omniya/core/const/url.dart';
 import 'package:omniya/core/l10n/app_localizations.dart';
@@ -39,6 +42,20 @@ class _LoginState extends State<Login> {
   String? securityType;
   bool hasSavedSession = false;
   String? originalSavedUsername;
+  Future<bool> _hasInternetConnection() async {
+    try {
+      final result = await InternetAddress.lookup(
+        'google.com',
+      ).timeout(
+        const Duration(seconds: 5),
+      );
+
+      return result.isNotEmpty && result.first.rawAddress.isNotEmpty;
+    } catch (_) {
+      return false;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -76,6 +93,15 @@ class _LoginState extends State<Login> {
     } else {
       showMsg(AppLocalizations.of(context)!.call_not_available);
     }
+  }
+
+  void _showLoginError(String message) {
+    if (!mounted) return;
+
+    AppNotifier.instance.error(
+      context,
+      message,
+    );
   }
 
   Future<void> openWhatsApp(String phone) async {
@@ -303,16 +329,35 @@ class _LoginState extends State<Login> {
                             if (securityType == "bio")
                               ElevatedButton.icon(
                                 onPressed: () async {
-                                  bool success = await loginWithBiometric();
-                                  if (success && mounted) {
-                                    if (!context.mounted) return;
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const Home(),
-                                      ),
-                                    );
+                                  final bool success =
+                                      await loginWithBiometric();
+
+                                  if (!success || !mounted) {
+                                    return;
                                   }
+
+                                  final bool hasInternet =
+                                      await _hasInternetConnection();
+
+                                  if (!mounted) {
+                                    return;
+                                  }
+
+                                  if (!hasInternet) {
+                                    _showLoginError(
+                                      AppLocalizations.of(context)!
+                                          .no_internet_connection,
+                                    );
+
+                                    return;
+                                  }
+
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const Home(),
+                                    ),
+                                  );
                                 },
                                 icon: const Icon(Icons.fingerprint, size: 24),
                                 label: Text(AppLocalizations.of(context)!
@@ -321,16 +366,35 @@ class _LoginState extends State<Login> {
                             if (securityType == "pin")
                               ElevatedButton.icon(
                                 onPressed: () async {
-                                  bool success = await loginWithPinSilent();
-                                  if (success && mounted) {
-                                    if (!context.mounted) return;
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const Home(),
-                                      ),
-                                    );
+                                  final bool success =
+                                      await loginWithPinSilent();
+
+                                  if (!success || !mounted) {
+                                    return;
                                   }
+
+                                  final bool hasInternet =
+                                      await _hasInternetConnection();
+
+                                  if (!mounted) {
+                                    return;
+                                  }
+
+                                  if (!hasInternet) {
+                                    _showLoginError(
+                                      AppLocalizations.of(context)!
+                                          .no_internet_connection,
+                                    );
+
+                                    return;
+                                  }
+
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const Home(),
+                                    ),
+                                  );
                                 },
                                 icon: const Icon(Icons.lock, size: 24),
                                 label: Text(
@@ -423,11 +487,9 @@ class _LoginState extends State<Login> {
 
                       try {
                         final deviceData = await DeviceService.getDeviceData();
-
                         final fcmToken = deviceData["fcm_token"];
                         final deviceType = deviceData["device_type"];
                         final deviceName = deviceData["device_name"];
-
                         final result = await loginController.login(
                           context: context,
                           username: userController.text.trim(),
@@ -437,36 +499,68 @@ class _LoginState extends State<Login> {
                           deviceType: deviceType,
                           deviceName: deviceName,
                         );
-
                         if (!mounted) return;
 
                         if (!result.success) {
-                          showMsg(result.message);
-                          return;
-                        }
+                          if (!result.success) {
+                            if (!result.success) {
+                              if (result.statusCode == 426) {
+                                App403Notifier.instance.show(
+                                  context: context,
+                                  message: result.message,
+                                  link: result.link,
+                                );
+                              } else {
+                                _showLoginError(result.message);
+                              }
 
+                              return;
+                            }
+                          }
+                        }
+                        showMsg(
+                          AppLocalizations.of(context)!.login_success,
+                        );
                         showMsg(AppLocalizations.of(context)!.login_success);
                         if (rememberMe) {
                           final savedSecurity =
                               await securityService.getSecurityType();
                           if (savedSecurity == null) {
-                            await showSecurityOptions();
+                            final securityConfigured =
+                                await showSecurityOptions();
+                            if (!securityConfigured) {
+                              if (!mounted) return;
+                              showMsg(
+                                AppLocalizations.of(context)!
+                                    .quick_login_disabled,
+                              );
+
+                              return;
+                            }
                           }
                         }
-
                         await NotificationFlow.processPending();
                         NotificationFlow.pendingMessage = null;
 
+                        if (!mounted) return;
+
                         if (widget.fromNotification) {
-                          if (!context.mounted) return;
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                               builder: (_) => const Notifications(),
                             ),
                           );
+
                           return;
                         }
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const Home(),
+                          ),
+                        );
                         if (!context.mounted) return;
                         Navigator.pushReplacement(
                           context,
@@ -474,8 +568,20 @@ class _LoginState extends State<Login> {
                             builder: (_) => const Home(),
                           ),
                         );
-                      } catch (e) {
-                        showMsg(AppLocalizations.of(context)!.login_error);
+                      } catch (e, stack) {
+                        debugPrint('========================================');
+                        debugPrint('[LOGIN UI] LOGIN EXCEPTION');
+                        debugPrint('[LOGIN UI] ERROR TYPE: ${e.runtimeType}');
+                        debugPrint('[LOGIN UI] ERROR: $e');
+                        debugPrint('[LOGIN UI] STACK TRACE:');
+                        debugPrint('$stack');
+                        debugPrint('========================================');
+
+                        if (!mounted) return;
+
+                        _showLoginError(
+                          AppLocalizations.of(context)!.login_error,
+                        );
                       }
                     },
               child: loginController.isLoading
@@ -528,8 +634,10 @@ class _LoginState extends State<Login> {
     await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.quick_access_security),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(
+          AppLocalizations.of(context)!.quick_access_security,
+        ),
         content: Text(
           AppLocalizations.of(context)!.choose_security_method,
         ),
@@ -537,46 +645,91 @@ class _LoginState extends State<Login> {
           TextButton(
             onPressed: () {
               selected = "bio";
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
             },
-            child: Text(AppLocalizations.of(context)!.fingerprint),
+            child: Text(
+              AppLocalizations.of(context)!.fingerprint,
+            ),
           ),
           TextButton(
             onPressed: () {
               selected = "pin";
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
             },
-            child: Text(AppLocalizations.of(context)!.pin_code),
+            child: Text(
+              AppLocalizations.of(context)!.pin_code,
+            ),
           ),
           TextButton(
             onPressed: () {
               selected = "none";
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
             },
-            child: Text(AppLocalizations.of(context)!.skip),
+            child: Text(
+              AppLocalizations.of(context)!.skip,
+            ),
           ),
         ],
       ),
     );
 
+    // ============================================================
+    // BIOMETRIC
+    // ============================================================
+
     if (selected == "bio") {
-      bool authenticated = await securityService.authenticateWithBiometrics(
-          AppLocalizations.of(context)!.confirm_fingerprint_enable);
-      if (authenticated) {
-        await securityService.setSecurityType("bio");
-        showMsg(AppLocalizations.of(context)!.fingerprint_enabled_success);
-        return true;
-      } else {
-        showMsg(
-            AppLocalizations.of(context)!.fingerprint_failed_or_unavailable);
+      final authenticated = await securityService.authenticateWithBiometrics(
+        AppLocalizations.of(context)!.confirm_fingerprint_enable,
+      );
+
+      if (!mounted) {
         return false;
       }
-    } else if (selected == "pin") {
-      bool pinSaved = await setupNewPin();
+
+      if (authenticated) {
+        await securityService.setSecurityType(
+          "bio",
+        );
+
+        showMsg(
+          AppLocalizations.of(context)!.fingerprint_enabled_success,
+        );
+
+        return true;
+      }
+
+      // فشل تسجيل البصمة
+      await securityService.clearSecurityData();
+      await securityService.clearLoginSession();
+
+      return false;
+    }
+
+    // ============================================================
+    // PIN
+    // ============================================================
+
+    if (selected == "pin") {
+      final pinSaved = await setupNewPin();
+
       if (pinSaved) {
         return true;
       }
+
+      // لم يتم إدخال PIN
+      await securityService.clearSecurityData();
+      await securityService.clearLoginSession();
+
+      return false;
     }
+
+    // ============================================================
+    // SKIP
+    // ============================================================
+
+    await securityService.clearSecurityData();
+    await securityService.clearLoginSession();
+
     return false;
   }
 

@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @user_name.
   ///
   /// In en, this message translates to:
-  /// **'User Name'**
+  /// **'Username'**
   String get user_name;
 
   /// No description provided for @phone.
@@ -131,7 +131,7 @@ abstract class AppLocalizations {
   /// No description provided for @monthly_subscription.
   ///
   /// In en, this message translates to:
-  /// **'Monthly Subscription'**
+  /// **'Monthly Fee'**
   String get monthly_subscription;
 
   /// No description provided for @expiry_date.
@@ -167,7 +167,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirm_logout.
   ///
   /// In en, this message translates to:
-  /// **'Confirm Logout?'**
+  /// **'Are you sure you want to log out?'**
   String get confirm_logout;
 
   /// No description provided for @confirm.
@@ -194,6 +194,30 @@ abstract class AppLocalizations {
   /// **'Logout failed'**
   String get logout_failed;
 
+  /// No description provided for @canceled.
+  ///
+  /// In en, this message translates to:
+  /// **'Canceled'**
+  String get canceled;
+
+  /// No description provided for @completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completed;
+
+  /// No description provided for @accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get accepted;
+
+  /// No description provided for @rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejected;
+
   /// No description provided for @no_Internet.
   ///
   /// In en, this message translates to:
@@ -217,6 +241,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get success;
+
+  /// No description provided for @unexpected_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unexpected error'**
+  String get unexpected_error;
+
+  /// No description provided for @server_error_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error, please try again'**
+  String get server_error_message;
+
+  /// No description provided for @failed_fetch_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to fetch data. Error code: '**
+  String get failed_fetch_data;
+
+  /// No description provided for @no_internet_connection.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get no_internet_connection;
+
+  /// No description provided for @session_expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired, please log in again'**
+  String get session_expired;
+
+  /// No description provided for @error_loading_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading data'**
+  String get error_loading_data;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @no_Data.
+  ///
+  /// In en, this message translates to:
+  /// **'No Data'**
+  String get no_Data;
+
+  /// No description provided for @previous.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get previous;
+
+  /// No description provided for @page.
+  ///
+  /// In en, this message translates to:
+  /// **'Page'**
+  String get page;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @number.
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get number;
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date: '**
+  String get date;
 
   /// No description provided for @current_Balance.
   ///
@@ -263,7 +371,7 @@ abstract class AppLocalizations {
   /// No description provided for @from.
   ///
   /// In en, this message translates to:
-  /// **'from'**
+  /// **'of'**
   String get from;
 
   /// No description provided for @gigabyte.
@@ -284,156 +392,6 @@ abstract class AppLocalizations {
   /// **'Extra Package'**
   String get extra_Package;
 
-  /// No description provided for @processing_Payment.
-  ///
-  /// In en, this message translates to:
-  /// **'Processing payment...'**
-  String get processing_Payment;
-
-  /// No description provided for @confirm_Add_Bank_Payment.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to add a bank payment?'**
-  String get confirm_Add_Bank_Payment;
-
-  /// No description provided for @bank_Name.
-  ///
-  /// In en, this message translates to:
-  /// **'Bank Name:'**
-  String get bank_Name;
-
-  /// No description provided for @notification_Number.
-  ///
-  /// In en, this message translates to:
-  /// **'Notification Number:'**
-  String get notification_Number;
-
-  /// No description provided for @total_Amount.
-  ///
-  /// In en, this message translates to:
-  /// **'Total Amount:'**
-  String get total_Amount;
-
-  /// No description provided for @payment_Added_Success.
-  ///
-  /// In en, this message translates to:
-  /// **'Payment added successfully!'**
-  String get payment_Added_Success;
-
-  /// No description provided for @payment_Added_Failed.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to add payment, please try again later.'**
-  String get payment_Added_Failed;
-
-  /// No description provided for @add_Bank_Payment.
-  ///
-  /// In en, this message translates to:
-  /// **'Add Bank Payment'**
-  String get add_Bank_Payment;
-
-  /// No description provided for @select_Bank.
-  ///
-  /// In en, this message translates to:
-  /// **'Select Bank'**
-  String get select_Bank;
-
-  /// No description provided for @example_Number.
-  ///
-  /// In en, this message translates to:
-  /// **'Example: 992311'**
-  String get example_Number;
-
-  /// No description provided for @amount.
-  ///
-  /// In en, this message translates to:
-  /// **'Amount (SYP)'**
-  String get amount;
-
-  /// No description provided for @example_Amount.
-  ///
-  /// In en, this message translates to:
-  /// **'Example: 5000'**
-  String get example_Amount;
-
-  /// No description provided for @select_Bank_Warning.
-  ///
-  /// In en, this message translates to:
-  /// **'Please select a bank to continue'**
-  String get select_Bank_Warning;
-
-  /// No description provided for @fill_Fields_Title.
-  ///
-  /// In en, this message translates to:
-  /// **'Fill Fields'**
-  String get fill_Fields_Title;
-
-  /// No description provided for @fill_All_Fields.
-  ///
-  /// In en, this message translates to:
-  /// **'Please fill all fields to continue'**
-  String get fill_All_Fields;
-
-  /// No description provided for @submit_Payment.
-  ///
-  /// In en, this message translates to:
-  /// **'Submit Payment'**
-  String get submit_Payment;
-
-  /// No description provided for @payment_Report.
-  ///
-  /// In en, this message translates to:
-  /// **'Payment Report'**
-  String get payment_Report;
-
-  /// No description provided for @no_Data.
-  ///
-  /// In en, this message translates to:
-  /// **'No Data'**
-  String get no_Data;
-
-  /// No description provided for @previous.
-  ///
-  /// In en, this message translates to:
-  /// **'Previous'**
-  String get previous;
-
-  /// No description provided for @page.
-  ///
-  /// In en, this message translates to:
-  /// **'Page'**
-  String get page;
-
-  /// No description provided for @next.
-  ///
-  /// In en, this message translates to:
-  /// **'Next'**
-  String get next;
-
-  /// No description provided for @accepted.
-  ///
-  /// In en, this message translates to:
-  /// **'Accepted'**
-  String get accepted;
-
-  /// No description provided for @number.
-  ///
-  /// In en, this message translates to:
-  /// **'Number'**
-  String get number;
-
-  /// No description provided for @search.
-  ///
-  /// In en, this message translates to:
-  /// **'search'**
-  String get search;
-
-  /// No description provided for @success.
-  ///
-  /// In en, this message translates to:
-  /// **'success'**
-  String get success;
-
   /// No description provided for @prepaid.
   ///
   /// In en, this message translates to:
@@ -449,7 +407,7 @@ abstract class AppLocalizations {
   /// No description provided for @check_balance_before_purchase.
   ///
   /// In en, this message translates to:
-  /// **'Please check your balance before purchase'**
+  /// **'Check your balance before purchase'**
   String get check_balance_before_purchase;
 
   /// No description provided for @no_packages.
@@ -488,17 +446,11 @@ abstract class AppLocalizations {
   /// **'Activating package...'**
   String get activating_package;
 
-  /// No description provided for @notifications.
+  /// No description provided for @services.
   ///
   /// In en, this message translates to:
-  /// **'notifications'**
-  String get notifications;
-
-  /// No description provided for @no_notifications.
-  ///
-  /// In en, this message translates to:
-  /// **'No notifications'**
-  String get no_notifications;
+  /// **'Services'**
+  String get services;
 
   /// No description provided for @orders_report.
   ///
@@ -512,83 +464,23 @@ abstract class AppLocalizations {
   /// **'Order'**
   String get order;
 
-  /// No description provided for @rejected.
-  ///
-  /// In en, this message translates to:
-  /// **'Rejected'**
-  String get rejected;
-
-  /// No description provided for @date.
-  ///
-  /// In en, this message translates to:
-  /// **'Date: '**
-  String get date;
-
   /// No description provided for @invalid_code.
   ///
   /// In en, this message translates to:
   /// **'The code you entered is incorrect'**
   String get invalid_code;
 
-  /// No description provided for @completed.
+  /// No description provided for @welcome.
   ///
   /// In en, this message translates to:
-  /// **'completed'**
-  String get completed;
-
-  /// No description provided for @enter_pin.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter PIN code'**
-  String get enter_pin;
+  /// **'Welcome'**
+  String get welcome;
 
   /// No description provided for @login.
   ///
   /// In en, this message translates to:
   /// **'Login'**
   String get login;
-
-  /// No description provided for @canceled.
-  ///
-  /// In en, this message translates to:
-  /// **'canceled'**
-  String get canceled;
-
-  /// No description provided for @error_loading_data.
-  ///
-  /// In en, this message translates to:
-  /// **'Error loading data'**
-  String get error_loading_data;
-
-  /// No description provided for @call_not_available.
-  ///
-  /// In en, this message translates to:
-  /// **'Call is not available at the moment'**
-  String get call_not_available;
-
-  /// No description provided for @contact_support_reset_password.
-  ///
-  /// In en, this message translates to:
-  /// **'Please contact customer support to reset your password via:'**
-  String get contact_support_reset_password;
-
-  /// No description provided for @call.
-  ///
-  /// In en, this message translates to:
-  /// **'Call'**
-  String get call;
-
-  /// No description provided for @no_payment_gateways.
-  ///
-  /// In en, this message translates to:
-  /// **'No payment gateways'**
-  String get no_payment_gateways;
-
-  /// No description provided for @welcome.
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome'**
-  String get welcome;
 
   /// No description provided for @login_to_account.
   ///
@@ -599,50 +491,14 @@ abstract class AppLocalizations {
   /// No description provided for @username_or_phone.
   ///
   /// In en, this message translates to:
-  /// **'Username / Phone number'**
+  /// **'Username / Phone'**
   String get username_or_phone;
-
-  /// No description provided for @quick_login_disabled.
-  ///
-  /// In en, this message translates to:
-  /// **'Quick login has been disabled to change username'**
-  String get quick_login_disabled;
 
   /// No description provided for @password.
   ///
   /// In en, this message translates to:
   /// **'Password'**
   String get password;
-
-  /// No description provided for @forgot_password.
-  ///
-  /// In en, this message translates to:
-  /// **'Forgot password?'**
-  String get forgot_password;
-
-  /// No description provided for @remember_me.
-  ///
-  /// In en, this message translates to:
-  /// **'Remember me'**
-  String get remember_me;
-
-  /// No description provided for @or_use_quick_login.
-  ///
-  /// In en, this message translates to:
-  /// **'Or use quick login'**
-  String get or_use_quick_login;
-
-  /// No description provided for @login_fingerprint.
-  ///
-  /// In en, this message translates to:
-  /// **'Login with fingerprint'**
-  String get login_fingerprint;
-
-  /// No description provided for @login_pin.
-  ///
-  /// In en, this message translates to:
-  /// **'Login via PIN'**
-  String get login_pin;
 
   /// No description provided for @enter_username.
   ///
@@ -656,17 +512,17 @@ abstract class AppLocalizations {
   /// **'Please enter password'**
   String get enter_password;
 
-  /// No description provided for @login_success.
+  /// No description provided for @forgot_password.
   ///
   /// In en, this message translates to:
-  /// **'Login successful'**
-  String get login_success;
+  /// **'Forgot password?'**
+  String get forgot_password;
 
-  /// No description provided for @login_error.
+  /// No description provided for @remember_me.
   ///
   /// In en, this message translates to:
-  /// **'Login error occurred'**
-  String get login_error;
+  /// **'Remember me'**
+  String get remember_me;
 
   /// No description provided for @no_account.
   ///
@@ -677,8 +533,62 @@ abstract class AppLocalizations {
   /// No description provided for @contact_us.
   ///
   /// In en, this message translates to:
-  /// **'Contact us'**
+  /// **'Contact Us'**
   String get contact_us;
+
+  /// No description provided for @login_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Login successful'**
+  String get login_success;
+
+  /// No description provided for @login_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Login error'**
+  String get login_error;
+
+  /// No description provided for @login_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed'**
+  String get login_failed;
+
+  /// No description provided for @connection_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection error'**
+  String get connection_error;
+
+  /// No description provided for @quick_login_disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick login disabled to change username'**
+  String get quick_login_disabled;
+
+  /// No description provided for @or_use_quick_login.
+  ///
+  /// In en, this message translates to:
+  /// **'Or use quick login'**
+  String get or_use_quick_login;
+
+  /// No description provided for @login_fingerprint.
+  ///
+  /// In en, this message translates to:
+  /// **'Login with Fingerprint'**
+  String get login_fingerprint;
+
+  /// No description provided for @login_pin.
+  ///
+  /// In en, this message translates to:
+  /// **'Login with PIN'**
+  String get login_pin;
+
+  /// No description provided for @enter_pin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter PIN'**
+  String get enter_pin;
 
   /// No description provided for @quick_access_security.
   ///
@@ -689,7 +599,7 @@ abstract class AppLocalizations {
   /// No description provided for @choose_security_method.
   ///
   /// In en, this message translates to:
-  /// **'To make login easier next time, choose a security method:'**
+  /// **'Choose a security method for quick login'**
   String get choose_security_method;
 
   /// No description provided for @fingerprint.
@@ -713,25 +623,25 @@ abstract class AppLocalizations {
   /// No description provided for @confirm_fingerprint_enable.
   ///
   /// In en, this message translates to:
-  /// **'Confirm fingerprint to enable quick access'**
+  /// **'Confirm fingerprint to enable quick login'**
   String get confirm_fingerprint_enable;
 
   /// No description provided for @fingerprint_enabled_success.
   ///
   /// In en, this message translates to:
-  /// **'Fingerprint login enabled successfully'**
+  /// **'Fingerprint login enabled'**
   String get fingerprint_enabled_success;
 
   /// No description provided for @fingerprint_failed_or_unavailable.
   ///
   /// In en, this message translates to:
-  /// **'Fingerprint verification failed or is not available'**
+  /// **'Fingerprint verification failed'**
   String get fingerprint_failed_or_unavailable;
 
   /// No description provided for @setup_pin.
   ///
   /// In en, this message translates to:
-  /// **'Set up PIN code'**
+  /// **'Set Up PIN'**
   String get setup_pin;
 
   /// No description provided for @pin_4_digits_only.
@@ -743,7 +653,7 @@ abstract class AppLocalizations {
   /// No description provided for @pin_must_be_4_digits.
   ///
   /// In en, this message translates to:
-  /// **'PIN must be 4 digits'**
+  /// **'PIN must contain 4 digits'**
   String get pin_must_be_4_digits;
 
   /// No description provided for @save.
@@ -761,26 +671,56 @@ abstract class AppLocalizations {
   /// No description provided for @confirm_identity_fingerprint.
   ///
   /// In en, this message translates to:
-  /// **'Please confirm your identity using fingerprint'**
+  /// **'Confirm your identity with fingerprint'**
   String get confirm_identity_fingerprint;
 
   /// No description provided for @fingerprint_verified_success.
   ///
   /// In en, this message translates to:
-  /// **'Fingerprint verified successfully'**
+  /// **'Fingerprint verified'**
   String get fingerprint_verified_success;
 
-  /// No description provided for @unreaded.
+  /// No description provided for @call_not_available.
   ///
   /// In en, this message translates to:
-  /// **'Un read'**
-  String get unreaded;
+  /// **'Call unavailable'**
+  String get call_not_available;
+
+  /// No description provided for @contact_support_reset_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact customer support to reset your password via:'**
+  String get contact_support_reset_password;
+
+  /// No description provided for @call.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get call;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @no_notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
+  String get no_notifications;
 
   /// No description provided for @all.
   ///
   /// In en, this message translates to:
   /// **'All'**
   String get all;
+
+  /// No description provided for @unreaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get unreaded;
 
   /// No description provided for @financial.
   ///
@@ -803,13 +743,13 @@ abstract class AppLocalizations {
   /// No description provided for @payments.
   ///
   /// In en, this message translates to:
-  /// **'My payments'**
+  /// **'My Payments'**
   String get payments;
 
   /// No description provided for @requests.
   ///
   /// In en, this message translates to:
-  /// **'My requests'**
+  /// **'My Requests'**
   String get requests;
 
   /// No description provided for @usage.
@@ -827,25 +767,25 @@ abstract class AppLocalizations {
   /// No description provided for @subscription_extension_options.
   ///
   /// In en, this message translates to:
-  /// **'Subscription extension options'**
+  /// **'Extension Options'**
   String get subscription_extension_options;
 
   /// No description provided for @extension_for_1_day.
   ///
   /// In en, this message translates to:
-  /// **'Extension for 1 day'**
+  /// **'Extend 1 Day'**
   String get extension_for_1_day;
 
   /// No description provided for @extension_for_2_days.
   ///
   /// In en, this message translates to:
-  /// **'Extension for 2 days'**
+  /// **'Extend 2 Days'**
   String get extension_for_2_days;
 
   /// No description provided for @extension_for_3_days.
   ///
   /// In en, this message translates to:
-  /// **'Extension for 3 days'**
+  /// **'Extend 3 Days'**
   String get extension_for_3_days;
 
   /// No description provided for @free.
@@ -857,7 +797,7 @@ abstract class AppLocalizations {
   /// No description provided for @free_of_charge.
   ///
   /// In en, this message translates to:
-  /// **'Free of charge'**
+  /// **'Free of Charge'**
   String get free_of_charge;
 
   /// No description provided for @confirm_extension.
@@ -869,7 +809,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirm_extension_message.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to extend the subscription for'**
+  /// **'Extend subscription for'**
   String get confirm_extension_message;
 
   /// No description provided for @extension_success.
@@ -881,25 +821,25 @@ abstract class AppLocalizations {
   /// No description provided for @extension_failed.
   ///
   /// In en, this message translates to:
-  /// **'Failed to extend subscription, please try again later'**
+  /// **'Extension failed, please try again'**
   String get extension_failed;
 
   /// No description provided for @day.
   ///
   /// In en, this message translates to:
-  /// **'day'**
+  /// **'Day'**
   String get day;
 
   /// No description provided for @two_days.
   ///
   /// In en, this message translates to:
-  /// **'2 days'**
+  /// **'2 Days'**
   String get two_days;
 
   /// No description provided for @days.
   ///
   /// In en, this message translates to:
-  /// **'days'**
+  /// **'Days'**
   String get days;
 
   /// No description provided for @cost.
@@ -908,71 +848,77 @@ abstract class AppLocalizations {
   /// **'Cost'**
   String get cost;
 
-  /// No description provided for @server_error_message.
+  /// No description provided for @processing_Payment.
   ///
   /// In en, this message translates to:
-  /// **'Server error. Please try again later.'**
-  String get server_error_message;
+  /// **'Processing payment...'**
+  String get processing_Payment;
 
-  /// No description provided for @failed_fetch_data.
+  /// No description provided for @confirm_Add_Bank_Payment.
   ///
   /// In en, this message translates to:
-  /// **'Failed to fetch data. Error code: '**
-  String get failed_fetch_data;
+  /// **'Add this bank payment?'**
+  String get confirm_Add_Bank_Payment;
 
-  /// No description provided for @no_internet_connection.
+  /// No description provided for @bank_Name.
   ///
   /// In en, this message translates to:
-  /// **'No internet connection, please check your network.'**
-  String get no_internet_connection;
+  /// **'Bank Name:'**
+  String get bank_Name;
 
-  /// No description provided for @session_expired.
+  /// No description provided for @notification_Number.
   ///
   /// In en, this message translates to:
-  /// **'Session expired, please login again.'**
-  String get session_expired;
+  /// **'Reference Number:'**
+  String get notification_Number;
 
-  /// No description provided for @unexpected_error.
+  /// No description provided for @total_Amount.
   ///
   /// In en, this message translates to:
-  /// **'Unexpected error occurred.'**
-  String get unexpected_error;
+  /// **'Total Amount:'**
+  String get total_Amount;
 
-  /// No description provided for @add_request.
+  /// No description provided for @payment_Added_Success.
   ///
   /// In en, this message translates to:
-  /// **'Add Request'**
-  String get add_request;
+  /// **'Payment added successfully!'**
+  String get payment_Added_Success;
 
-  /// No description provided for @request_type.
+  /// No description provided for @payment_Added_Failed.
   ///
   /// In en, this message translates to:
-  /// **'Request Type'**
-  String get request_type;
+  /// **'Failed to add payment, try again later'**
+  String get payment_Added_Failed;
 
-  /// No description provided for @choose_request_type.
+  /// No description provided for @add_Bank_Payment.
   ///
   /// In en, this message translates to:
-  /// **'Choose request type'**
-  String get choose_request_type;
+  /// **'Add Bank Payment'**
+  String get add_Bank_Payment;
 
-  /// No description provided for @add_request_button.
+  /// No description provided for @select_Bank.
   ///
   /// In en, this message translates to:
-  /// **'Add Request'**
-  String get add_request_button;
+  /// **'Select Bank'**
+  String get select_Bank;
 
-  /// No description provided for @confirm_request_title.
+  /// No description provided for @example_Number.
   ///
   /// In en, this message translates to:
-  /// **'Confirm Request'**
-  String get confirm_request_title;
+  /// **'Example: 992311'**
+  String get example_Number;
 
-  /// No description provided for @confirm_request_message.
+  /// No description provided for @example_Amount.
   ///
   /// In en, this message translates to:
-  /// **'Do you want to confirm request: {name} ?'**
-  String confirm_request_message(Object name);
+  /// **'Example: 50000'**
+  String get example_Amount;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (SYP)'**
+  String get amount;
 
   /// No description provided for @syp.
   ///
@@ -980,11 +926,35 @@ abstract class AppLocalizations {
   /// **'SYP'**
   String get syp;
 
-  /// No description provided for @loading_sending.
+  /// No description provided for @select_Bank_Warning.
   ///
   /// In en, this message translates to:
-  /// **'Sending...'**
-  String get loading_sending;
+  /// **'Select a bank to continue'**
+  String get select_Bank_Warning;
+
+  /// No description provided for @fill_Fields_Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill Fields'**
+  String get fill_Fields_Title;
+
+  /// No description provided for @fill_All_Fields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all fields'**
+  String get fill_All_Fields;
+
+  /// No description provided for @submit_Payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Payment'**
+  String get submit_Payment;
+
+  /// No description provided for @payment_Report.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Report'**
+  String get payment_Report;
 
   /// No description provided for @bank_payment.
   ///
@@ -1019,19 +989,19 @@ abstract class AppLocalizations {
   /// No description provided for @payment_confirmed_successfully.
   ///
   /// In en, this message translates to:
-  /// **'Payment Confirmed Successfully'**
+  /// **'Payment confirmed successfully'**
   String get payment_confirmed_successfully;
 
   /// No description provided for @payment_not_confirmed_yet.
   ///
   /// In en, this message translates to:
-  /// **'Payment Not Confirmed Yet'**
+  /// **'Payment not confirmed yet'**
   String get payment_not_confirmed_yet;
 
   /// No description provided for @payment_status_check_error.
   ///
   /// In en, this message translates to:
-  /// **'An error occurred while checking payment status'**
+  /// **'Error checking payment status'**
   String get payment_status_check_error;
 
   /// No description provided for @enter_payment_amount.
@@ -1055,7 +1025,7 @@ abstract class AppLocalizations {
   /// No description provided for @payment_creation_failed.
   ///
   /// In en, this message translates to:
-  /// **'Payment Creation Failed'**
+  /// **'Payment creation failed'**
   String get payment_creation_failed;
 
   /// No description provided for @missing_data.
@@ -1064,34 +1034,52 @@ abstract class AppLocalizations {
   /// **'Missing Data'**
   String get missing_data;
 
+  /// No description provided for @missing_data_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing Data'**
+  String get missing_data_title;
+
+  /// No description provided for @missing_data_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all fields'**
+  String get missing_data_message;
+
   /// No description provided for @please_fill_all_fields.
   ///
   /// In en, this message translates to:
-  /// **'Please fill in all fields'**
+  /// **'Please fill all fields'**
   String get please_fill_all_fields;
+
+  /// No description provided for @fill_all_fields_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all fields'**
+  String get fill_all_fields_message;
 
   /// No description provided for @payment_completed.
   ///
   /// In en, this message translates to:
-  /// **'Operation Completed'**
+  /// **'Completed'**
   String get payment_completed;
 
   /// No description provided for @payment_sent_successfully.
   ///
   /// In en, this message translates to:
-  /// **'Payment Sent Successfully'**
+  /// **'Payment sent successfully'**
   String get payment_sent_successfully;
 
   /// No description provided for @payment_send_failed.
   ///
   /// In en, this message translates to:
-  /// **'Failed to Send Payment'**
+  /// **'Failed to send payment'**
   String get payment_send_failed;
 
   /// No description provided for @sending_error.
   ///
   /// In en, this message translates to:
-  /// **'An error occurred while sending'**
+  /// **'Error while sending'**
   String get sending_error;
 
   /// No description provided for @payment_reference_number.
@@ -1103,7 +1091,7 @@ abstract class AppLocalizations {
   /// No description provided for @payment_amount.
   ///
   /// In en, this message translates to:
-  /// **'Payment Amount'**
+  /// **'Amount'**
   String get payment_amount;
 
   /// No description provided for @gateway.
@@ -1111,6 +1099,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gateway'**
   String get gateway;
+
+  /// No description provided for @loading_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading data...'**
+  String get loading_data;
+
+  /// No description provided for @data_loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Data loaded'**
+  String get data_loaded;
+
+  /// No description provided for @loading_sending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get loading_sending;
+
+  /// No description provided for @creating_payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating payment...'**
+  String get creating_payment;
+
+  /// No description provided for @browser_opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Browser opened'**
+  String get browser_opened;
 
   /// No description provided for @transaction_id.
   ///
@@ -1124,28 +1142,22 @@ abstract class AppLocalizations {
   /// **'Payment URL'**
   String get payment_url;
 
-  /// No description provided for @browser_opened.
-  ///
-  /// In en, this message translates to:
-  /// **'Browser Opened'**
-  String get browser_opened;
-
   /// No description provided for @checking_payment.
   ///
   /// In en, this message translates to:
-  /// **'Checking Payment'**
+  /// **'Checking payment'**
   String get checking_payment;
 
   /// No description provided for @payment_processing.
   ///
   /// In en, this message translates to:
-  /// **'Processing Payment'**
+  /// **'Processing payment'**
   String get payment_processing;
 
   /// No description provided for @loading_payment_methods.
   ///
   /// In en, this message translates to:
-  /// **'Loading Payment Methods'**
+  /// **'Loading payment methods'**
   String get loading_payment_methods;
 
   /// No description provided for @select_payment_method.
@@ -1166,46 +1178,10 @@ abstract class AppLocalizations {
   /// **'Online Gateway'**
   String get online_gateway;
 
-  /// No description provided for @missing_data_title.
-  ///
-  /// In en, this message translates to:
-  /// **'Missing Data'**
-  String get missing_data_title;
-
-  /// No description provided for @missing_data_message.
-  ///
-  /// In en, this message translates to:
-  /// **'Please fill all fields'**
-  String get missing_data_message;
-
-  /// No description provided for @fill_all_fields_message.
-  ///
-  /// In en, this message translates to:
-  /// **'Please fill all fields'**
-  String get fill_all_fields_message;
-
-  /// No description provided for @loading_data.
-  ///
-  /// In en, this message translates to:
-  /// **'Loading data...'**
-  String get loading_data;
-
-  /// No description provided for @data_loaded.
-  ///
-  /// In en, this message translates to:
-  /// **'Data loaded'**
-  String get data_loaded;
-
-  /// No description provided for @creating_payment.
-  ///
-  /// In en, this message translates to:
-  /// **'Creating payment...'**
-  String get creating_payment;
-
   /// No description provided for @reset_session.
   ///
   /// In en, this message translates to:
-  /// **'Reset session'**
+  /// **'Reset Session'**
   String get reset_session;
 
   /// No description provided for @payment_method_online.
@@ -1223,20 +1199,56 @@ abstract class AppLocalizations {
   /// No description provided for @identity_verification.
   ///
   /// In en, this message translates to:
-  /// **'Identity Verification'**
+  /// **'Payment Verification'**
   String get identity_verification;
 
-  /// No description provided for @login_failed.
+  /// No description provided for @no_payment_gateways.
   ///
   /// In en, this message translates to:
-  /// **'Login failed'**
-  String get login_failed;
+  /// **'No payment gateways'**
+  String get no_payment_gateways;
 
-  /// No description provided for @connection_error.
+  /// No description provided for @add_request.
   ///
   /// In en, this message translates to:
-  /// **'Connection error occurred'**
-  String get connection_error;
+  /// **'Add Request'**
+  String get add_request;
+
+  /// No description provided for @request_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Type'**
+  String get request_type;
+
+  /// No description provided for @choose_request_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Request Type'**
+  String get choose_request_type;
+
+  /// No description provided for @add_request_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Request'**
+  String get add_request_button;
+
+  /// No description provided for @confirm_request_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Request'**
+  String get confirm_request_title;
+
+  /// No description provided for @confirm_request_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm request: {name}?'**
+  String confirm_request_message(Object name);
+
+  /// No description provided for @storage_cleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Session data cleared'**
+  String get storage_cleared;
 
   /// No description provided for @no_token_found.
   ///
@@ -1244,11 +1256,749 @@ abstract class AppLocalizations {
   /// **'No authentication token found'**
   String get no_token_found;
 
-  /// No description provided for @storage_cleared.
+  /// No description provided for @router_management.
   ///
   /// In en, this message translates to:
-  /// **'Session data cleared successfully'**
-  String get storage_cleared;
+  /// **'Router Management'**
+  String get router_management;
+
+  /// No description provided for @router_local_network.
+  ///
+  /// In en, this message translates to:
+  /// **'Local Network'**
+  String get router_local_network;
+
+  /// No description provided for @router_connect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect'**
+  String get router_connect;
+
+  /// No description provided for @router_disconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect from Router'**
+  String get router_disconnect;
+
+  /// No description provided for @router_enter_username.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter username'**
+  String get router_enter_username;
+
+  /// No description provided for @router_enter_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter password'**
+  String get router_enter_password;
+
+  /// No description provided for @router_invalid_gateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid gateway'**
+  String get router_invalid_gateway;
+
+  /// No description provided for @connect_to_router.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Router'**
+  String get connect_to_router;
+
+  /// No description provided for @router_connecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting...'**
+  String get router_connecting;
+
+  /// No description provided for @router_loading_commands.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading commands...'**
+  String get router_loading_commands;
+
+  /// No description provided for @router_logging_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Logging in...'**
+  String get router_logging_in;
+
+  /// No description provided for @router_verifying_subscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying...'**
+  String get router_verifying_subscription;
+
+  /// No description provided for @router_login_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Router login successful'**
+  String get router_login_success;
+
+  /// No description provided for @router_connection_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Router Connection Failed'**
+  String get router_connection_failed;
+
+  /// No description provided for @router_connection_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to connect'**
+  String get router_connection_error;
+
+  /// No description provided for @router_token_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired. Log in again'**
+  String get router_token_not_found;
+
+  /// No description provided for @router_login_data_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to read login data'**
+  String get router_login_data_error;
+
+  /// No description provided for @router_commands_load_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load commands'**
+  String get router_commands_load_failed;
+
+  /// No description provided for @router_commands_load_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load router commands'**
+  String get router_commands_load_error;
+
+  /// No description provided for @router_invalid_server_response.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid response'**
+  String get router_invalid_server_response;
+
+  /// No description provided for @router_commands_http_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load commands'**
+  String get router_commands_http_error;
+
+  /// No description provided for @router_subscriber_data_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriber data not found'**
+  String get router_subscriber_data_not_found;
+
+  /// No description provided for @router_username_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to read username'**
+  String get router_username_not_found;
+
+  /// No description provided for @router_data_mismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Router data does not match your account'**
+  String get router_data_mismatch;
+
+  /// No description provided for @router_verification_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified successfully'**
+  String get router_verification_success;
+
+  /// No description provided for @router_pppoe_commands_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'PPPoE commands not found'**
+  String get router_pppoe_commands_not_found;
+
+  /// No description provided for @router_disconnect_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect error'**
+  String get router_disconnect_error;
+
+  /// No description provided for @default_login_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Default login failed'**
+  String get default_login_failed;
+
+  /// No description provided for @default_login_failed_manual.
+  ///
+  /// In en, this message translates to:
+  /// **'Default credentials are incorrect'**
+  String get default_login_failed_manual;
+
+  /// No description provided for @router_default_credentials_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Default login failed'**
+  String get router_default_credentials_failed;
+
+  /// No description provided for @router_manual_credentials_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter router credentials manually'**
+  String get router_manual_credentials_required;
+
+  /// No description provided for @router_connection_help.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to the router network first'**
+  String get router_connection_help;
+
+  /// No description provided for @router_invalid_credentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid credentials'**
+  String get router_invalid_credentials;
+
+  /// No description provided for @router_not_found_on_network.
+  ///
+  /// In en, this message translates to:
+  /// **'Router not found'**
+  String get router_not_found_on_network;
+
+  /// No description provided for @router_network_mismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Device is not on the router network'**
+  String get router_network_mismatch;
+
+  /// No description provided for @router_gateway_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Router not found'**
+  String get router_gateway_not_found;
+
+  /// No description provided for @router_telnet_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Router service unavailable'**
+  String get router_telnet_unavailable;
+
+  /// No description provided for @router_connection_refused.
+  ///
+  /// In en, this message translates to:
+  /// **'Router refused connection'**
+  String get router_connection_refused;
+
+  /// No description provided for @router_connection_timeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection timed out'**
+  String get router_connection_timeout;
+
+  /// No description provided for @router_socket_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to establish connection'**
+  String get router_socket_error;
+
+  /// No description provided for @router_authentication_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid credentials'**
+  String get router_authentication_failed;
+
+  /// No description provided for @router_login_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Router login failed'**
+  String get router_login_failed;
+
+  /// No description provided for @router_unknown_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Router connection error'**
+  String get router_unknown_error;
+
+  /// No description provided for @router_network_unreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Network unreachable'**
+  String get router_network_unreachable;
+
+  /// No description provided for @router_host_unreachable.
+  ///
+  /// In en, this message translates to:
+  /// **'Router unreachable'**
+  String get router_host_unreachable;
+
+  /// No description provided for @router_host_lookup_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Router not found'**
+  String get router_host_lookup_failed;
+
+  /// No description provided for @router_verification_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Router verification failed'**
+  String get router_verification_failed;
+
+  /// No description provided for @router_subscription_verification_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to verify subscription'**
+  String get router_subscription_verification_error;
+
+  /// No description provided for @router_line_quality.
+  ///
+  /// In en, this message translates to:
+  /// **'Line Quality'**
+  String get router_line_quality;
+
+  /// No description provided for @router_line_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Current line connection data'**
+  String get router_line_data;
+
+  /// No description provided for @router_reading_router_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading router data...'**
+  String get router_reading_router_data;
+
+  /// No description provided for @router_reading_statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading statistics...'**
+  String get router_reading_statistics;
+
+  /// No description provided for @router_current_connection_speed.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Connection Speed'**
+  String get router_current_connection_speed;
+
+  /// No description provided for @router_download.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get router_download;
+
+  /// No description provided for @router_upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload'**
+  String get router_upload;
+
+  /// No description provided for @router_snr_download.
+  ///
+  /// In en, this message translates to:
+  /// **'SNR Download'**
+  String get router_snr_download;
+
+  /// No description provided for @router_snr_upload.
+  ///
+  /// In en, this message translates to:
+  /// **'SNR Upload'**
+  String get router_snr_upload;
+
+  /// No description provided for @router_attenuation_download.
+  ///
+  /// In en, this message translates to:
+  /// **'Download Attenuation'**
+  String get router_attenuation_download;
+
+  /// No description provided for @router_attenuation_upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Attenuation'**
+  String get router_attenuation_upload;
+
+  /// No description provided for @router_crc_errors.
+  ///
+  /// In en, this message translates to:
+  /// **'CRC Errors'**
+  String get router_crc_errors;
+
+  /// No description provided for @router_change_wifi_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Wi-Fi Password'**
+  String get router_change_wifi_password;
+
+  /// No description provided for @router_change_wifi_password_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the Wi-Fi password of your router.'**
+  String get router_change_wifi_password_subtitle;
+
+  /// No description provided for @router_select_band.
+  ///
+  /// In en, this message translates to:
+  /// **'Network Band'**
+  String get router_select_band;
+
+  /// No description provided for @router_24ghz.
+  ///
+  /// In en, this message translates to:
+  /// **'2.4 GHz'**
+  String get router_24ghz;
+
+  /// No description provided for @router_5ghz.
+  ///
+  /// In en, this message translates to:
+  /// **'5 GHz'**
+  String get router_5ghz;
+
+  /// No description provided for @router_better_coverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Better Coverage'**
+  String get router_better_coverage;
+
+  /// No description provided for @router_higher_speed.
+  ///
+  /// In en, this message translates to:
+  /// **'Higher Speed'**
+  String get router_higher_speed;
+
+  /// No description provided for @router_new_password.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get router_new_password;
+
+  /// No description provided for @router_enter_new_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the new password'**
+  String get router_enter_new_password;
+
+  /// No description provided for @router_password_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the new password.'**
+  String get router_password_required;
+
+  /// No description provided for @router_password_min_length.
+  ///
+  /// In en, this message translates to:
+  /// **'The password must be at least 8 characters long.'**
+  String get router_password_min_length;
+
+  /// No description provided for @router_password_no_spaces.
+  ///
+  /// In en, this message translates to:
+  /// **'The password cannot contain spaces.'**
+  String get router_password_no_spaces;
+
+  /// No description provided for @router_password_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a strong password with at least 8 characters and avoid spaces.'**
+  String get router_password_hint;
+
+  /// No description provided for @router_change_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get router_change_password;
+
+  /// No description provided for @router_changing_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing password...'**
+  String get router_changing_password;
+
+  /// No description provided for @router_password_changed_successfully.
+  ///
+  /// In en, this message translates to:
+  /// **'The Wi-Fi password was changed successfully.'**
+  String get router_password_changed_successfully;
+
+  /// No description provided for @router_devices_reconnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect devices using the new password'**
+  String get router_devices_reconnect;
+
+  /// No description provided for @router_prepare_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing settings...'**
+  String get router_prepare_settings;
+
+  /// No description provided for @router_connecting_fetching_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting and fetching data...'**
+  String get router_connecting_fetching_data;
+
+  /// No description provided for @router_unable_connect.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to connect'**
+  String get router_unable_connect;
+
+  /// No description provided for @router_unexpected_error.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred.'**
+  String get router_unexpected_error;
+
+  /// No description provided for @router_unable_load_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load router data'**
+  String get router_unable_load_data;
+
+  /// No description provided for @router_unable_load_commands.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load router commands'**
+  String get router_unable_load_commands;
+
+  /// No description provided for @router_unable_change_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to change password'**
+  String get router_unable_change_password;
+
+  /// No description provided for @router_commands_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load router commands.'**
+  String get router_commands_error;
+
+  /// No description provided for @router_password_change_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to change the Wi-Fi password.'**
+  String get router_password_change_error;
+
+  /// No description provided for @router_current_connection_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Current connection data'**
+  String get router_current_connection_data;
+
+  /// No description provided for @router_downstream_snr.
+  ///
+  /// In en, this message translates to:
+  /// **'Downstream SNR'**
+  String get router_downstream_snr;
+
+  /// No description provided for @router_upstream_snr.
+  ///
+  /// In en, this message translates to:
+  /// **'Upstream SNR'**
+  String get router_upstream_snr;
+
+  /// No description provided for @router_downstream_attenuation.
+  ///
+  /// In en, this message translates to:
+  /// **'Downstream Attenuation'**
+  String get router_downstream_attenuation;
+
+  /// No description provided for @router_upstream_attenuation.
+  ///
+  /// In en, this message translates to:
+  /// **'Upstream Attenuation'**
+  String get router_upstream_attenuation;
+
+  /// No description provided for @router_select_network_band.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Network Band'**
+  String get router_select_network_band;
+
+  /// No description provided for @router_password_security_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'The new password will be applied directly to the router. Make sure to save it before continuing.'**
+  String get router_password_security_hint;
+
+  /// No description provided for @router_loading_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading Router Settings'**
+  String get router_loading_settings;
+
+  /// No description provided for @router_connecting_loading_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to the router and reading data...'**
+  String get router_connecting_loading_data;
+
+  /// No description provided for @router_router_data_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load router data.'**
+  String get router_router_data_error;
+
+  /// No description provided for @loading_payment_data.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading payment data...'**
+  String get loading_payment_data;
+
+  /// No description provided for @router_choose_device.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Router'**
+  String get router_choose_device;
+
+  /// No description provided for @router_choose_brand.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Brand'**
+  String get router_choose_brand;
+
+  /// No description provided for @router_choose_model.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Model'**
+  String get router_choose_model;
+
+  /// No description provided for @router_choose_model_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a model to continue'**
+  String get router_choose_model_subtitle;
+
+  /// No description provided for @router_no_brands.
+  ///
+  /// In en, this message translates to:
+  /// **'No Brands'**
+  String get router_no_brands;
+
+  /// No description provided for @router_manufacturer.
+  ///
+  /// In en, this message translates to:
+  /// **'Router manufacturer'**
+  String get router_manufacturer;
+
+  /// No description provided for @available_router_models.
+  ///
+  /// In en, this message translates to:
+  /// **'available models'**
+  String get available_router_models;
+
+  /// No description provided for @router_no_brands_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load router brands'**
+  String get router_no_brands_message;
+
+  /// No description provided for @router_loading_connection.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing connection...'**
+  String get router_loading_connection;
+
+  /// No description provided for @router_loading_brands.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading brands...'**
+  String get router_loading_brands;
+
+  /// No description provided for @router_models_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No models available'**
+  String get router_models_unavailable;
+
+  /// No description provided for @router_brands_load_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load router brands'**
+  String get router_brands_load_failed;
+
+  /// No description provided for @invalid_login_credentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid login credentials'**
+  String get invalid_login_credentials;
+
+  /// No description provided for @router_login_token_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Login token was not found'**
+  String get router_login_token_not_found;
+
+  /// No description provided for @router_login_data_read_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to read login information'**
+  String get router_login_data_read_failed;
+
+  /// No description provided for @router_server_response_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid response from the server'**
+  String get router_server_response_invalid;
+
+  /// No description provided for @router_brands_data_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid router brands data'**
+  String get router_brands_data_invalid;
+
+  /// No description provided for @router_brands_load_error.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while loading router brands'**
+  String get router_brands_load_error;
+
+  /// No description provided for @router_models_load_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load router models'**
+  String get router_models_load_failed;
+
+  /// No description provided for @router_models_data_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid router models data'**
+  String get router_models_data_invalid;
+
+  /// No description provided for @router_models_load_error.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while loading router models'**
+  String get router_models_load_error;
+
+  /// No description provided for @session_expired_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Expired'**
+  String get session_expired_title;
+
+  /// No description provided for @session_expired_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please log in again.'**
+  String get session_expired_message;
+
+  /// No description provided for @update_now.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Now'**
+  String get update_now;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @total_fees.
+  ///
+  /// In en, this message translates to:
+  /// **'Total_fees'**
+  String get total_fees;
 }
 
 class _AppLocalizationsDelegate

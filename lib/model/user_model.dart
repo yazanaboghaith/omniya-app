@@ -18,6 +18,7 @@ class UserModel {
   final int? tokenExpiry;
   final bool? fcmRegistered;
   final bool isExpired;
+
   UserModel({
     required this.id,
     required this.username,
@@ -41,25 +42,29 @@ class UserModel {
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final user = json['user'] is Map<String, dynamic>
+        ? json['user'] as Map<String, dynamic>
+        : json;
+
     return UserModel(
-      id: _toInt(json['id']),
-      username: _toString(json['username']),
-      mobile: _toString(json['mobile']),
-      userType: _toStringList(json['user_type']),
-      arabicName: _toString(json['arabic_name']),
-      phone: _toString(json['phone']),
-      balance: _toInt(json['balance']),
-      status: _toString(json['status']),
-      expiryDate: _toString(json['expiry_date']),
-      baseService: BaseService.fromJson(json['base_service']),
-      quota: Quota.fromJson(json['quota']),
+      id: _toInt(user['id']),
+      username: _toString(user['username']),
+      mobile: _toString(user['mobile']),
+      userType: _toStringList(user['user_type']),
+      arabicName: _toString(user['arabic_name']),
+      phone: _toString(user['phone']),
+      balance: _toInt(user['balance']),
+      status: _toString(user['status']),
+      expiryDate: _toString(user['expiry_date']),
+      baseService: BaseService.fromJson(user['base_service']),
+      quota: Quota.fromJson(user['quota']),
       packages: _toList(
-        json['packages'],
+        user['packages'],
       ).map((e) => Package.fromJson(e)).toList(),
-      isExpired: json['is_expired'] == true,
-      arabicStatus: _toString(json['arabic_status']),
+      isExpired: user['is_expired'] == true,
+      arabicStatus: _toString(user['arabic_status']),
       addonServices: _toList(
-        json['addon_services'],
+        user['addon_services'],
       ).map((e) => AddonService.fromJson(e)).toList(),
       token: json['token']?.toString(),
       refreshToken: json['refresh_token']?.toString(),
@@ -68,7 +73,6 @@ class UserModel {
       fcmRegistered: json['fcm_registered'] == true,
     );
   }
-
   static String _toString(dynamic value) {
     if (value == null) return "";
     return value.toString();
@@ -93,7 +97,6 @@ class UserModel {
 }
 
 class BaseService {
-  final int id;
   final int quota;
   final String itemType;
   final String name;
@@ -102,7 +105,6 @@ class BaseService {
   final bool unlimitted;
 
   BaseService({
-    required this.id,
     required this.quota,
     required this.itemType,
     required this.name,
@@ -114,7 +116,6 @@ class BaseService {
   factory BaseService.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
       return BaseService(
-        id: 0,
         quota: 0,
         itemType: "",
         name: "",
@@ -125,7 +126,6 @@ class BaseService {
     }
 
     return BaseService(
-      id: UserModel._toInt(json['id']),
       quota: UserModel._toInt(json['quota']),
       itemType: UserModel._toString(json['item_type']),
       name: UserModel._toString(json['name']),
@@ -229,14 +229,18 @@ class AddonService {
   final String itemType;
   final String name;
   final String nameAr;
+  final int price;
   final int regPrice;
+  final bool active;
 
   AddonService({
     required this.id,
     required this.itemType,
     required this.name,
     required this.nameAr,
+    required this.price,
     required this.regPrice,
+    required this.active,
   });
 
   factory AddonService.fromJson(Map<String, dynamic>? json) {
@@ -246,7 +250,9 @@ class AddonService {
         itemType: "",
         name: "",
         nameAr: "",
+        price: 0,
         regPrice: 0,
+        active: false,
       );
     }
 
@@ -255,7 +261,9 @@ class AddonService {
       itemType: UserModel._toString(json['item_type']),
       name: UserModel._toString(json['name']),
       nameAr: UserModel._toString(json['name_ar']),
+      price: UserModel._toInt(json['price']),
       regPrice: UserModel._toInt(json['reg_price']),
+      active: json['active'] == true,
     );
   }
 }

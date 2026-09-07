@@ -232,13 +232,28 @@ class _RechargePackageState extends State<RechargePackage> {
 
   Widget _buildPackagesGrid(BuildContext context, double screenWidth) {
     final data = controller.data;
+
     final prepaid = data?.prepaid ?? [];
-    final postpaid = data?.postpaid;
-    final items = isPrepaid ? prepaid : (postpaid != null ? [postpaid] : []);
+    final postpaid = data?.postpaid ?? [];
+
+    final items = isPrepaid ? prepaid : postpaid;
+
+    debugPrint(
+      '[Packages UI] Type: ${isPrepaid ? "PREPAID" : "POSTPAID"}',
+    );
+
+    debugPrint(
+      '[Packages UI] Items count: ${items.length}',
+    );
 
     if (items.isEmpty) {
-      debugPrint(" empty");
-      return Center(child: Text(AppLocalizations.of(context)!.no_packages));
+      debugPrint('[Packages UI] No packages found');
+
+      return Center(
+        child: Text(
+          AppLocalizations.of(context)!.no_packages,
+        ),
+      );
     }
 
     return GridView.builder(
@@ -253,12 +268,14 @@ class _RechargePackageState extends State<RechargePackage> {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
+
         final isDark = Theme.of(context).brightness == Brightness.dark;
 
         return Container(
           decoration: BoxDecoration(
-            borderRadius:
-                BorderRadius.circular(MediaQuery.of(context).size.width * 0.07),
+            borderRadius: BorderRadius.circular(
+              MediaQuery.of(context).size.width * 0.07,
+            ),
             border: Border.all(
               color: AppColors.text(context).withValues(alpha: 0.15),
             ),
@@ -280,11 +297,16 @@ class _RechargePackageState extends State<RechargePackage> {
                 textAlign: TextAlign.center,
                 style: AppTextStyles.text15Grey(context),
               ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.034),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.034,
+              ),
               ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  filter: ImageFilter.blur(
+                    sigmaX: 10,
+                    sigmaY: 10,
+                  ),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green.withValues(alpha: 0.6),
@@ -296,7 +318,28 @@ class _RechargePackageState extends State<RechargePackage> {
                       ),
                     ),
                     onPressed: () {
-                      showConfirmDialog(context, item.quota, item.id);
+                      debugPrint(
+                        '[Packages UI] Selected package',
+                      );
+
+                      debugPrint(
+                        '[Packages UI] Type: '
+                        '${isPrepaid ? "PREPAID" : "POSTPAID"}',
+                      );
+
+                      debugPrint(
+                        '[Packages UI] ID: ${item.id}',
+                      );
+
+                      debugPrint(
+                        '[Packages UI] Quota: ${item.quota}',
+                      );
+
+                      showConfirmDialog(
+                        context,
+                        item.quota,
+                        item.id,
+                      );
                     },
                     child: Text(
                       AppLocalizations.of(context)!.buy_package,

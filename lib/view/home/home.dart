@@ -5,6 +5,7 @@ import 'package:omniya/view/home/const/custom_bottom_bar.dart';
 import 'package:omniya/view/home/home_page/home_page.dart';
 import 'package:omniya/view/home/payment_screen/payment_screen.dart';
 import 'package:omniya/view/home/request_page/request_page.dart';
+import 'package:omniya/view/home/router_setting/router/router_selection_page.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -21,6 +22,7 @@ class _HomeState extends State<Home> {
     HomePage(),
     PaymentScreen(),
     RequestPage(),
+    RouterSelectionPage(),
   ];
 
   @override

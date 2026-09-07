@@ -1,18 +1,22 @@
 import 'dart:convert';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
 import 'package:omniya/core/const/url.dart';
 import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/core/services/auth_storage.dart';
+import 'package:omniya/core/services/api_error_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController with ChangeNotifier {
   bool isLoading = false;
+
   final AuthStorage storage = AuthStorage();
+
   final String apilogout = "${AppApi.url}${AppApi.logout}";
-  /////////////////////////////
-  ////////////////////////////
-  ////////////////////////////
-  ///////////////////////////
+
   Future<LoginResult> login({
     required String username,
     required String password,
@@ -27,7 +31,9 @@ class LoginController with ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      final uri = Uri.parse("${AppApi.url}${AppApi.login}");
+      final uri = Uri.parse(
+        "${AppApi.url}${AppApi.login}",
+      );
 
       final body = {
         "username": username,
@@ -40,62 +46,127 @@ class LoginController with ChangeNotifier {
       };
 
       debugPrint(jsonEncode(body));
-
-      debugPrint("\n======> RAW BODY MAP <======");
       body.forEach((key, value) {
         debugPrint("$key => $value");
       });
+      final languageCode = await _getLanguageCode();
 
+      debugPrint('[LOGIN] REQUEST HEADERS');
+      debugPrint('[LOGIN] Accept => application/json');
+      debugPrint('[LOGIN] Content-Type => application/json');
+      debugPrint('[LOGIN] Accept-Language => $languageCode');
+      debugPrint('[LOGIN] Application-type => mobile');
       final response = await http.post(
         uri,
         headers: {
           "Accept": "application/json",
           "Content-Type": "application/json",
-          "Accept-Language": "ar",
+          "Accept-Language": languageCode,
           "Application-type": "mobile",
         },
         body: jsonEncode(body),
       );
-
       isLoading = false;
       notifyListeners();
 
-      debugPrint("STATUS CODE => ${response.statusCode}");
+      debugPrint(
+        "STATUS CODE => ${response.statusCode}",
+      );
 
-      debugPrint(response.body);
+      debugPrint(
+        "RESPONSE BODY => ${response.body}",
+      );
 
-      final data = jsonDecode(response.body);
+      Map<String, dynamic>? data;
 
-      debugPrint("\nPARSED RESPONSE =>");
-      debugPrint(data.toString());
-      if (data["user"] != null) {
-        debugPrint("\n====== USER DATA ======");
-        data["user"].forEach((key, value) {
-          debugPrint("$key => $value");
-        });
+      try {
+        final decoded = jsonDecode(response.body);
+
+        if (decoded is Map<String, dynamic>) {
+          data = decoded;
+        }
+      } catch (e) {
+        debugPrint(
+          "Response is not valid JSON => $e",
+        );
       }
 
-      debugPrint("token => ${data["token"]}");
-      debugPrint("refresh_token => ${data["refresh_token"]}");
-      debugPrint("token_expiry => ${data["token_expiry"]}");
-      debugPrint("fcm_registered => ${data["fcm_registered"]}");
+      debugPrint("\nPARSED RESPONSE =>");
 
-      debugPrint("\n================ LOGIN END ================\n");
+      debugPrint(data?.toString() ?? "NULL");
+
+      if (data?["user"] != null) {
+        if (data!["user"] is Map) {
+          data["user"].forEach((key, value) {
+            debugPrint("$key => $value");
+          });
+        }
+      }
+
+      debugPrint(
+        "token => ${data?["token"]}",
+      );
+
+      debugPrint(
+        "refresh_token => ${data?["refresh_token"]}",
+      );
+
+      debugPrint(
+        "token_expiry => ${data?["token_expiry"]}",
+      );
+
+      debugPrint(
+        "fcm_registered => ${data?["fcm_registered"]}",
+      );
+
       final savedToken = await storage.getToken();
+
       final savedRefreshToken = await storage.getRefreshToken();
+
       final savedExpiry = await storage.storage.read(
         key: "token_expiry",
       );
 
-      debugPrint("saved token => $savedToken");
-      debugPrint("saved refresh_token => $savedRefreshToken");
-      debugPrint("saved token_expiry => $savedExpiry");
+      debugPrint(
+        "saved token => $savedToken",
+      );
+
+      debugPrint(
+        "saved refresh_token => $savedRefreshToken",
+      );
+
+      debugPrint(
+        "saved token_expiry => $savedExpiry",
+      );
+
       if (response.statusCode == 200) {
-        debugPrint("======> SAVING TOKENS TO STORAGE <======");
+        if (data == null) {
+          return LoginResult(
+            success: false,
+            message: ApiErrorHandler.getUnhandledErrorMessage(
+              context: context,
+            ),
+          );
+        }
 
-        await storage.saveToken(data["token"]);
+        await storage.saveToken(
+          data["token"],
+        );
 
-        await storage.saveRefreshToken(data["refresh_token"]);
+        await storage.saveRefreshToken(
+          data["refresh_token"],
+        );
+
+        final tokenAfterLogin = await storage.getToken();
+
+        debugPrint('[LOGIN] SERVER TOKEN');
+        debugPrint('${data["token"]}');
+        debugPrint('----------------------------------------');
+        debugPrint('[LOGIN] STORAGE TOKEN AFTER SAVE');
+        debugPrint('$tokenAfterLogin');
+        debugPrint(
+          '[LOGIN] SAME TOKEN => ${data["token"] == tokenAfterLogin}',
+        );
 
         await storage.storage.write(
           key: "last_username",
@@ -114,22 +185,116 @@ class LoginController with ChangeNotifier {
         );
       }
 
-      final errorMessage = data["message"] ??
-          data["error"] ??
-          data["errors"]?.toString() ??
-          AppLocalizations.of(context)!.login_failed;
+      if (response.statusCode == 201) {
+        if (data == null) {
+          return LoginResult(
+            success: false,
+            message: ApiErrorHandler.getUnhandledErrorMessage(
+              context: context,
+            ),
+          );
+        }
 
-      // debugPrint("ERROR MESSAGE:${errorMessage}");
+        await storage.saveToken(
+          data["token"],
+        );
+
+        await storage.saveRefreshToken(
+          data["refresh_token"],
+        );
+
+        await storage.storage.write(
+          key: "last_username",
+          value: username,
+        );
+
+        await storage.storage.write(
+          key: "token_expiry",
+          value: data["token_expiry"].toString(),
+        );
+
+        return LoginResult(
+          success: true,
+          message: AppLocalizations.of(context)!.login_success,
+          data: data,
+        );
+      }
+
+      if (response.statusCode == 401 ||
+          response.statusCode == 406 ||
+          response.statusCode == 429) {
+        String? serverMessage;
+
+        if (data?["error"] != null) {
+          serverMessage = data!["error"].toString();
+        } else if (data?["message"] != null) {
+          serverMessage = data!["message"].toString();
+        }
+
+        debugPrint(
+          "SERVER ERROR MESSAGE => $serverMessage",
+        );
+
+        return LoginResult(
+          success: false,
+          message: serverMessage != null && serverMessage.trim().isNotEmpty
+              ? serverMessage
+              : AppLocalizations.of(context)!.login_failed,
+        );
+      }
+      if (response.statusCode == 426) {
+        String? serverMessage;
+        String? serverLink;
+
+        if (data?["error"] != null) {
+          serverMessage = data!["error"].toString();
+        } else if (data?["message"] != null) {
+          serverMessage = data!["message"].toString();
+        } else if (data?["msg"] != null) {
+          serverMessage = data!["msg"].toString();
+        }
+
+        if (data?["link"] != null) {
+          serverLink = data!["link"].toString().trim();
+        }
+
+        debugPrint(
+          "426 SERVER ERROR MESSAGE => $serverMessage",
+        );
+
+        debugPrint(
+          "426 SERVER LINK => $serverLink",
+        );
+
+        return LoginResult(
+          success: false,
+          message: serverMessage != null && serverMessage.trim().isNotEmpty
+              ? serverMessage.trim()
+              : AppLocalizations.of(context)!.login_failed,
+          statusCode: 426,
+          link: serverLink,
+        );
+      }
+      if (response.statusCode == 404) {
+        return LoginResult(
+          success: false,
+          message: AppLocalizations.of(context)!.connection_error,
+        );
+      }
 
       return LoginResult(
         success: false,
-        message: errorMessage,
+        message: ApiErrorHandler.getUnhandledErrorMessage(
+          context: context,
+        ),
       );
     } catch (e) {
       isLoading = false;
       notifyListeners();
 
-      debugPrint("Catch Error: $e");
+      debugPrint(
+        "Catch Error: $e",
+      );
 
       return LoginResult(
         success: false,
@@ -138,37 +303,78 @@ class LoginController with ChangeNotifier {
     }
   }
 
-/////////////////////////////
-//////////////////////////////
-/////////////////////////////
-//////////////////////////////
-////////////////////////////
+  Future<String> _getLanguageCode() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final savedLanguage = prefs.getString('language');
+
+    if (savedLanguage != null && savedLanguage.trim().isNotEmpty) {
+      debugPrint(
+        '[LOGIN] LANGUAGE SOURCE => SAVED',
+      );
+
+      debugPrint(
+        '[LOGIN] SAVED LANGUAGE => $savedLanguage',
+      );
+
+      return savedLanguage.trim();
+    }
+    final deviceLanguage =
+        PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+
+    final languageCode = deviceLanguage == 'ar' ? 'ar' : 'en';
+
+    debugPrint(
+      '[LOGIN] LANGUAGE SOURCE => DEVICE',
+    );
+
+    debugPrint(
+      '[LOGIN] DEVICE LANGUAGE => $deviceLanguage',
+    );
+
+    debugPrint(
+      '[LOGIN] LANGUAGE TO SERVER => $languageCode',
+    );
+
+    return languageCode;
+  }
+
   Future<bool> logout() async {
     try {
-      debugPrint("\n========== LOGOUT START ==========");
-
       final token = await storage.getToken();
 
-      debugPrint("Saved Token => $token");
+      debugPrint(
+        "Saved Token => $token",
+      );
 
       if (token == null || token.isEmpty) {
-        debugPrint("No token found");
+        debugPrint(
+          "No token found",
+        );
+
         return false;
       }
 
-      final uri = Uri.parse("${AppApi.url}${AppApi.logout}");
-      debugPrint("LOGOUT FULL URL => ${uri.toString()}");
+      final uri = Uri.parse(
+        "${AppApi.url}${AppApi.logout}",
+      );
+
+      debugPrint(
+        "LOGOUT FULL URL => ${uri.toString()}",
+      );
+
       final headers = {
-        // "Accept": "application/json",
-        // "Content-Type": "application/json",
-        // "Accept-Language": "ar",
         "Authorization": "Bearer $token",
       };
 
-      debugPrint("LOGOUT URL => $uri");
+      debugPrint(
+        "LOGOUT URL => $uri",
+      );
 
       headers.forEach((key, value) {
-        debugPrint("$key => $value");
+        debugPrint(
+          "$key => $value",
+        );
       });
 
       final response = await http.post(
@@ -176,44 +382,65 @@ class LoginController with ChangeNotifier {
         headers: headers,
       );
 
-      debugPrint("\n========== LOGOUT RESPONSE ==========");
-      debugPrint("STATUS => ${response.statusCode}");
-      debugPrint("BODY => ${response.body}");
+      debugPrint(
+        "STATUS => ${response.statusCode}",
+      );
+
+      debugPrint(
+        "BODY => ${response.body}",
+      );
 
       try {
-        final data = jsonDecode(response.body);
+        final data = jsonDecode(
+          response.body,
+        );
 
-        debugPrint("\nPARSED RESPONSE =>");
+        debugPrint(
+          "\nPARSED RESPONSE =>",
+        );
 
-        data.forEach((key, value) {
-          debugPrint("$key => $value");
-        });
+        if (data is Map) {
+          data.forEach((key, value) {
+            debugPrint(
+              "$key => $value",
+            );
+          });
+        }
       } catch (_) {
-        debugPrint("Response is not JSON");
+        debugPrint(
+          "Response is not JSON",
+        );
       }
 
       if (response.statusCode == 200 ||
           response.statusCode == 204 ||
           response.statusCode == 401) {
-        debugPrint("\n====== CLEARING STORAGE ======");
-
         await storage.clearAuthData();
-        await storage.storage.delete(key: "token_expiry");
 
-        debugPrint("Storage cleared successfully");
-        debugPrint("Logout Success");
-        debugPrint("================================\n");
+        await storage.storage.delete(
+          key: "token_expiry",
+        );
+
+        debugPrint(
+          "Logout Success",
+        );
 
         return true;
       }
 
-      debugPrint("Logout Failed");
+      debugPrint(
+        "Logout Failed",
+      );
+
       return false;
     } catch (e, stack) {
-      debugPrint("\n========== LOGOUT ERROR ==========");
-      debugPrint("ERROR => $e");
-      debugPrint("STACK => $stack");
-      debugPrint("==================================\n");
+      debugPrint(
+        "ERROR => $e",
+      );
+
+      debugPrint(
+        "STACK => $stack",
+      );
 
       return false;
     }
@@ -224,10 +451,14 @@ class LoginResult {
   final bool success;
   final String message;
   final Map<String, dynamic>? data;
+  final int? statusCode;
+  final String? link;
 
   LoginResult({
     required this.success,
     required this.message,
     this.data,
+    this.statusCode,
+    this.link,
   });
 }

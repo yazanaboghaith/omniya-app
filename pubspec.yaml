@@ -2,7 +2,7 @@
   description: "A new Flutter project."
   publish_to: 'none'
 
-  version: 1.1.0+2
+  version: 1.2.2+2
 
   environment:
     sdk: ">=3.0.0 <4.0.0"
@@ -71,7 +71,6 @@
     ios: true
     image_path: "assets/images/iconomniya.png"
     
-    # (اختياري) لدعم أيقونات أندرويد الحديثة التي تتكيف مع النظام (Adaptive Icons)
     adaptive_icon_background: "assets/images/iconomniya.png" 
     adaptive_icon_foreground: "assets/images/iconomniya.png"
     # adaptive_icon_foreground_inset: 10
