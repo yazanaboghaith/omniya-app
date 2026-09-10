@@ -1,15 +1,13 @@
-import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:omniya/core/const/app_notifier.dart';
 import 'package:omniya/core/const/connection_error_view.dart';
 import 'package:omniya/core/l10n/app_localizations.dart';
 import 'package:omniya/model/bank_model.dart';
-import 'package:omniya/model/payment_methods_response.dart';
-
 import 'package:omniya/view/home/payment_screen/addbank_payment_card.dart';
 import 'package:omniya/view/home/payment_screen/controller/bank_controller.dart';
 import 'package:omniya/view/home/payment_screen/controller/payment_screen_controller.dart';
+import 'package:omniya/view/home/payment_screen/dialogs/payment_dialogs.dart';
 import 'package:omniya/view/home/payment_screen/payment_tabs.dart';
 import 'package:omniya/view/home/payment_screen/payments_report_card.dart';
 
@@ -48,9 +46,16 @@ class _PaymentScreenState extends State<PaymentScreen>
 
     WidgetsBinding.instance.addObserver(this);
 
+    refNoController.addListener(_onBankFormChanged);
+    amountController.addListener(_onBankFormChanged);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadInitialData();
     });
+  }
+
+  void _onBankFormChanged() {
+    setState(() {});
   }
 
   bool get isBankFormValid {
@@ -254,311 +259,12 @@ class _PaymentScreenState extends State<PaymentScreen>
     });
   }
 
-  Future<void> _showGatewayPaymentDialog(
-    PaymentMethod method,
-  ) async {
-    final TextEditingController amountCtrl = TextEditingController();
-
-    bool loading = false;
-
-    await showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (
-            context,
-            setStateDialog,
-          ) {
-            return AlertDialog(
-              title: Text(
-                AppLocalizations.of(context)!.enter_payment_amount,
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${AppLocalizations.of(context)!.gateway}: '
-                    '${method.name}',
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: amountCtrl,
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context)!.amount,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                  if (loading)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 20),
-                      child: CircularProgressIndicator(),
-                    ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: loading
-                      ? null
-                      : () {
-                          Navigator.pop(
-                            dialogContext,
-                          );
-                        },
-                  child: Text(
-                    AppLocalizations.of(context)!.cancel,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: loading
-                      ? null
-                      : () async {
-                          final amount = amountCtrl.text.trim();
-
-                          if (amount.isEmpty) {
-                            return;
-                          }
-
-                          final hasInternet = await _hasInternetConnection();
-
-                          if (!hasInternet) {
-                            if (Navigator.canPop(
-                              dialogContext,
-                            )) {
-                              Navigator.pop(
-                                dialogContext,
-                              );
-                            }
-
-                            _showConnectionError();
-                            return;
-                          }
-
-                          setStateDialog(() {
-                            loading = true;
-                          });
-
-                          _log(
-                            'Creating payment...',
-                          );
-
-                          _log(
-                            'Amount => $amount',
-                          );
-
-                          _log(
-                            'Gateway => ${method.value}',
-                          );
-
-                          try {
-                            final success =
-                                await paymentController.createPayment(
-                              amount: amount,
-                              paymentType: method.value,
-                            );
-
-                            if (!success) {
-                              setStateDialog(() {
-                                loading = false;
-                              });
-
-                              _log(
-                                'Payment creation failed',
-                              );
-
-                              return;
-                            }
-
-                            final session = paymentController.session;
-
-                            _log(
-                              'Transaction ID => '
-                              '${session.transactionId}',
-                            );
-
-                            _log(
-                              'URL => '
-                              '${session.paymentUrl}',
-                            );
-
-                            session.isActive = true;
-
-                            _wentToGateway = true;
-
-                            Navigator.pop(
-                              dialogContext,
-                            );
-
-                            await paymentController.openPaymentUrl();
-
-                            _log(
-                              'Browser opened',
-                            );
-                          } catch (e) {
-                            _log(
-                              'Create payment error => $e',
-                            );
-
-                            setStateDialog(() {
-                              loading = false;
-                            });
-                          }
-                        },
-                  child: Text(
-                    AppLocalizations.of(context)!.confirm_payment,
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-
-    amountCtrl.dispose();
-  }
-
   void _resetSession() {
     _log('Reset session');
 
     _wentToGateway = false;
 
     paymentController.session.clear();
-  }
-
-  Future<void> _showConfirmDialog() async {
-    final bank = selectedBank;
-
-    final amount = amountController.text.trim();
-
-    final refNo = refNoController.text.trim();
-
-    await showDialog(
-      context: context,
-      builder: (dialogContext) {
-        return Dialog(
-          backgroundColor: Colors.white30,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
-          ),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: _glassDialogDecoration(context),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppLocalizations.of(context)!.confirm_payment,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 15),
-                Text(
-                  '${AppLocalizations.of(context)!.bank_Name} '
-                  '${bank?.nameAr ?? ''}',
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '${AppLocalizations.of(context)!.total_Amount} '
-                  '$amount',
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '${AppLocalizations.of(context)!.notification_Number} '
-                  '$refNo',
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pop(
-                            dialogContext,
-                          );
-                        },
-                        child: Text(
-                          AppLocalizations.of(
-                            context,
-                          )!
-                              .cancel,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          Navigator.pop(
-                            dialogContext,
-                          );
-
-                          await _submitBankPayment();
-                        },
-                        child: Text(
-                          AppLocalizations.of(
-                            context,
-                          )!
-                              .confirm,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  BoxDecoration _glassDialogDecoration(
-    BuildContext context,
-  ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return BoxDecoration(
-      borderRadius: BorderRadius.circular(24),
-      border: Border.all(
-        color: Colors.white.withValues(
-          alpha: 0.15,
-        ),
-        width: 1,
-      ),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withValues(
-            alpha: 0.25,
-          ),
-          blurRadius: 30,
-          offset: const Offset(0, 10),
-        ),
-      ],
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: isDark
-            ? [
-                Colors.white.withValues(
-                  alpha: 0.2,
-                ),
-                Colors.white.withValues(
-                  alpha: 0.2,
-                ),
-              ]
-            : [
-                Colors.white.withValues(
-                  alpha: 0.2,
-                ),
-                Colors.white.withValues(
-                  alpha: 0.2,
-                ),
-              ],
-      ),
-    );
   }
 
   Future<void> _submitBankPayment() async {
@@ -650,6 +356,9 @@ class _PaymentScreenState extends State<PaymentScreen>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
 
+    refNoController.removeListener(_onBankFormChanged);
+    amountController.removeListener(_onBankFormChanged);
+
     refNoController.dispose();
     amountController.dispose();
 
@@ -667,7 +376,7 @@ class _PaymentScreenState extends State<PaymentScreen>
         child: Stack(
           children: [
             if (_pageLoading)
-               PageLoadingView(
+              PageLoadingView(
                 message: AppLocalizations.of(context)!.loading_payment_data,
               )
             else if (_hasConnectionError)
@@ -726,7 +435,13 @@ class _PaymentScreenState extends State<PaymentScreen>
                               return;
                             }
 
-                            await _showConfirmDialog();
+                            await PaymentDialogs.showConfirmDialog(
+                              context: context,
+                              bank: selectedBank,
+                              amount: amountController.text.trim(),
+                              refNo: refNoController.text.trim(),
+                              submitBankPayment: _submitBankPayment,
+                            );
                           },
                         )
                       else
@@ -735,7 +450,19 @@ class _PaymentScreenState extends State<PaymentScreen>
                           builder: (context, _) {
                             return OnlinePaymentGateways(
                               paymentMethodsController: paymentController,
-                              onGatewayTap: _showGatewayPaymentDialog,
+                              onGatewayTap: (method) {
+                                PaymentDialogs.showGatewayPaymentDialog(
+                                  context: context,
+                                  method: method,
+                                  paymentController: paymentController,
+                                  hasInternetConnection: _hasInternetConnection,
+                                  showConnectionError: _showConnectionError,
+                                  log: _log,
+                                  onWentToGateway: () {
+                                    _wentToGateway = true;
+                                  },
+                                );
+                              },
                             );
                           },
                         ),

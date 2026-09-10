@@ -13,8 +13,9 @@ import java.net.Inet4Address
 class MainActivity : FlutterFragmentActivity() {
 
     companion object {
-        private const val CHANNEL = "router_gateway"
-    }
+    private const val CHANNEL = "router_gateway"
+    private const val VIBRATION_CHANNEL = "omniya_vibration"
+}
 
     // ============================================================
     // FLUTTER ENGINE
@@ -29,7 +30,114 @@ class MainActivity : FlutterFragmentActivity() {
         println("[Omniya] Flutter Engine configured")
         println("[Omniya] Activity: FlutterFragmentActivity")
         println("========================================")
+MethodChannel(
+    flutterEngine.dartExecutor.binaryMessenger,
+    VIBRATION_CHANNEL
+).setMethodCallHandler { call, result ->
 
+  when (call.method) {
+
+    "strongVibrate" -> {
+        try {
+            val vibrator = getSystemService(
+                Context.VIBRATOR_SERVICE
+            ) as android.os.Vibrator
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+                vibrator.vibrate(
+                    android.os.VibrationEffect.createOneShot(
+                        300,
+                        android.os.VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
+
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(300)
+            }
+
+            println("[Omniya] Strong vibration executed")
+
+            result.success(true)
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            println(
+                "[Omniya] Vibration error: ${e.message}"
+            )
+
+            result.error(
+                "VIBRATION_ERROR",
+                e.message,
+                null
+            )
+        }
+    }
+
+    // ============================================================
+    // ERROR VIBRATION
+    // ============================================================
+
+    "errorVibrate" -> {
+        try {
+            val vibrator = getSystemService(
+                Context.VIBRATOR_SERVICE
+            ) as android.os.Vibrator
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
+                vibrator.vibrate(
+                    android.os.VibrationEffect.createWaveform(
+                        longArrayOf(
+                            0,
+                            150,
+                            100,
+                            150
+                        ),
+                        -1
+                    )
+                )
+
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(
+                    longArrayOf(
+                        0,
+                        150,
+                        100,
+                        150
+                    ),
+                    -1
+                )
+            }
+
+            println("[Omniya] Error vibration executed")
+
+            result.success(true)
+
+        } catch (e: Exception) {
+
+            e.printStackTrace()
+
+            println(
+                "[Omniya] Error vibration error: ${e.message}"
+            )
+
+            result.error(
+                "VIBRATION_ERROR",
+                e.message,
+                null
+            )
+        }
+    }
+
+    else -> {
+        result.notImplemented()
+    }
+}}
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             CHANNEL

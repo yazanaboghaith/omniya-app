@@ -1,5 +1,7 @@
 import 'dart:ui';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:omniya/core/const/app_background.dart';
 import 'package:omniya/core/const/app_color.dart';
 import 'package:omniya/core/l10n/app_localizations.dart';
@@ -16,7 +18,13 @@ class _RechargePackageState extends State<RechargePackage> {
   bool isPrepaid = true;
   bool isBuying = false;
   final RechargePackageController controller = RechargePackageController();
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
+  static const String _successSound = 'sounds/success.mp3';
+  static const String _errorSound = 'sounds/error.mp3';
+
+  static const MethodChannel _vibrationChannel =
+      MethodChannel('omniya_vibration');
   @override
   void initState() {
     super.initState();
@@ -31,8 +39,49 @@ class _RechargePackageState extends State<RechargePackage> {
 
   @override
   void dispose() {
+    _audioPlayer.dispose();
     controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _playSuccessFeedback() async {
+    try {
+      await _audioPlayer.stop();
+
+      await _audioPlayer.play(
+        AssetSource(_successSound),
+      );
+
+      await _vibrationChannel.invokeMethod('strongVibrate');
+
+      debugPrint(
+        '[Recharge Package] Success sound and vibration played',
+      );
+    } catch (e) {
+      debugPrint(
+        '[Recharge Package] Error playing success feedback: $e',
+      );
+    }
+  }
+
+  Future<void> _playErrorFeedback() async {
+    try {
+      await _audioPlayer.stop();
+
+      await _audioPlayer.play(
+        AssetSource(_errorSound),
+      );
+
+      await _vibrationChannel.invokeMethod('errorVibrate');
+
+      debugPrint(
+        '[Recharge Package] Error sound and vibration played',
+      );
+    } catch (e) {
+      debugPrint(
+        '[Recharge Package] Error playing error feedback: $e',
+      );
+    }
   }
 
   @override
@@ -479,6 +528,11 @@ class _RechargePackageState extends State<RechargePackage> {
                                         : apiMessage;
                                   });
 
+                                  if (success) {
+                                    await _playSuccessFeedback();
+                                  } else {
+                                    await _playErrorFeedback();
+                                  }
                                   isBuying = false;
 
                                   await Future.delayed(

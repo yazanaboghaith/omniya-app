@@ -78,10 +78,6 @@ class AddonServiceController with ChangeNotifier {
         );
       }
 
-      // ============================================================
-      // 200 - Success
-      // ============================================================
-
       if (res.statusCode == 200) {
         final jsonData = json.decode(res.body);
 
@@ -97,10 +93,6 @@ class AddonServiceController with ChangeNotifier {
           " [PACKAGES] SUCCESS => ${servicePackages.length} packages",
         );
       }
-
-      // ============================================================
-      // 401 - Unauthorized
-      // ============================================================
 
       else if (res.statusCode == 401) {
         String? serverMessage;
@@ -122,9 +114,6 @@ class AddonServiceController with ChangeNotifier {
         );
       }
 
-      // ============================================================
-      // 406 - Not Acceptable
-      // ============================================================
 
       else if (res.statusCode == 406) {
         String? serverMessage;
@@ -146,9 +135,6 @@ class AddonServiceController with ChangeNotifier {
         );
       }
 
-      // ============================================================
-      // 429 - Too Many Requests
-      // ============================================================
 
       else if (res.statusCode == 429) {
         String? serverMessage;
@@ -170,9 +156,6 @@ class AddonServiceController with ChangeNotifier {
         );
       }
 
-      // ============================================================
-      // Other Server Errors
-      // ============================================================
 
       else {
         packagesError = "server_error_message";
@@ -240,9 +223,6 @@ class AddonServiceController with ChangeNotifier {
         " [SUBMIT] RESPONSE BODY => ${response.body}",
       );
 
-      // ============================================================
-      // 200 / 201 - Success
-      // ============================================================
 
       final success = response.statusCode == 200 || response.statusCode == 201;
 
@@ -254,9 +234,6 @@ class AddonServiceController with ChangeNotifier {
         return true;
       }
 
-      // ============================================================
-      // Parse server response
-      // ============================================================
 
       Map<String, dynamic>? responseData;
 
@@ -299,9 +276,6 @@ class AddonServiceController with ChangeNotifier {
         return false;
       }
 
-      // ============================================================
-      // Other Errors
-      // ============================================================
 
       error = ApiErrorHandler.getUnhandledErrorMessage(
         context: context,

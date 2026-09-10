@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
 import 'package:omniya/core/const/app_color.dart';
 import 'package:omniya/core/l10n/app_localizations.dart';
 
@@ -14,6 +15,49 @@ class AppNotifier {
   AppNotifier._internal();
 
   OverlayEntry? _entry;
+
+  final AudioPlayer _audioPlayer = AudioPlayer();
+
+  static const String _successSound = 'sounds/success.mp3';
+
+  static const String _errorSound = 'sounds/error.mp3';
+  static const MethodChannel _vibrationChannel =
+      MethodChannel('omniya_vibration');
+  Future<void> _playSuccessSound() async {
+    try {
+      await _audioPlayer.stop();
+
+      await _audioPlayer.play(
+        AssetSource(_successSound),
+      );
+
+      await _vibrationChannel.invokeMethod('strongVibrate');
+
+      debugPrint('Success notification sound and vibration played');
+    } catch (e) {
+      debugPrint(
+        'Error playing success sound/vibration: $e',
+      );
+    }
+  }
+
+  Future<void> _playErrorSound() async {
+    try {
+      await _audioPlayer.stop();
+
+      await _audioPlayer.play(
+        AssetSource(_errorSound),
+      );
+
+      await _vibrationChannel.invokeMethod('errorVibrate');
+
+      debugPrint('Error notification sound and vibration played');
+    } catch (e) {
+      debugPrint(
+        'Error playing error sound/vibration: $e',
+      );
+    }
+  }
 
   void show({
     required BuildContext context,
@@ -63,6 +107,8 @@ class AppNotifier {
   ) {
     final l10n = AppLocalizations.of(context)!;
 
+    _playSuccessSound();
+
     show(
       context: context,
       message: message,
@@ -76,6 +122,8 @@ class AppNotifier {
     String message,
   ) {
     final l10n = AppLocalizations.of(context)!;
+
+    _playErrorSound();
 
     show(
       context: context,
@@ -97,6 +145,10 @@ class AppNotifier {
       title: l10n.error,
       isSuccess: false,
     );
+  }
+
+  Future<void> dispose() async {
+    await _audioPlayer.dispose();
   }
 }
 

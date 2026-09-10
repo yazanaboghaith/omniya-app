@@ -66,7 +66,6 @@ class RechargePackageController with ChangeNotifier {
 
       Map<String, dynamic>? responseData;
 
-      // محاولة تحويل Response إلى JSON
       try {
         final decoded = jsonDecode(response.body);
 
@@ -82,10 +81,6 @@ class RechargePackageController with ChangeNotifier {
           '[Packages] JSON PARSE ERROR: $e',
         );
       }
-
-      // =========================================================
-      // 200 SUCCESS
-      // =========================================================
 
       if (response.statusCode == 200) {
         if (responseData == null) {
@@ -135,13 +130,7 @@ class RechargePackageController with ChangeNotifier {
             state = PackageState.error;
           }
         }
-      }
-
-      // =========================================================
-      // 401 UNAUTHORIZED
-      // =========================================================
-
-      else if (response.statusCode == 401) {
+      } else if (response.statusCode == 401) {
         String? serverMessage;
 
         if (responseData?['error'] != null) {
@@ -174,13 +163,7 @@ class RechargePackageController with ChangeNotifier {
             error!,
           );
         }
-      }
-
-      // =========================================================
-      // 406 NOT ACCEPTABLE
-      // =========================================================
-
-      else if (response.statusCode == 406) {
+      } else if (response.statusCode == 406) {
         String? serverMessage;
 
         if (responseData?['error'] != null) {
@@ -206,13 +189,7 @@ class RechargePackageController with ChangeNotifier {
         debugPrint(
           '[Packages] 406 SERVER ERROR => $error',
         );
-      }
-
-      // =========================================================
-      // 429 TOO MANY REQUESTS
-      // =========================================================
-
-      else if (response.statusCode == 429) {
+      } else if (response.statusCode == 429) {
         String? serverMessage;
 
         if (responseData?['error'] != null) {
@@ -238,13 +215,7 @@ class RechargePackageController with ChangeNotifier {
         debugPrint(
           '[Packages] 429 SERVER ERROR => $error',
         );
-      }
-
-      // =========================================================
-      // OTHER SERVER ERRORS
-      // =========================================================
-
-      else {
+      } else {
         if (context != null) {
           error = ApiErrorHandler.getUnhandledErrorMessage(
             context: context,
